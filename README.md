@@ -1,93 +1,48 @@
-# 허니스톤_선민수연
+# 🧗 꿀멩이
 
+## 📌 프로젝트 소개
 
+**꿀멩이**는 클라이밍 입문자 및 애호가를 위한 통합 플랫폼입니다.  
+영상 기반 학습 콘텐츠를 등록 및 공유할 수 있으며, 댓글, 좋아요, 팔로우 등 **커뮤니티 기능**을 통해 사용자 간 소통을 지원합니다.  
+또한 개인의 **운동 계획을 캘린더로 관리**하고, 외부 데이터를 **크롤링하여 난이도에 따른 운동 지점을 추천**하는 기능도 제공합니다.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 🔧 기능 목록
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+| 번호  | 분류       | 기능명                  | 기능 설명                                                             | 우선순위 |
+|-------|------------|-------------------------|------------------------------------------------------------------------|----------|
+| F01   | 영상       | 영상 등록               | 영상 정보를 등록하는 기능                                             | 2        |
+| F02   | 영상       | 영상 조회               | 영상 정보를 조회하는 기능 (필터링 포함)                              | 2        |
+| F03   | 영상       | 영상 수정               | 영상 정보를 수정하는 기능                                             | 2        |
+| F04   | 영상       | 영상 삭제               | 영상 정보를 삭제하는 기능                                             | 2        |
+| F05   | 영상       | 영상 검색               | 지점, 난이도, 인기순 등으로 정렬 및 검색할 수 있는 기능              | 5        |
+| F06   | 영상       | 찜 영상                 | 관심있는 영상을 찜하고 관리할 수 있는 기능                            | 6        |
+| F07   | 댓글       | 댓글 작성               | 영상에 대한 댓글을 작성하는 기능                                      | 3        |
+| F08   | 댓글       | 댓글 조회               | 영상에 대한 댓글을 조회하는 기능                                      | 3        |
+| F09   | 댓글       | 댓글 수정               | 영상에 대한 댓글을 수정하는 기능                                      | 3        |
+| F10   | 댓글       | 댓글 삭제               | 영상에 대한 댓글을 삭제하는 기능                                      | 3        |
+| F11   | 회원       | 회원가입                | 회원가입을 통해 사용자 정보를 등록하는 기능                          | 1        |
+| F12   | 회원       | 회원 조회               | 회원 정보를 조회하는 기능                                             | 1        |
+| F13   | 마이페이지 | 회원 게시글 조회        | 내 게시글을 조회하는 기능                                             | 1        |
+| F14   | 회원       | 회원 검색               | 조건에 따라 회원을 검색하는 기능                                      | 1        |
+| F15   | 회원       | 회원 수정               | 회원 정보를 수정하는 기능                                             | 1        |
+| F16   | 회원       | 회원 삭제               | 회원 정보를 삭제하는 기능                                             | 1        |
+| F17   | 회원       | 로그인/로그아웃         | 로그인 및 로그아웃 기능                                               | 1        |
+| F18   | 회원       | 팔로우/팔로잉           | 팔로우 추가 및 취소, 목록 조회 기능                                   | 4        |
+| F19   | 운동추천   | 운동추천                | 크롤링한 정보를 바탕으로, 난이도에 따른 클라이밍 지점 추천 기능       | 7        |
+| F20   | 운동추천   | 추천 데이터 조회        | 추천된 지점 정보를 조회하는 기능                                      | 8        |
+| F21   | 운동계획   | 운동계획 조회           | 캘린더를 통해 운동 계획을 조회하는 기능                               | 9        |
+| F22   | 운동계획   | 운동계획 등록           | 캘린더에 운동 계획을 등록하는 기능                                    | 9        |
+| F23   | 운동계획   | 운동계획 수정           | 등록된 운동 계획을 수정하는 기능                                      | 9        |
+| F24   | 운동계획   | 운동계획 삭제           | 등록된 운동 계획을 삭제하는 기능                                      | 9        |
+| F25   | 운동계획   | 친구 운동 일정 공유     | 친구의 캘린더에 운동 일정 추가 요청 (수락 시 같이 운동하기 기능 포함) | 10       |
 
-## Add your files
+---
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## 🔗 USE CASE
+![image.png](./image.png)
 
-```
-cd existing_repo
-git remote add origin https://lab.ssafy.com/s13/a10/spring/honeystone.git
-git branch -M master
-git push -uf origin master
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://lab.ssafy.com/s13/a10/spring/honeystone/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## 😊 멤버 소개
+❤️ 김선민
+💚 추수연 
