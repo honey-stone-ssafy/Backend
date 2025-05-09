@@ -16,8 +16,31 @@ CREATE TABLE videos (
   id          BIGINT       NOT NULL AUTO_INCREMENT,
   title       VARCHAR(50)  NOT NULL,
   description VARCHAR(255) NULL,
-  level       ENUM('BEGINNER','INTERMEDIATE','ADVANCED') NOT NULL COMMENT '홀드 색깔',
-  skill       ENUM('TECHNIQUE1','TECHNIQUE2','OTHER') NOT NULL COMMENT '기술 명/기타',
+  level       ENUM('WHITE','YELLOW','ORANGE', 'GREEN', 'BLUE', 'RED', 'PURPLE', 'GREY', 'BROWN', 'BLACK') NOT NULL COMMENT '난이도/테이프 색깔',
+  skill SET(
+    'PINCH',
+    'SLOPER',
+    'CRIMP',
+    'POCKET_HOLD',
+    'COORDINATION',
+    'LUNGE',
+    'DYNO',
+    'BALANCE',
+    'OVERHANG',
+    'TOE_HOOK',
+    'HEEL_HOOK',
+    'BAT_HANG',
+    'COUNTER_BALANCING',
+    'DEADPOINT',
+    'POGO',
+    'FLIP',
+    'KNEEBAR',
+    'DROP_KNEE',
+    'PUSH',
+    'RUN_AND_JUMP',
+    'CAMPUSING',
+    'TOE_CATCH'
+  ) NOT NULL COMMENT '기술 명',
   PRIMARY KEY (id)
 );
 
@@ -45,7 +68,7 @@ CREATE TABLE reviews (
   FOREIGN KEY (video_id) REFERENCES videos(id)
 );
 
--- 5. 클라이밍 위치 테이블
+-- 5. 더클라임 지점 테이블
 CREATE TABLE climbing_locations (
   id          BIGINT      NOT NULL AUTO_INCREMENT,
   name        VARCHAR(50) NOT NULL,
