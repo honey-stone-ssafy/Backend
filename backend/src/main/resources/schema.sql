@@ -69,7 +69,7 @@ CREATE TABLE reviews (
 );
 
 -- 5. 더클라임 지점 테이블
-CREATE TABLE climbing_locations (
+CREATE TABLE the_climb (
   id          BIGINT      NOT NULL AUTO_INCREMENT,
   name        VARCHAR(50) NOT NULL,
   wall        VARCHAR(50) NULL,
