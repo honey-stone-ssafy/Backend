@@ -96,6 +96,30 @@ public class VideoController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@Operation(
+		summary     = "게시글 삭제",
+		description = """
+      PathVariable로 지정된 게시글 ID의 내용을 삭제합니다.
+    """,
+		responses   = {
+			@ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
+			@ApiResponse(
+				responseCode = "400",
+				description  = "잘못된 요청",
+				content      = @Content(schema = @Schema(implementation = ApiError.class))
+			),
+			@ApiResponse(
+				responseCode = "404",
+				description  = "게시글을 찾을 수 없음",
+				content      = @Content(schema = @Schema(implementation = ApiError.class))
+			),
+			@ApiResponse(
+				responseCode = "500",
+				description  = "서버 내부 오류",
+				content      = @Content(schema = @Schema(implementation = ApiError.class))
+			)
+		}
+	)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteVideo(@PathVariable("id") Long id){
 		videoService.deleteVideo(id);
