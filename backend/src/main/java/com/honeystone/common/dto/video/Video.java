@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -17,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Schema(description = "비디오 및 사진 게시물 DTO입니다.")
 public class Video {
-    @Schema(description = "게시물 인덱스", example = "1")
+    @Schema(description = "게시물 인덱스")
     private Long id;
 
     @Schema(description = "게시물 제목", example = "논현점 파랑이 정복")
@@ -33,10 +34,14 @@ public class Video {
     @NotNull(message = "난이도는 필수입니다.")
     private Level level;
 
-    @Schema(description = "기술명", example = "PINCH")
+    @Schema(description = "기술명", example = "[\"PINCH\", \"SLOPER\"]")
     @NotNull(message = "기술은 필수입니다.")
     @Size(min = 1, message = "기술은 하나 이상 선택해야 합니다.")
     private Set<Skill> skill;
+
+    @Schema(description = "첨부 파일", type = "string", format = "binary")
+    @NotNull(message = "파일 첨부는 필수입니다.")
+    private MultipartFile file;
 
     @Override
     public String toString() {

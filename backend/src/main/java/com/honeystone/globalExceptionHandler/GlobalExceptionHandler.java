@@ -4,7 +4,6 @@ import com.honeystone.common.dto.ApiError;
 import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
 import com.honeystone.exception.ValidationException;
-import com.honeystone.exception.video.FileStorageException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -42,12 +41,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleServerException(ServerException ex) {
         return new ApiError(ex.getMessage(), ex.getDetail());
-    }
-
-    @ExceptionHandler(FileStorageException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleFileStorage(FileStorageException ex) {
-        return new ApiError("파일 저장에 실패했습니다.", ex.getMessage());
     }
 
     @ExceptionHandler(DataAccessException.class)

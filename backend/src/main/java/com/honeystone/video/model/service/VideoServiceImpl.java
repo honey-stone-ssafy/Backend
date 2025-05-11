@@ -7,14 +7,12 @@ import com.honeystone.common.util.FileUpload;
 import com.honeystone.common.dto.video.VideoFile;
 import com.honeystone.exception.ServerException;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.honeystone.video.model.dao.VideoDao;
 import com.honeystone.common.dto.video.Video;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 @Transactional
 @Service
