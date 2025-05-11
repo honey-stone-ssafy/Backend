@@ -12,8 +12,8 @@
 
 	<!-- 게시글 생성	-->
 	<insert id="createVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		INSERT INTO videos (title, description, level, skill)
-		VALUES(#{title}, #{description}, #{level}, #{skill})
+		INSERT INTO videos (title, description, level, skill, created_at)
+		VALUES(#{title}, #{description}, #{level}, #{skill}, NOW())
 	</insert>
 
 	<insert id="createFile" parameterType="VideoFile" useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
@@ -24,7 +24,7 @@
 	<!--게시글 수정 -->
 	<update id="updateVideo" parameterType="Video">
 		UPDATE videos
-		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}
+		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}, updated_at = NOW()
 		WHERE id = #{id}
 	</update>
 

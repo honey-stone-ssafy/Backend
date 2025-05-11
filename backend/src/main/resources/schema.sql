@@ -41,6 +41,8 @@ CREATE TABLE videos (
     'CAMPUSING',
     'TOE_CATCH'
   ) NOT NULL COMMENT '기술 명',
+  created_at   TIMESTAMP NOT NULL,
+  updated_at   TIMESTAMP NULL,
   PRIMARY KEY (id)
 );
 

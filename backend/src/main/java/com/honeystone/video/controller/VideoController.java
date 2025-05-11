@@ -46,8 +46,9 @@ public class VideoController {
 	}
 
 	@Operation(summary = "게시글 업로드", description = """
-			Video DTO와 첨부 파일을 multipart/form-data로 전송합니다. skill 필드는 여러 개 선택 시 Shift 혹은 ctrl 이용하면 됩니다. 게시물 인덱스는 empty value로 보내주세요.
-			""",
+			Video DTO와 첨부 파일을 multipart/form-data로 전송합니다. skill 필드는 여러 개 선택 시 Shift 혹은 ctrl 이용하면 됩니다.\s
+			게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
+		""",
 		responses = {
 			@ApiResponse(responseCode = "201", description = "비디오 업로드 성공"),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
@@ -64,14 +65,13 @@ public class VideoController {
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
 
-	@Operation(
-		summary     = "게시글 수정",
-		description = """
-      PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
-      수정 가능한 필드: title, description, level, skill
-      ※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다.
-    """,
-		responses   = {
+	@Operation(summary = "게시글 수정", description = """
+      		PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
+      		수정 가능한 필드: title, description, level, skill
+      		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다. \s
+      		게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
+   	""",
+		responses = {
 			@ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
 			@ApiResponse(
 				responseCode = "400",
@@ -96,10 +96,8 @@ public class VideoController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@Operation(
-		summary     = "게시글 삭제",
-		description = """
-      PathVariable로 지정된 게시글 ID의 내용을 삭제합니다.
+	@Operation(summary = "게시글 삭제", description = """
+      		PathVariable로 지정된 게시글 ID의 내용을 삭제합니다.
     """,
 		responses   = {
 			@ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),

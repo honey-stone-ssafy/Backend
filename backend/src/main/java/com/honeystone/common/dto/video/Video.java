@@ -1,5 +1,6 @@
 package com.honeystone.common.dto.video;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.honeystone.video.model.type.Level;
 import com.honeystone.video.model.type.Skill;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Setter
@@ -16,6 +18,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "비디오 및 사진 게시물 DTO입니다.")
 public class Video {
     @Schema(description = "게시물 인덱스")
@@ -38,6 +41,12 @@ public class Video {
     @NotNull(message = "기술은 필수입니다.")
     @Size(min = 1, message = "기술은 하나 이상 선택해야 합니다.")
     private Set<Skill> skill;
+
+    @Schema(description = "생성 시각", example = "2025-05-11T18:45:00")
+    private LocalDateTime createdAt;
+
+    @Schema(description = "수정 시각", example = "2025-05-11T19:00:00")
+    private LocalDateTime updatedAt;
 
     @Schema(description = "첨부 파일", type = "string", format = "binary")
     @NotNull(message = "파일 첨부는 필수입니다.")
