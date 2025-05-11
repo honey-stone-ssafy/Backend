@@ -5,8 +5,7 @@ import java.util.List;
 
 import com.honeystone.common.util.FileUpload;
 import com.honeystone.common.dto.video.VideoFile;
-import com.honeystone.exception.video.FileStorageException;
-import com.honeystone.exception.video.VideoCreationException;
+import com.honeystone.exception.ServerException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -47,44 +46,41 @@ public class VideoServiceImpl implements VideoService {
 				.skill(video.getSkill())
 				.build();
 
-		try{
+		try {
 			videoDao.createVideo(newVideo);
-		} catch (DataAccessException dae) {
-			throw new VideoCreationException("비디오 생성 중 DB 오류", dae);
+		} catch (DataAccessException e) {
+			throw new ServerException("비디오 생성 중 DB 오류가 발생했습니다.", e);
 		}
-		// 파일 처리 로직 (비디오 먼저 생성하고, 그 id를 받아와야 함. file url에 저장하기 위해)
-		// 1. file로 File 생성하기
+
+		// 파일 처리 로직
 		Long fileId = null;
 		String filename = fileUpload.generateFileName(newVideo.getId(), file);
 		String fileUrl = null;
 		try {
 			fileUrl = fileUpload.uploadFile(file, filename);
-		}catch (IOException e) {
-			throw new FileStorageException("S3업로드 중 I/O 오류", e);
+		} catch (IOException e) {
+			throw new ServerException("S3 파일 업로드 중 오류가 발생했습니다.", e);
 		}
 
-			VideoFile newFile = VideoFile.builder()
-				.videoId(newVideo.getId())
-				.filename(filename)
-				.url(fileUrl)
-				.build();
+		VideoFile newFile = VideoFile.builder()
+			.videoId(newVideo.getId())
+			.filename(filename)
+			.url(fileUrl)
+			.build();
 
-		try{
-			// 2. DB에 저장
+		try {
+			// DB에 저장
 			videoDao.createFile(newFile);
 			fileId = newFile.getFileId();
 			System.out.println("******newFile : "+newFile);
 
-		}catch (DataAccessException ex) {
+		} catch (DataAccessException e) {
 			// S3 업로드 또는 file 테이블 저장 실패 시
-			ex.printStackTrace();
-
 			// S3에 올라간 파일이 있다면 삭제
 			if (fileUrl != null) {
 				fileUpload.deleteFile(fileId);
 			}
-			// 클라이언트에게도 실패 알리기
-			throw new FileStorageException("파일 저장 중 DB 오류.", ex);
+			throw new ServerException("파일 정보 저장 중 DB 오류가 발생했습니다.", e);
 		}
 	}
 }
