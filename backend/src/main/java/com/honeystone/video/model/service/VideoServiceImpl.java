@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.honeystone.common.dto.video.GetVideo;
 import com.honeystone.common.util.FileRemove;
 import com.honeystone.common.util.FileUpload;
 import com.honeystone.common.dto.video.VideoFile;
@@ -114,5 +115,14 @@ public class VideoServiceImpl implements VideoService {
 		videoDao.deleteVideo(id);
 		// 2. s3에서 삭제
 		fileRemove.removeFile(id);
+	}
+
+	@Override
+	public GetVideo getVideo(Long id) throws ServerException {
+		// 있는 게시물인지 확인
+		if(videoDao.existsById(id) == 0) throw new BusinessException("없는 게시물입니다.");
+
+		GetVideo video = videoDao.getVideo(id);
+		return video;
 	}
 }

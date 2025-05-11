@@ -2,6 +2,7 @@ package com.honeystone.video.model.dao;
 
 import java.util.List;
 
+import com.honeystone.common.dto.video.GetVideo;
 import com.honeystone.common.dto.video.VideoFile;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -23,4 +24,6 @@ public interface VideoDao {
 	public void deleteVideo(Long id);
 
 	public void deleteFile(Long id);
+
+	public GetVideo getVideo(Long id);
 }

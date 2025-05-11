@@ -10,6 +10,15 @@
 		FROM videos
 	</select>
 
+	<!-- 상세 게시글 조회	-->
+	<select id="getVideo" resultType="GetVideo" parameterType="Long">
+		SELECT *
+		FROM videos v
+		INNER JOIN files f
+		ON v.id = f.video_id
+		WHERE v.id = #{id}
+	</select>
+
 	<!-- 게시글 생성	-->
 	<insert id="createVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO videos (title, description, level, skill, created_at)

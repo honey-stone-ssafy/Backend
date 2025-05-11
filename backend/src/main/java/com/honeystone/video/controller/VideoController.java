@@ -3,6 +3,7 @@ package com.honeystone.video.controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.honeystone.common.dto.video.GetVideo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,6 +44,21 @@ public class VideoController {
 		}
 
 		return new ResponseEntity<List<Video>>(list,HttpStatus.OK);
+	}
+
+	@Operation(summary = "게시글 상세 조회", description = """
+			PathVariable로 지정된 게시글 ID의 내용을 조회합니다.
+		""",
+		responses = {
+			@ApiResponse(responseCode = "201", description = "비디오 업로드 성공"),
+			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
+			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
+		}
+	)
+	@GetMapping("/{id}")
+	public ResponseEntity<GetVideo> getVideo(@PathVariable("id") Long id){
+		GetVideo video = videoService.getVideo(id);
+		return new ResponseEntity<GetVideo>(video, HttpStatus.OK);
 	}
 
 	@Operation(summary = "게시글 업로드", description = """
