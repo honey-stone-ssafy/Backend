@@ -29,7 +29,7 @@ public class Video {
     @NotNull
     private Level level;
 
-    @Schema(description = "기술명", example = "PINCH")
+    @Schema(description = "기술명", example = "[ \"PINCH\", \"SLOPER\" ]")
     @NotNull
     private Set<Skill> skill;
 
