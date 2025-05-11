@@ -12,4 +12,6 @@ public interface VideoService {
 	public void createVideo(Video video, MultipartFile file) throws IOException;
 
 	public void updateVideo(Long id, Video video);
+
+	public void deleteVideo(Long id);
 }

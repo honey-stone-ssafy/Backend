@@ -96,4 +96,10 @@ public class VideoController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteVideo(@PathVariable("id") Long id){
+		videoService.deleteVideo(id);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 }

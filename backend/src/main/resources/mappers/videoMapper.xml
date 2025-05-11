@@ -29,9 +29,20 @@
 	</update>
 
 	<!-- id로 게시글 존재 확인	-->
-	<select id="existsById" resultType="int">
+	<select id="existsById" resultType="int" parameterType="Long">
 		SELECT COUNT(*)
 		FROM videos
 		WHERE id = #{id}
 	</select>
+
+	<!-- 게시글 삭제	-->
+	<delete id="deleteVideo" parameterType="Long">
+		DELETE FROM videos
+		WHERE id = #{id}
+	</delete>
+
+	<delete id="deleteFile" parameterType="Long">
+		DELETE FROM files
+		WHERE video_id = #{id}
+	</delete>
 </mapper>

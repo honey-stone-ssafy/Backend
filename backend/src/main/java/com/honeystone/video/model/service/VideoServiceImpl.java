@@ -3,6 +3,7 @@ package com.honeystone.video.model.service;
 import java.io.IOException;
 import java.util.List;
 
+import com.honeystone.common.util.FileRemove;
 import com.honeystone.common.util.FileUpload;
 import com.honeystone.common.dto.video.VideoFile;
 import com.honeystone.exception.BusinessException;
@@ -21,10 +22,12 @@ public class VideoServiceImpl implements VideoService {
 
 	private final VideoDao videoDao;
 	private final FileUpload fileUpload;
+	private final FileRemove fileRemove;
 	
-	public VideoServiceImpl(VideoDao videoDao, FileUpload fileUpload) {
+	public VideoServiceImpl(VideoDao videoDao, FileUpload fileUpload, FileRemove fileRemove) {
 		this.videoDao = videoDao;
 		this.fileUpload = fileUpload;
+		this.fileRemove = fileRemove;
 	}
 	
 	@Override
@@ -97,5 +100,18 @@ public class VideoServiceImpl implements VideoService {
 			.skill(video.getSkill())
 			.build();
 		videoDao.updateVideo(updateVideo);
+	}
+
+	@Override
+	public void deleteVideo(Long id) throws ServerException {
+		// 사용자 인증
+		// 있는 게시물인지 확인
+		if(videoDao.existsById(id) == 0) throw new BusinessException("없는 게시물입니다.");
+		// 삭제
+		// 1. db에서 삭제
+		videoDao.deleteFile(id);
+		videoDao.deleteVideo(id);
+		// 2. s3에서 삭제
+		fileRemove.removeFile(id);
 	}
 }

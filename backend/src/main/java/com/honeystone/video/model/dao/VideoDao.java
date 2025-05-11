@@ -19,4 +19,8 @@ public interface VideoDao {
 	public void updateVideo(Video video);
 
 	public int existsById(Long id); // id로 게시물 조회
+
+	public void deleteVideo(Long id);
+
+	public void deleteFile(Long id);
 }
