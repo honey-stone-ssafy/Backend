@@ -1,0 +1,13 @@
+package com.honeystone.video.model.type;
+
+public enum Skill {
+    PINCH, SLOPER, CRIMP,
+    POCKET_HOLD, COORDINATION,
+    LUNGE, DYNO, BALANCE,
+    OVERHANG, TOE_HOOK, HEEL_HOOK,
+    BAT_HANG, COUNTER_BALANCING,
+    DEADPOINT, POGO, FLIP,
+    KNEEBAR, DROP_KNEE, PUSH,
+    RUN_AND_JUMP, CAMPUSING,
+    TOE_CATCH
+}

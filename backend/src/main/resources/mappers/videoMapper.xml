@@ -9,4 +9,14 @@
 		SELECT *
 		FROM videos
 	</select>
+
+	<insert id="createVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO videos (title, description, level, skill)
+		VALUES(#{title}, #{description}, #{level}, #{skill})
+	</insert>
+
+	<insert id="createFile" parameterType="VideoFile" useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
+		INSERT INTO files (url, filename, video_id)
+		VALUES(#{url}, #{filename}, #{videoId})
+	</insert>
 </mapper>
