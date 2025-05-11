@@ -17,6 +17,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.media.Content;
 import com.honeystone.common.dto.ApiError;
+import com.honeystone.exception.ServerException;
+import org.springframework.dao.DataAccessException;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindException;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
@@ -26,14 +30,15 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class VideoController {
 	
 	private final VideoService videoService;
-	public VideoController(VideoService videoService) {
+	private final ObjectMapper objectMapper;
 
+	public VideoController(VideoService videoService, ObjectMapper objectMapper) {
 		this.videoService = videoService;
+		this.objectMapper = objectMapper;
 	}
-	// todo: 스웨거 작성
+
 	@GetMapping("")
 	public ResponseEntity<?> getVideoList() {
-		// todo: 필터링 작업 필요
 		List<Video> list = videoService.getVideoList();
 
 		if(list == null || list.isEmpty()) {
@@ -67,15 +72,12 @@ public class VideoController {
 	@PostMapping(value = "", consumes = MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Void> createVideo(
 		@Parameter(description = "비디오 정보 (skill 필드는 배열 형태로 전송)", schema = @Schema(implementation = Video.class)) 
-		@RequestPart(value = "video", required = true) String videoJson,
+		@Valid @RequestPart(value = "video", required = true) Video video,
 		@Parameter(description = "첨부 파일", schema = @Schema(type = "string", format = "binary")) 
 		@RequestPart(value = "file", required = true) MultipartFile file
 	) throws IOException {
 		// todo: 인증인가 구현되면 사용자 검증해야 함. (userId 받기)
-		ObjectMapper objectMapper = new ObjectMapper();
-		Video video = objectMapper.readValue(videoJson, Video.class);
 		videoService.createVideo(video, file);
-
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
 

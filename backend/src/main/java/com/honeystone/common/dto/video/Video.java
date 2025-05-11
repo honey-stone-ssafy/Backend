@@ -3,7 +3,9 @@ package com.honeystone.common.dto.video;
 import com.honeystone.video.model.type.Level;
 import com.honeystone.video.model.type.Skill;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.Set;
@@ -19,18 +21,21 @@ public class Video {
     private Long id;
 
     @Schema(description = "게시물 제목", example = "논현점 파랑이 정복")
-    @NotNull
+    @NotBlank(message = "제목은 필수입니다.")
+    @Size(max = 50, message = "제목은 50자 이내여야 합니다.")
     private String title;
 
     @Schema(description = "게시물 상세 내용", example = "오늘 논현점 파랑이 완전 정복했어요!!")
+    @Size(max = 255, message = "내용은 255자 이내여야 합니다.")
     private String description;
 
     @Schema(description = "난이도", example = "RED")
-    @NotNull
+    @NotNull(message = "난이도는 필수입니다.")
     private Level level;
 
-    @Schema(description = "기술명", example = "[ \"PINCH\", \"SLOPER\" ]")
-    @NotNull
+    @Schema(description = "기술명", example = "PINCH")
+    @NotNull(message = "기술은 필수입니다.")
+    @Size(min = 1, message = "기술은 하나 이상 선택해야 합니다.")
     private Set<Skill> skill;
 
     @Override
