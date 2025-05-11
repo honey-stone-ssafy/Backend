@@ -10,6 +10,7 @@
 		FROM videos
 	</select>
 
+	<!-- 게시글 생성	-->
 	<insert id="createVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO videos (title, description, level, skill)
 		VALUES(#{title}, #{description}, #{level}, #{skill})
@@ -19,4 +20,18 @@
 		INSERT INTO files (url, filename, video_id)
 		VALUES(#{url}, #{filename}, #{videoId})
 	</insert>
+
+	<!--게시글 수정 -->
+	<update id="updateVideo" parameterType="Video">
+		UPDATE videos
+		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}
+		WHERE id = #{id}
+	</update>
+
+	<!-- id로 게시글 존재 확인	-->
+	<select id="existsById" resultType="int">
+		SELECT COUNT(*)
+		FROM videos
+		WHERE id = #{id}
+	</select>
 </mapper>

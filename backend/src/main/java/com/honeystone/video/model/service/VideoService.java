@@ -10,4 +10,6 @@ public interface VideoService {
 	public List<Video> getVideoList();
 
 	public void createVideo(Video video, MultipartFile file) throws IOException;
+
+	public void updateVideo(Long id, Video video);
 }

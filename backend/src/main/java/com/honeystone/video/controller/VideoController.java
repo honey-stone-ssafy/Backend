@@ -4,16 +4,18 @@ import java.io.IOException;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.honeystone.common.dto.video.Video;
 import com.honeystone.video.model.service.VideoService;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import com.honeystone.common.dto.ApiError;
 import jakarta.validation.Valid;
@@ -26,13 +28,14 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class VideoController {
 	
 	private final VideoService videoService;
-
 	public VideoController(VideoService videoService) {
+
 		this.videoService = videoService;
 	}
-
+	// todo: 스웨거 작성
 	@GetMapping("")
 	public ResponseEntity<?> getVideoList() {
+		// todo: 필터링 작업 필요
 		List<Video> list = videoService.getVideoList();
 
 		if(list == null || list.isEmpty()) {
@@ -61,11 +64,11 @@ public class VideoController {
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
 
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<Void> updateVideo(@PathVariable("id") int id, @ModelAttribute Video video){
-//		video.setId(id);
-//		videoService.updateVideo(video);
-//		return new ResponseEntity<>(HttpStatus.OK);
-//	}
+	//todo: 스웨거
+	@PatchMapping("/{id}")
+	public ResponseEntity<Void> updateVideo(@PathVariable("id") Long id, @RequestBody Video video){
+		videoService.updateVideo(id, video);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.honeystone.common.util.FileUpload;
 import com.honeystone.common.dto.video.VideoFile;
+import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -80,5 +81,21 @@ public class VideoServiceImpl implements VideoService {
 			}
 			throw new ServerException("파일 정보 저장 중 DB 오류가 발생했습니다.", e);
 		}
+	}
+
+	@Override
+	public void updateVideo(Long id, Video video) throws ServerException {
+		// 사용자 인증
+		// 있는 게시물인지 확인
+		if(videoDao.existsById(id) == 0) throw new BusinessException("없는 게시물입니다.");
+		// 수정
+		Video updateVideo = Video.builder()
+			.id(id)
+			.title(video.getTitle())
+			.description(video.getDescription())
+			.level(video.getLevel())
+			.skill(video.getSkill())
+			.build();
+		videoDao.updateVideo(updateVideo);
 	}
 }
