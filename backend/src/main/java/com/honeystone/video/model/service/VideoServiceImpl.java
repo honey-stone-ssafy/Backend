@@ -1,7 +1,6 @@
 package com.honeystone.video.model.service;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.honeystone.common.dto.video.GetVideo;
@@ -25,17 +24,26 @@ public class VideoServiceImpl implements VideoService {
 	private final VideoDao videoDao;
 	private final FileUpload fileUpload;
 	private final FileRemove fileRemove;
-	
+
 	public VideoServiceImpl(VideoDao videoDao, FileUpload fileUpload, FileRemove fileRemove) {
 		this.videoDao = videoDao;
 		this.fileUpload = fileUpload;
 		this.fileRemove = fileRemove;
 	}
-	
+
 	@Override
 	public List<Video> getVideoList() {
 		System.out.println("게시글 전체 목록");
 		return videoDao.selectAll();
+	}
+
+	@Override
+	public GetVideo getVideo(Long id) throws ServerException {
+		// 있는 게시물인지 확인
+		if(videoDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+
+		GetVideo video = videoDao.getVideo(id);
+		return video;
 	}
 
 	@Override
@@ -82,7 +90,7 @@ public class VideoServiceImpl implements VideoService {
 			// S3 업로드 또는 file 테이블 저장 실패 시
 			// S3에 올라간 파일이 있다면 삭제
 			if (fileUrl != null) {
-				fileUpload.deleteFile(fileId);
+				fileRemove.removeFile(fileId);
 			}
 			throw new ServerException("파일 정보 저장 중 DB 오류가 발생했습니다.", e);
 		}
@@ -92,7 +100,7 @@ public class VideoServiceImpl implements VideoService {
 	public void updateVideo(Long id, Video video) throws ServerException {
 		// 사용자 인증
 		// 있는 게시물인지 확인
-		if(videoDao.existsById(id) == 0) throw new BusinessException("없는 게시물입니다.");
+		if(videoDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
 		// 수정
 		Video updateVideo = Video.builder()
 			.id(id)
@@ -106,23 +114,17 @@ public class VideoServiceImpl implements VideoService {
 
 	@Override
 	public void deleteVideo(Long id) throws ServerException {
-		// 사용자 인증
+		// todo: 사용자 인증
+
 		// 있는 게시물인지 확인
-		if(videoDao.existsById(id) == 0) throw new BusinessException("없는 게시물입니다.");
+		if(videoDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+
 		// 삭제
-		// 1. db에서 삭제
-		videoDao.deleteFile(id);
-		videoDao.deleteVideo(id);
-		// 2. s3에서 삭제
-		fileRemove.removeFile(id);
+		// 1. db에서 변경
+		GetVideo deletedVideo = getVideo(id);
+		videoDao.deleteVideo(id); //deletedat 변경
+		// file s3에서 경로 옮기기
+		fileRemove.moveFile(deletedVideo.getUrl(), deletedVideo.getFilename());
 	}
 
-	@Override
-	public GetVideo getVideo(Long id) throws ServerException {
-		// 있는 게시물인지 확인
-		if(videoDao.existsById(id) == 0) throw new BusinessException("없는 게시물입니다.");
-
-		GetVideo video = videoDao.getVideo(id);
-		return video;
-	}
 }

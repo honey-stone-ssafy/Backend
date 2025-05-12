@@ -32,7 +32,7 @@ public class FileUpload {
                 : ""; // 기본값을 빈 문자열로 설정
 
             String formattedFileName = String.format(
-                "videos_%d%s", id,  extension
+                "video_%d%s", id,  extension
             );
 
         return formattedFileName;
@@ -49,17 +49,5 @@ public class FileUpload {
         amazonS3Client.putObject(bucket, fileUrl, file.getInputStream(), metadata);
 
         return fileUrl;
-    }
-
-    public void deleteFile(Long fileId) {
-        final String files = String.format("videos_%d", fileId);
-        ObjectListing objectListing = amazonS3Client.listObjects(bucket, RV_DIR);
-        for(S3ObjectSummary os : objectListing.getObjectSummaries()) {
-            String filename = os.getKey();
-            log.info("filename: {}", filename);
-            if (filename.startsWith(RV_DIR + files)) {
-                amazonS3Client.deleteObject(bucket, filename);
-            }
-        }
     }
 }

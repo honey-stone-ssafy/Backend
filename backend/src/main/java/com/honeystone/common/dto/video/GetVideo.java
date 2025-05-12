@@ -43,6 +43,9 @@ public class GetVideo {
     @Schema(description = "수정 시각", example = "2025-05-11T19:00:00")
     private LocalDateTime updatedAt;
 
+    @Schema(description = "삭제 시각", example = "2025-05-11T19:00:00")
+    private LocalDateTime deletedAt;
+
     @Schema(description = "파일 인덱스", example = "1")
     private Long fileId;
 

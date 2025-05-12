@@ -46,6 +46,9 @@ public class Video {
     @Schema(description = "수정 시각", example = "2025-05-11T19:00:00")
     private LocalDateTime updatedAt;
 
+    @Schema(description = "삭제 시각", example = "2025-05-11T19:00:00")
+    private LocalDateTime deletedAt;
+
     @Schema(description = "첨부 파일", type = "string", format = "binary")
     @NotNull(message = "파일 첨부는 필수입니다.")
     private MultipartFile file;

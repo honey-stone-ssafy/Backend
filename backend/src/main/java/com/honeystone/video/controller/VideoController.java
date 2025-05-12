@@ -50,7 +50,7 @@ public class VideoController {
 			PathVariable로 지정된 게시글 ID의 내용을 조회합니다.
 		""",
 		responses = {
-			@ApiResponse(responseCode = "201", description = "비디오 업로드 성공"),
+			@ApiResponse(responseCode = "200", description = "게시글 상세 조회 성공"),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
 			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
 		}
@@ -139,5 +139,7 @@ public class VideoController {
 		videoService.deleteVideo(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
+
 
 }

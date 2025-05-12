@@ -43,6 +43,7 @@ CREATE TABLE videos (
   ) NOT NULL COMMENT '기술 명',
   created_at   TIMESTAMP NOT NULL,
   updated_at   TIMESTAMP NULL,
+  deleted_at   TIMESTAMP NULL,
   PRIMARY KEY (id)
 );
 

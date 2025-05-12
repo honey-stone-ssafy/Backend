@@ -23,7 +23,11 @@ public interface VideoDao {
 
 	public void deleteVideo(Long id);
 
+	public void completeDeleteVideo(Long id);
+
 	public void deleteFile(Long id);
 
 	public GetVideo getVideo(Long id);
+
+	public List<Video> findVideosToDelete();
 }
