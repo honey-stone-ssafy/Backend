@@ -19,7 +19,7 @@ public class VideoCleanupScheduler {
         this.fileRemove = fileRemove;
     }
 
-    @Scheduled(cron = "0 0 22 * * *") // 매일 새벽 2시에 실행
+    @Scheduled(cron = "0 0 2 * * *") // 매일 새벽 2시에 실행
 //    @Scheduled(cron = "0 */1 * * * *") // 매 1분마다 실행 (테스트용)
     public void deleteExpiredVideos() {
         List<Video> expiredVideos = videoDao.findVideosToDelete();
