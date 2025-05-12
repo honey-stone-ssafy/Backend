@@ -38,8 +38,6 @@ public class Video {
     private Level level;
 
     @Schema(description = "기술명", example = "[\"PINCH\", \"SLOPER\"]")
-    @NotNull(message = "기술은 필수입니다.")
-    @Size(min = 1, message = "기술은 하나 이상 선택해야 합니다.")
     private Set<Skill> skill;
 
     @Schema(description = "생성 시각", example = "2025-05-11T18:45:00")
