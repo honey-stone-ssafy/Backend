@@ -84,7 +84,7 @@ public class VideoServiceImpl implements VideoService {
 			// DB에 저장
 			videoDao.createFile(newFile);
 			fileId = newFile.getFileId();
-			System.out.println("******newFile : "+newFile);
+//			System.out.println("******newFile : "+newFile);
 
 		} catch (DataAccessException e) {
 			// S3 업로드 또는 file 테이블 저장 실패 시
