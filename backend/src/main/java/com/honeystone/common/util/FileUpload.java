@@ -21,7 +21,7 @@ public class FileUpload {
     private AmazonS3 amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    private static final String RV_DIR = "file/video/";
+    private static final String RV_DIR = "file/videos/";
 
     public String generateFileName(Long id, MultipartFile file) {
 
@@ -32,7 +32,7 @@ public class FileUpload {
                 : ""; // 기본값을 빈 문자열로 설정
 
             String formattedFileName = String.format(
-                "videos_%d_%s", id,  extension
+                "videos_%d%s", id,  extension
             );
 
         return formattedFileName;
