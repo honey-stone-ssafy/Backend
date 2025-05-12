@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.honeystone.review.model.dao.ReviewDao">
+
+	<!-- 전체 댓글 조회 -->
+	<select id="getReviewList" resultType="GetReview" parameterType="Long">
+		SELECT *
+		FROM reviews
+		WHERE video_id = #{videoId}
+	</select>
+	
+	<insert id="createReview" parameterType="Review">
+		INSERT INTO reviews(content, created_at, user_id, video_id)
+		VALUES(#{content}, NOW(), #{userId}, #{videoId})
+	</insert>
+	
+	<select id="existsById" parameterType="Long" resultType="int">
+		SELECT count(*)
+		FROM reviews
+		WHERE id = #{reviewId}
+	</select>
+	
+	<update id="updatedReview" parameterType = "Review">
+		UPDATE reviews
+		SET content = #{content}, updated_at = NOW()
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteReview" parameterType="Long">
+		DELETE FROM reviews
+		WHERE id = #{id}
+	</delete>
+</mapper>
