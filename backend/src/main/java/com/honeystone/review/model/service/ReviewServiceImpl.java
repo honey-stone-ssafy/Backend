@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.honeystone.common.dto.GetReview;
 import com.honeystone.common.dto.Review;
 import com.honeystone.review.model.dao.ReviewDao;
 
@@ -18,12 +17,12 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public List<GetReview> getReviewList(Long videoId) { // 전역 예외 처리
+	public List<Review> getReviewList(Long videoId) { // 전역 예외 처리
 		// todo: 사용자 인증
 
 		// video 존재 여부 검사
 
-		List<GetReview> reviews = reviewDao.getReviewList(videoId);
+		List<Review> reviews = reviewDao.getReviewList(videoId);
 		return reviews;
 	}
 

@@ -5,30 +5,43 @@
 <mapper namespace="com.honeystone.review.model.dao.ReviewDao">
 
 	<!-- 전체 댓글 조회 -->
-	<select id="getReviewList" resultType="GetReview" parameterType="Long">
+	<select id="getReviewList" resultType="Review" parameterType="Long">
 		SELECT *
 		FROM reviews
 		WHERE video_id = #{videoId}
+		AND deleted_at IS NULL
 	</select>
-	
+
+	<!--댓글 생성 -->
 	<insert id="createReview" parameterType="Review">
 		INSERT INTO reviews(content, created_at, user_id, video_id)
 		VALUES(#{content}, NOW(), #{userId}, #{videoId})
 	</insert>
-	
+
+	<!--id로 댓글 존재 확인 -->
 	<select id="existsById" parameterType="Long" resultType="int">
 		SELECT count(*)
 		FROM reviews
 		WHERE id = #{reviewId}
+		AND deleted_at IS NULL
 	</select>
-	
+
+	<!-- 댓글 수정 -->
 	<update id="updatedReview" parameterType = "Review">
 		UPDATE reviews
 		SET content = #{content}, updated_at = NOW()
 		WHERE id = #{id}
 	</update>
-	
-	<delete id="deleteReview" parameterType="Long">
+
+	<!-- 댓글 논리 삭제 -->
+	<update id="deleteReview" parameterType="Long">
+		UPDATE reviews
+		SET deleted_at = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<!-- 댓글 영구 삭제 -->
+	<delete id="CompleteDeleteReview" parameterType="Long">
 		DELETE FROM reviews
 		WHERE id = #{id}
 	</delete>

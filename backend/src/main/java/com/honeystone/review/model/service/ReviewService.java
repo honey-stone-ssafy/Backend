@@ -2,12 +2,11 @@ package com.honeystone.review.model.service;
 
 import java.util.List;
 
-import com.honeystone.common.dto.GetReview;
 import com.honeystone.common.dto.Review;
 
 public interface ReviewService {
 
-	public List<GetReview> getReviewList(Long videoId);
+	public List<Review> getReviewList(Long videoId);
 
 	public void createReview(Long videoId, Review review);
 
