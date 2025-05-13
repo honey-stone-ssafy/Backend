@@ -5,10 +5,12 @@ import com.honeystone.common.util.FileRemove;
 import com.honeystone.video.model.dao.VideoDao;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
+@Transactional
 public class VideoCleanupScheduler {
 
     private final VideoDao videoDao;
