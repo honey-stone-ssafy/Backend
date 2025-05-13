@@ -25,8 +25,8 @@ public class VideoCleanupScheduler {
         this.reviewDao = reviewDao;
     }
 
-//    @Scheduled(cron = "0 0 2 * * *") // 매일 새벽 2시에 실행
-    @Scheduled(cron = "0 */1 * * * *") // 매 1분마다 실행 (테스트용)
+    @Scheduled(cron = "0 0 2 * * *") // 매일 새벽 2시에 실행
+//    @Scheduled(cron = "0 */1 * * * *") // 매 1분마다 실행 (테스트용)
     public void deleteExpiredVideos() {
         // 게시물 검사
         List<Video> expiredVideos = videoDao.findVideosToDelete();

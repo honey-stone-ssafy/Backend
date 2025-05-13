@@ -51,24 +51,24 @@
 	</update>
 
 
-<!--	<select id="findReviewsToDelete" resultType="Review">-->
-<!--		<![CDATA[-->
-<!--        SELECT *-->
-<!--        FROM reviews-->
-<!--        WHERE deleted_at IS NOT NULL-->
-<!--          AND DATE_ADD(deleted_at, INTERVAL 30 DAY) <= CURRENT_DATE-->
-<!--    ]]>-->
-<!--	</select>-->
+	<select id="findReviewsToDelete" resultType="Review">
+		<![CDATA[
+        SELECT *
+        FROM reviews
+        WHERE deleted_at IS NOT NULL
+          AND DATE_ADD(deleted_at, INTERVAL 30 DAY) <= CURRENT_DATE
+    ]]>
+	</select>
 
 	<!--논리 삭제 테스트용 -->
-	<select id="findReviewsToDelete" resultType="Review">
-            <![CDATA[
-            SELECT *
-            FROM reviews
-            WHERE deleted_at IS NOT NULL
-              AND DATE_ADD(deleted_at, INTERVAL 1 MINUTE) <= NOW()
-        ]]>
-	</select>
+<!--	<select id="findReviewsToDelete" resultType="Review">-->
+<!--            <![CDATA[-->
+<!--            SELECT *-->
+<!--            FROM reviews-->
+<!--            WHERE deleted_at IS NOT NULL-->
+<!--              AND DATE_ADD(deleted_at, INTERVAL 1 MINUTE) <= NOW()-->
+<!--        ]]>-->
+<!--	</select>-->
 
 
 	<!-- 댓글 영구 삭제 -->
