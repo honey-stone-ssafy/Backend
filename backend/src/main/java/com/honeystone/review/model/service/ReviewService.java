@@ -2,11 +2,13 @@ package com.honeystone.review.model.service;
 
 import java.util.List;
 
-import com.honeystone.common.dto.Review;
+import com.honeystone.common.dto.review.Review;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ReviewService {
 
-	public List<Review> getReviewList(Long videoId);
+	public Page<Review> getReviewList(Long videoId, Pageable pageables);
 
 	public void createReview(Long videoId, Review review);
 
