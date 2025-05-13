@@ -3,4 +3,11 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.honeystone.user.model.dao.UserDao">
+	
+	<!-- 회원가입 -->
+	<insert id="createUser" parameterType="com.honeystone.user.model.dto.request.UserSignupRequest">
+        INSERT INTO users (email, nickname, password, created_at)
+        VALUES (#{email}, #{nickname}, #{password}, NOW())
+    </insert>
+    
 </mapper>
