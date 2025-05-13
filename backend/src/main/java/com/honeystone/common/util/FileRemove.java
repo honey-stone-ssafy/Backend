@@ -16,18 +16,10 @@ import java.util.List;
 public class FileRemove {
 
     @Autowired
-    private final FileUpload fileUpload;
-
-    public FileRemove(FileUpload fileUpload) {
-        this.fileUpload = fileUpload;
-    }
-
-    @Autowired
     private AmazonS3 amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    private static final String RV_DIR = "file/videos/";
-    private static final String RV_DIR2 = "file/deleted/";
+    private static final String RV_DIR = "file/deleted/";
 
 
 
@@ -46,7 +38,7 @@ public class FileRemove {
 
     public void moveFile(String fileUrl, String filename){
         // 1. 복사
-        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, fileUrl, bucket, RV_DIR2+filename);
+        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, fileUrl, bucket, RV_DIR+filename);
         amazonS3Client.copyObject(copyObjectRequest);
 
         // 2. 원본 삭제
