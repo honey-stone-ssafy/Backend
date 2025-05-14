@@ -1,11 +1,10 @@
-package com.honeystone.common.dto.video;
+package com.honeystone.common.dto.board;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.honeystone.video.model.type.Level;
-import com.honeystone.video.model.type.Skill;
+import com.honeystone.board.model.type.Level;
+import com.honeystone.board.model.type.Skill;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -19,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "비디오 상세 조회용 DTO (파일 정보 포함)")
-public class GetVideo {
+public class GetBoard {
     @Schema(description = "게시물 인덱스")
     private Long id;
 

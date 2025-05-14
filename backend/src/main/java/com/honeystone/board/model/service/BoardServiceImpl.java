@@ -1,72 +1,72 @@
-package com.honeystone.video.model.service;
+package com.honeystone.board.model.service;
 
 import java.io.IOException;
 import java.util.List;
 
-import com.honeystone.common.dto.video.GetVideo;
+import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.util.FileRemove;
 import com.honeystone.common.util.FileUpload;
-import com.honeystone.common.dto.video.VideoFile;
+import com.honeystone.common.dto.board.BoardFile;
 import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.honeystone.video.model.dao.VideoDao;
-import com.honeystone.common.dto.video.Video;
+import com.honeystone.board.model.dao.BoardDao;
+import com.honeystone.common.dto.board.Board;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Transactional
 @Service
-public class VideoServiceImpl implements VideoService {
+public class BoardServiceImpl implements BoardService {
 
-	private final VideoDao videoDao;
+	private final BoardDao boardDao;
 	private final FileUpload fileUpload;
 	private final FileRemove fileRemove;
 
-	public VideoServiceImpl(VideoDao videoDao, FileUpload fileUpload, FileRemove fileRemove) {
-		this.videoDao = videoDao;
+	public BoardServiceImpl(BoardDao boardDao, FileUpload fileUpload, FileRemove fileRemove) {
+		this.boardDao = boardDao;
 		this.fileUpload = fileUpload;
 		this.fileRemove = fileRemove;
 	}
 
 	@Override
-	public List<Video> getVideoList() {
+	public List<Board> getBoardList() {
 		System.out.println("게시글 전체 목록");
-		return videoDao.selectAll();
+		return boardDao.selectAll();
 	}
 
 	@Override
-	public GetVideo getVideo(Long id) throws ServerException {
+	public GetBoard getBoard(Long id) throws ServerException {
 		// 있는 게시물인지 확인
-		if(videoDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
 
-		GetVideo video = videoDao.getVideo(id);
-		return video;
+		GetBoard board = boardDao.getBoard(id);
+		return board;
 	}
 
 	@Override
-	public void createVideo(Video video, MultipartFile file) throws IOException {
+	public void createBoard(Board board, MultipartFile file) throws IOException {
 		// todo : 사용자 유효성 로직 필요
 
-		// video 생성 로직
-		Video newVideo = Video.builder()
-				.title(video.getTitle())
-				.description(video.getDescription())
-				.level(video.getLevel())
-				.skill(video.getSkill())
+		// board 생성 로직
+		Board newBoard = Board.builder()
+				.title(board.getTitle())
+				.description(board.getDescription())
+				.level(board.getLevel())
+				.skill(board.getSkill())
 				.build();
 
 		try {
-			videoDao.createVideo(newVideo);
+			boardDao.createBoard(newBoard);
 		} catch (DataAccessException e) {
 			throw new ServerException("비디오 생성 중 DB 오류가 발생했습니다.", e);
 		}
 
 		// 파일 처리 로직
 		Long fileId = null;
-		String filename = fileUpload.generateFileName(newVideo.getId(), file);
+		String filename = fileUpload.generateFileName(newBoard.getId(), file);
 		String fileUrl = null;
 		try {
 			fileUrl = fileUpload.uploadFile(file, filename);
@@ -74,15 +74,15 @@ public class VideoServiceImpl implements VideoService {
 			throw new ServerException("S3 파일 업로드 중 오류가 발생했습니다.", e);
 		}
 
-		VideoFile newFile = VideoFile.builder()
-			.videoId(newVideo.getId())
+		BoardFile newFile = BoardFile.builder()
+			.boardId(newBoard.getId())
 			.filename(filename)
 			.url(fileUrl)
 			.build();
 
 		try {
 			// DB에 저장
-			videoDao.createFile(newFile);
+			boardDao.createFile(newFile);
 			fileId = newFile.getFileId();
 //			System.out.println("******newFile : "+newFile);
 
@@ -97,34 +97,34 @@ public class VideoServiceImpl implements VideoService {
 	}
 
 	@Override
-	public void updateVideo(Long id, Video video) throws ServerException {
+	public void updateBoard(Long id, Board board) throws ServerException {
 		// 사용자 인증
 		// 있는 게시물인지 확인
-		if(videoDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
 		// 수정
-		Video updateVideo = Video.builder()
+		Board updateBoard = Board.builder()
 			.id(id)
-			.title(video.getTitle())
-			.description(video.getDescription())
-			.level(video.getLevel())
-			.skill(video.getSkill())
+			.title(board.getTitle())
+			.description(board.getDescription())
+			.level(board.getLevel())
+			.skill(board.getSkill())
 			.build();
-		videoDao.updateVideo(updateVideo);
+		boardDao.updateBoard(updateBoard);
 	}
 
 	@Override
-	public void deleteVideo(Long id) throws ServerException {
+	public void deleteBoard(Long id) throws ServerException {
 		// todo: 사용자 인증
 
 		// 있는 게시물인지 확인
-		if(videoDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
 
 		// 삭제
 		// 1. db에서 변경
-		GetVideo deletedVideo = getVideo(id);
-		videoDao.deleteVideo(id); //deletedat 변경
+		GetBoard deletedBoard = getBoard(id);
+		boardDao.deleteBoard(id); //deletedat 변경
 		// file s3에서 경로 옮기기
-		fileRemove.moveFile(deletedVideo.getUrl(), deletedVideo.getFilename());
+		fileRemove.moveFile(deletedBoard.getUrl(), deletedBoard.getFilename());
 	}
 
 }

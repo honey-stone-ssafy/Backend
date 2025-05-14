@@ -2,39 +2,39 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.honeystone.video.model.dao.VideoDao">
+<mapper namespace="com.honeystone.board.model.dao.BoardDao">
 
 	<!-- 전체 게시글 조회 -->
-	<select id="selectAll" resultType="Video">
+	<select id="selectAll" resultType="Board">
 		SELECT *
-		FROM videos
+		FROM boards
 		WHERE deleted_at IS NULL
 	</select>
 
 	<!-- 상세 게시글 조회	-->
-	<select id="getVideo" resultType="GetVideo" parameterType="Long">
+	<select id="getBoard" resultType="GetBoard" parameterType="Long">
 		SELECT *
-		FROM videos v
+		FROM boards v
 		INNER JOIN files f
-		ON v.id = f.video_id
+		ON v.id = f.Board_id
 		WHERE v.id = #{id}
 		AND v.deleted_at IS NULL
 	</select>
 
 	<!-- 게시글 생성	-->
-	<insert id="createVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		INSERT INTO videos (title, description, level, skill, created_at)
+	<insert id="createBoard" parameterType="Board" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO boards (title, description, level, skill, created_at)
 		VALUES(#{title}, #{description}, #{level}, #{skill}, NOW())
 	</insert>
 
-	<insert id="createFile" parameterType="VideoFile" useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
-		INSERT INTO files (url, filename, video_id)
-		VALUES(#{url}, #{filename}, #{videoId})
+	<insert id="createFile" parameterType="BoardFile" useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
+		INSERT INTO files (url, filename, board_id)
+		VALUES(#{url}, #{filename}, #{boardId})
 	</insert>
 
 	<!--게시글 수정 -->
-	<update id="updateVideo" parameterType="Video">
-		UPDATE videos
+	<update id="updateBoard" parameterType="Board">
+		UPDATE boards
 		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}, updated_at = NOW()
 		WHERE id = #{id}
 	</update>
@@ -42,33 +42,33 @@
 	<!-- id로 게시글 존재 확인	-->
 	<select id="existsById" resultType="int" parameterType="long">
 		SELECT COUNT(*)
-		FROM videos
+		FROM boards
 		WHERE id = #{id}
 		AND deleted_at IS NULL
 	</select>
 
 	<!-- 게시글 삭제(논리 삭제) deleted_at 변경 	-->
-	<update id="deleteVideo" parameterType="Long">
-		UPDATE videos
+	<update id="deleteBoard" parameterType="Long">
+		UPDATE boards
 		SET deleted_at = NOW()
 		WHERE id = #{id}
 	</update>
 
 
-	<select id="findVideosToDelete" resultType="Video">
+	<select id="findboardsToDelete" resultType="Board">
 		<![CDATA[
     	SELECT *
-    	FROM videos
+    	FROM boards
     	WHERE deleted_at IS NOT NULL
       	AND DATE_ADD(deleted_at, INTERVAL 30 DAY) <= CURRENT_DATE
     ]]>
 	</select>
 
 	<!--논리 삭제 테스트용 -->
-	<!--<select id="findVideosToDelete" resultType="Video">
+	<!--<select id="findboardsToDelete" resultType="Board">
 		<![CDATA[
     	SELECT *
-    	FROM videos
+    	FROM boards
     	WHERE deleted_at IS NOT NULL
       	AND DATE_ADD(deleted_at, INTERVAL 1 MINUTE) <= NOW()
     ]]>
@@ -77,11 +77,11 @@
 	<!--영구 삭제-->
 	<delete id="deleteFile" parameterType="Long">
 		DELETE FROM files
-		WHERE video_id = #{id}
+		WHERE board_id = #{id}
 	</delete>
 
-	<delete id="completeDeleteVideo" parameterType="Long">
-		DELETE FROM videos
+	<delete id="completeDeleteBoard" parameterType="Long">
+		DELETE FROM boards
 		WHERE id = #{id}
 	</delete>
 </mapper>

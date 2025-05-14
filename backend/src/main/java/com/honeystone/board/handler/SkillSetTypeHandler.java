@@ -1,9 +1,9 @@
 // src/main/java/com/honeystone/video/handler/SkillSetTypeHandler.java
-package com.honeystone.video.handler;
+package com.honeystone.board.handler;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
-import com.honeystone.video.model.type.Skill;
+import com.honeystone.board.model.type.Skill;
 
 import java.sql.*;
 import java.util.*;

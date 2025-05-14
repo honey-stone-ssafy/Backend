@@ -1,4 +1,4 @@
-package com.honeystone.video.model.type;
+package com.honeystone.board.model.type;
 
 public enum Skill {
     PINCH, SLOPER, CRIMP,

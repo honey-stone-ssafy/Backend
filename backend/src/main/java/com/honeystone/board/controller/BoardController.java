@@ -1,21 +1,19 @@
-package com.honeystone.video.controller;
+package com.honeystone.board.controller;
 
 import java.io.IOException;
 import java.util.List;
 
-import com.honeystone.common.dto.video.GetVideo;
+import com.honeystone.common.dto.board.GetBoard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.honeystone.common.dto.video.Video;
-import com.honeystone.video.model.service.VideoService;
+import com.honeystone.common.dto.board.Board;
+import com.honeystone.board.model.service.BoardService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import com.honeystone.common.dto.ApiError;
@@ -24,26 +22,26 @@ import jakarta.validation.Valid;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
-@RequestMapping("/api/videos")
-@Tag(name= "Video API", description = "비디오 게시판 관련 API 입니다.")
-public class VideoController {
+@RequestMapping("/api/boards")
+@Tag(name= "Board API", description = "비디오 게시판 관련 API 입니다.")
+public class BoardController {
 	
-	private final VideoService videoService;
-	public VideoController(VideoService videoService) {
+	private final BoardService boardService;
+	public BoardController(BoardService boardService) {
 
-		this.videoService = videoService;
+		this.boardService = boardService;
 	}
 	// todo: 스웨거 작성
 	@GetMapping("")
-	public ResponseEntity<?> getVideoList() {
+	public ResponseEntity<?> getBoardList() {
 		// todo: 필터링 작업 필요
-		List<Video> list = videoService.getVideoList();
+		List<Board> list = boardService.getBoardList();
 
 		if(list == null || list.isEmpty()) {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<List<Video>>(list,HttpStatus.OK);
+		return new ResponseEntity<List<Board>>(list,HttpStatus.OK);
 	}
 
 	@Operation(summary = "게시글 상세 조회", description = """
@@ -56,13 +54,13 @@ public class VideoController {
 		}
 	)
 	@GetMapping("/{id}")
-	public ResponseEntity<GetVideo> getVideo(@PathVariable("id") Long id){
-		GetVideo video = videoService.getVideo(id);
-		return new ResponseEntity<GetVideo>(video, HttpStatus.OK);
+	public ResponseEntity<GetBoard> getBoard(@PathVariable("id") Long id){
+		GetBoard board = boardService.getBoard(id);
+		return new ResponseEntity<GetBoard>(board, HttpStatus.OK);
 	}
 
 	@Operation(summary = "게시글 업로드", description = """
-			Video DTO와 첨부 파일을 multipart/form-data로 전송합니다. skill 필드는 여러 개 선택 시 Shift 혹은 ctrl 이용하면 됩니다.\s
+			Board DTO와 첨부 파일을 multipart/form-data로 전송합니다. skill 필드는 여러 개 선택 시 Shift 혹은 ctrl 이용하면 됩니다.\s
 			게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
 		""",
 		responses = {
@@ -72,12 +70,12 @@ public class VideoController {
 		}
 	)
 	@PostMapping(value = "", consumes = MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Void> createVideo(
-		@Parameter(description = "비디오 정보와 첨부 파일", schema = @Schema(implementation = Video.class))
-		@Valid @ModelAttribute Video video
+	public ResponseEntity<Void> createBoard(
+		@Parameter(description = "비디오 정보와 첨부 파일", schema = @Schema(implementation = Board.class))
+		@Valid @ModelAttribute Board board
 	) throws IOException {
 		// todo: 인증인가 구현되면 사용자 검증해야 함. (userId 받기)
-		videoService.createVideo(video, video.getFile());
+		boardService.createBoard(board, board.getFile());
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
 
@@ -107,8 +105,8 @@ public class VideoController {
 		}
 	)
 	@PatchMapping("/{id}")
-	public ResponseEntity<Void> updateVideo(@PathVariable("id") Long id, @RequestBody Video video){
-		videoService.updateVideo(id, video);
+	public ResponseEntity<Void> updateBoard(@PathVariable("id") Long id, @RequestBody Board board){
+		boardService.updateBoard(id, board);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
@@ -135,8 +133,8 @@ public class VideoController {
 		}
 	)
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteVideo(@PathVariable("id") Long id){
-		videoService.deleteVideo(id);
+	public ResponseEntity<Void> deleteBoard(@PathVariable("id") Long id){
+		boardService.deleteBoard(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
