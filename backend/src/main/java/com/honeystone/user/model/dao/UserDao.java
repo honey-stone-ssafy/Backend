@@ -8,5 +8,7 @@ import com.honeystone.common.dto.user.UserSignupRequest;
 public interface UserDao {
 
 	void createUser(UserSignupRequest user);
+
+	int countByNickname(String nickname);
 	
 }
