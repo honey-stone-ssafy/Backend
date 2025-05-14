@@ -10,6 +10,8 @@ import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
 import com.honeystone.user.model.dao.UserDao;
 
+import jakarta.validation.Valid;
+
 @Service
 public class UserServiceImpl implements UserService{
 	
@@ -25,7 +27,6 @@ public class UserServiceImpl implements UserService{
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	@Override
 	public void signupUser(UserSignupRequest user) throws ServerException {
 		String encoded = passwordEncoder.encode(user.getPassword());
 		user.setPassword(encoded); //비밀번호 암호화
