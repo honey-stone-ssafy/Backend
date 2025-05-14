@@ -1,6 +1,6 @@
 package com.honeystone.user.model.service;
 
-import com.honeystone.user.model.dto.UserSignupRequest;
+import com.honeystone.common.dto.user.UserSignupRequest;
 
 public interface UserService {
 	

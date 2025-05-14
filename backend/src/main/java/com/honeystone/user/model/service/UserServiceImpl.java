@@ -2,10 +2,10 @@ package com.honeystone.user.model.service;
 
 import org.springframework.stereotype.Service;
 
+import com.honeystone.common.dto.user.UserSignupRequest;
 import com.honeystone.common.util.FileRemove;
 import com.honeystone.common.util.FileUpload;
 import com.honeystone.user.model.dao.UserDao;
-import com.honeystone.user.model.dto.UserSignupRequest;
 import com.honeystone.video.model.dao.VideoDao;
 
 @Service

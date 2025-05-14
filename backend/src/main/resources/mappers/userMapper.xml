@@ -5,7 +5,7 @@
 <mapper namespace="com.honeystone.user.model.dao.UserDao">
 	
 	<!-- 회원가입 -->
-	<insert id="createUser" parameterType="com.honeystone.user.model.dto.request.UserSignupRequest">
+	<insert id="createUser" parameterType="com.honeystone.common.dto.user.UserSignupRequest">
         INSERT INTO users (email, nickname, password, created_at)
         VALUES (#{email}, #{nickname}, #{password}, NOW())
     </insert>

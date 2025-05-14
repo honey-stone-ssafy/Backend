@@ -1,4 +1,4 @@
-package com.honeystone.user.model.dto;
+package com.honeystone.common.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

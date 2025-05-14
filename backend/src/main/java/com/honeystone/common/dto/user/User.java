@@ -1,4 +1,4 @@
-package com.honeystone.user.model.dto;
+package com.honeystone.common.dto.user;
 
 import java.time.LocalDateTime;
 import java.util.Set;
