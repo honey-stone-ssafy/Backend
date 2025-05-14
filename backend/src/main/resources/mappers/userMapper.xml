@@ -17,4 +17,11 @@
         WHERE nickname = #{nickname}
     </select>
     
+    <!-- 토큰 발급용 이메일로 유저 찾기 -->
+    <select id="findByEmail" parameterType="string" resultType="com.honeystone.common.dto.user.User">
+        SELECT *
+        FROM users
+        WHERE email = #{email}
+    </select>
+    
 </mapper>
