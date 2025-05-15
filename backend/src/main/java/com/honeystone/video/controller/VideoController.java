@@ -1,27 +1,36 @@
 package com.honeystone.video.controller;
 
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+
 import java.io.IOException;
 import java.util.List;
 
-import com.honeystone.common.dto.video.GetVideo;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.honeystone.common.dto.ApiError;
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.video.GetVideo;
 import com.honeystone.common.dto.video.Video;
 import com.honeystone.video.model.service.VideoService;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import com.honeystone.common.dto.ApiError;
-import jakarta.validation.Valid;
 
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/videos")
@@ -35,9 +44,9 @@ public class VideoController {
 	}
 	// todo: 스웨거 작성
 	@GetMapping("")
-	public ResponseEntity<?> getVideoList() {
+	public ResponseEntity<?> getVideoList(@ModelAttribute SearchBoardCondition search) {
 		// todo: 필터링 작업 필요
-		List<Video> list = videoService.getVideoList();
+		List<Video> list = videoService.getVideoList(search);
 
 		if(list == null || list.isEmpty()) {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);

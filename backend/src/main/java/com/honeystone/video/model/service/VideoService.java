@@ -3,12 +3,14 @@ package com.honeystone.video.model.service;
 import java.io.IOException;
 import java.util.List;
 
-import com.honeystone.common.dto.video.GetVideo;
-import com.honeystone.common.dto.video.Video;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.video.GetVideo;
+import com.honeystone.common.dto.video.Video;
+
 public interface VideoService {
-	public List<Video> getVideoList();
+	public List<Video> getVideoList(SearchBoardCondition search);
 
 	public void createVideo(Video video, MultipartFile file) throws IOException;
 

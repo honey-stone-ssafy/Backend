@@ -3,19 +3,20 @@ package com.honeystone.video.model.service;
 import java.io.IOException;
 import java.util.List;
 
-import com.honeystone.common.dto.video.GetVideo;
-import com.honeystone.common.util.FileRemove;
-import com.honeystone.common.util.FileUpload;
-import com.honeystone.common.dto.video.VideoFile;
-import com.honeystone.exception.BusinessException;
-import com.honeystone.exception.ServerException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-
-import com.honeystone.video.model.dao.VideoDao;
-import com.honeystone.common.dto.video.Video;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.video.GetVideo;
+import com.honeystone.common.dto.video.Video;
+import com.honeystone.common.dto.video.VideoFile;
+import com.honeystone.common.util.FileRemove;
+import com.honeystone.common.util.FileUpload;
+import com.honeystone.exception.BusinessException;
+import com.honeystone.exception.ServerException;
+import com.honeystone.video.model.dao.VideoDao;
 
 @Transactional
 @Service
@@ -32,9 +33,8 @@ public class VideoServiceImpl implements VideoService {
 	}
 
 	@Override
-	public List<Video> getVideoList() {
-		System.out.println("게시글 전체 목록");
-		return videoDao.selectAll();
+	public List<Video> getVideoList(SearchBoardCondition search) throws ServerException {
+		return videoDao.selectAll(search);
 	}
 
 	@Override
