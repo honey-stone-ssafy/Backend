@@ -1,8 +1,9 @@
 package com.honeystone.user.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.honeystone.common.dto.user.User;
 import com.honeystone.common.dto.user.UserSignupRequest;
 import com.honeystone.user.model.service.UserService;
 
@@ -54,5 +56,13 @@ public class UserController {
 	@Operation(summary = "이메일 인증코드 확인")
 	public ResponseEntity<?> confirmEmailCode() {
 		return null;
+	}
+	
+	//닉네임으로 유저 검색
+	@GetMapping("")
+	@Operation(summary = "닉네임으로 유저 검색")
+	public ResponseEntity<?> searchUsers(@RequestParam(required = false, defaultValue = "") String nickname) {
+	    List<User> users = userService.searchUsersByNickname(nickname);
+	    return ResponseEntity.ok(users);
 	}
 }

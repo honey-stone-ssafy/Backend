@@ -1,5 +1,7 @@
 package com.honeystone.user.model.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,4 +19,5 @@ public interface UserDao {
 
 	User findByEmail(@Param("email") String email);
 	
+	List<User> searchByNickname(String nickname);
 }

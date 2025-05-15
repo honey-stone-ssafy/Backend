@@ -31,4 +31,15 @@
         WHERE email = #{email}
     </select>
     
+    <!-- 닉네임으로 유저 검색 -->
+    <select id="searchByNickname" parameterType="string" resultType="com.honeystone.common.dto.user.User">
+	    SELECT * 
+	    FROM users 
+	    <where>
+	        <if test="nickname != null and nickname != ''">
+	            nickname LIKE CONCAT('%', #{nickname}, '%')
+	        </if>
+	    </where>
+	</select>
+
 </mapper>

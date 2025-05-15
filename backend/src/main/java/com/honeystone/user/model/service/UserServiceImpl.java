@@ -1,16 +1,18 @@
 package com.honeystone.user.model.service;
 
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.honeystone.common.dto.user.User;
 import com.honeystone.common.dto.user.UserSignupRequest;
 import com.honeystone.common.util.FileRemove;
 import com.honeystone.common.util.FileUpload;
 import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
 import com.honeystone.user.model.dao.UserDao;
-
-import jakarta.validation.Valid;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -40,10 +42,19 @@ public class UserServiceImpl implements UserService{
 		
 		//비밀번호 암호화
 		String encoded = passwordEncoder.encode(user.getPassword());
-		user.setPassword(encoded);
 		
 		//유저 생성
-		userDao.createUser(user);
+		UserSignupRequest newUser = UserSignupRequest.builder()
+				.email(user.getEmail())
+				.nickname(user.getNickname())
+				.password(encoded)
+				.build();
+		
+		try {			
+			userDao.createUser(newUser);
+		} catch (DataAccessException e) {
+			throw new ServerException("회원가입 중 DB 오류가 발생했습니다.", e);
+		}
 	}
 
 	@Override
@@ -51,4 +62,9 @@ public class UserServiceImpl implements UserService{
 		return userDao.countByNickname(nickname) == 0;
 	}
 
+	@Override
+	public List<User> searchUsersByNickname(String nickname) {
+		return userDao.searchByNickname(nickname);
+	}
+	
 }
