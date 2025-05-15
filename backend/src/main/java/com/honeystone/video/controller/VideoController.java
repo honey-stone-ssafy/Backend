@@ -5,6 +5,9 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,6 +59,7 @@ public class VideoController {
 
 			    조건이 없을 경우 전체 게시글을 최신순으로 반환하며,
 			    조건이 일부만 주어질 경우 해당 조건에 해당하는 게시글만 필터링됩니다.
+			    
 			    한 필터에 여러 개의 데이터를 넣고 싶은 경우 배열 형식이 아닌 두 번 작성해야 합니다.
 			    ex) "levels" : "RED", "levels" : "BLUE"
 
@@ -65,15 +69,19 @@ public class VideoController {
 			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
 			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class))) })
 	@GetMapping("")
-	public ResponseEntity<?> getVideoList(@ModelAttribute SearchBoardCondition search) {
-		// todo: 필터링 작업 필요
-		List<GetVideo> list = videoService.getVideoList(search);
+	public ResponseEntity<?> getVideoList(@ModelAttribute SearchBoardCondition search, @RequestParam(defaultValue = "0") int page,
+		    @RequestParam(defaultValue = "12") int size) {
+		
+		// 페이지네이션
+		Pageable pageable = PageRequest.of(page, size);
+		
+		Page<GetVideo> list = videoService.getVideoList(search, pageable);
 
 		if (list == null || list.isEmpty()) {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<List<GetVideo>>(list, HttpStatus.OK);
+		return new ResponseEntity<Page<GetVideo>>(list, HttpStatus.OK);
 	}
 
 	@Operation(summary = "게시글 상세 조회", description = """

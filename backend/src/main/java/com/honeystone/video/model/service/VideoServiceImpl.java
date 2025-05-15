@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +36,13 @@ public class VideoServiceImpl implements VideoService {
 	}
 
 	@Override
-	public List<GetVideo> getVideoList(SearchBoardCondition search) throws ServerException {
-		return videoDao.selectAll(search);
+	public Page<GetVideo> getVideoList(SearchBoardCondition search, Pageable pageable) throws ServerException {
+		
+		// 페이지네이션
+		long total = videoDao.countBoards(search);
+		List<GetVideo> boards = videoDao.getVideoList(search, pageable);
+		
+		return new PageImpl<>(boards, pageable, total);
 	}
 
 	@Override

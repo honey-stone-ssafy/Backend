@@ -3,6 +3,8 @@ package com.honeystone.video.model.dao;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
 import com.honeystone.common.dto.video.GetVideo;
@@ -12,7 +14,7 @@ import com.honeystone.common.dto.video.VideoFile;
 @Mapper
 public interface VideoDao {
 
-	public List<GetVideo> selectAll(SearchBoardCondition search);
+	public List<GetVideo> getVideoList(@Param("search") SearchBoardCondition search, @Param("pageable") Pageable pageable);
 
 	public GetVideo getVideo(Long id);
 
@@ -31,4 +33,6 @@ public interface VideoDao {
 	public void deleteFile(Long id);
 
 	public List<Video> findVideosToDelete();
+
+	public long countBoards(SearchBoardCondition search);
 }
