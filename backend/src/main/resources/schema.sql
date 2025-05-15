@@ -41,6 +41,22 @@ CREATE TABLE videos (
     'CAMPUSING',
     'TOE_CATCH'
   ) NOT NULL COMMENT '기술 명',
+  location     ENUM(
+      'HONGDAE',
+      'ILSAN',
+      'MAGOK',
+      'SEOULDAE',
+      'YANGJAE',
+      'SINLIM',
+      'YEONNAM',
+      'GANGNAM',
+      'SADANG',
+      'SINSA',
+      'NONHYEON',
+      'MULLAE',
+      'ISU',
+      'SUNGSU'
+    ) NOT NULL COMMENT '지점 위치',
   created_at   TIMESTAMP NOT NULL,
   updated_at   TIMESTAMP NULL,
   deleted_at   TIMESTAMP NULL,
