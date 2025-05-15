@@ -2,8 +2,11 @@ package com.honeystone.common.dto.video;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.honeystone.video.model.type.Level;
+import com.honeystone.video.model.type.Location;
 import com.honeystone.video.model.type.Skill;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,6 +42,10 @@ public class Video {
 
     @Schema(description = "기술명", example = "[\"PINCH\", \"SLOPER\"]")
     private Set<Skill> skill;
+    
+    @Schema(description = "장소", example = "HONGDAE")
+    @Enumerated(EnumType.STRING)
+    private Location location;
 
     @Schema(description = "생성 시각", example = "2025-05-11T18:45:00")
     private LocalDateTime createdAt;
