@@ -11,4 +11,7 @@ public class UserLoginResponse {
 
     @Schema(description = "JWT 액세스 토큰")
     private String accessToken;
+    
+    @Schema(description = "리프레시 토큰")
+    private String refreshToken;
 }

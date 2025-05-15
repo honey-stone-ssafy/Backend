@@ -18,6 +18,9 @@ public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
     private String secretKey;
+    
+    @Value("${jwt.refresh-token-expire-ms}")
+    private long refreshTokenExpireMs;
 
     private Key key;
 
@@ -27,8 +30,21 @@ public class JwtTokenProvider {
     protected void init() {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
+    
+    /** 리프레시 토큰 생성 **/
+    public String generateRefreshToken(String email) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + refreshTokenExpireMs); // 7일
 
-    /** JWT 토큰 생성 */
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /** JWT 토큰 생성 **/
     public String generateToken(String email) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + TOKEN_VALID_TIME);
@@ -41,7 +57,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    /** JWT 토큰에서 사용자 이메일 추출 */
+    /** JWT 토큰에서 사용자 이메일 추출 **/
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -51,7 +67,7 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    /** JWT 토큰 유효성 검사 */
+    /** JWT 토큰 유효성 검사 **/
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -61,9 +77,14 @@ public class JwtTokenProvider {
         }
     }
 
-    /** 헤더에서 토큰 추출 */
+    /** 헤더에서 토큰 추출 **/
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("Authorization");
+        String bearer = request.getHeader("Authorization");
+        if (bearer != null && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
     }
+
 }
 
