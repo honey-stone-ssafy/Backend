@@ -42,7 +42,19 @@ public class VideoController {
 
 		this.videoService = videoService;
 	}
-	// todo: 스웨거 작성
+	@Operation(
+		    summary = "게시글 목록 조회",
+		    description = """
+		        전달받은 필터 조건(SearchBoardCondition)에 따라 게시글 목록을 조회합니다.
+		        결과가 없을 경우 204(No Content)를 반환합니다.
+		    """,
+		    responses = {
+		        @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공"),
+		        @ApiResponse(responseCode = "204", description = "조회된 게시글이 없음"),
+		        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
+		        @ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
+		    }
+		)
 	@GetMapping("")
 	public ResponseEntity<?> getVideoList(@ModelAttribute SearchBoardCondition search) {
 		// todo: 필터링 작업 필요
