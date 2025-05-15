@@ -28,12 +28,21 @@ public class UserServiceImpl implements UserService{
 	}
 
 	public void signupUser(UserSignupRequest user) throws ServerException {
-		String encoded = passwordEncoder.encode(user.getPassword());
-		user.setPassword(encoded); //비밀번호 암호화
-		
-		if (!confirmNickname(user.getNickname())) {
-			throw new BusinessException("이미 존재하는 닉네임입니다");
+		//이메일 중복 확인
+		if (userDao.countByEmail(user.getEmail()) > 0) {
+			throw new BusinessException("이미 가입한 이메일입니다.");
 		}
+		
+		//닉네임 중복 확인
+		if (!confirmNickname(user.getNickname())) {
+			throw new BusinessException("이미 존재하는 닉네임입니다.");
+		}
+		
+		//비밀번호 암호화
+		String encoded = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encoded);
+		
+		//유저 생성
 		userDao.createUser(user);
 	}
 

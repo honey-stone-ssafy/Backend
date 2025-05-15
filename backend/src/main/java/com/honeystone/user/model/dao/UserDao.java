@@ -12,6 +12,8 @@ public interface UserDao {
 	void createUser(UserSignupRequest user);
 
 	int countByNickname(String nickname);
+	
+	int countByEmail(@Param("email") String email);
 
 	User findByEmail(@Param("email") String email);
 	
