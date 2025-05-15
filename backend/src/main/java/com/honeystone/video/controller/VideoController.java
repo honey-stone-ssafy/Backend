@@ -48,7 +48,7 @@ public class VideoController {
 	}
 
 	@Operation(summary = "게시글 목록 조회", description = """
-				게시글 목록을 조건에 따라 필터링 및 정렬하여 조회합니다.
+			    게시글 목록을 조건에 따라 필터링 및 정렬하여 조회합니다.
 
 			    사용자는 다음 조건들을 조합하여 요청할 수 있습니다:
 			    - `keyword`: 제목 또는 내용에서 포함되는 문자열 검색
@@ -57,11 +57,15 @@ public class VideoController {
 			    - `skills`: 기술명 필터 (복수 선택 가능, 예: DYNO, PINCH 등)
 			    - `orderBy`: 정렬 기준 (created_at: 최신순, favorites: 찜 많은 순)
 
+			    ⚠️ 한 필터에 여러 개의 데이터를 넣고 싶은 경우 배열 형식이 아닌 **반복된 파라미터로 입력해야 합니다.**
+			    예시: `?levels=RED&levels=BLUE`
+
+			    페이징 관련 파라미터:
+			    - `page`: 페이지 번호 (0부터 시작, 기본값: 0)
+			    - `size`: 한 페이지당 게시글 수 (기본값: 12)
+
 			    조건이 없을 경우 전체 게시글을 최신순으로 반환하며,
 			    조건이 일부만 주어질 경우 해당 조건에 해당하는 게시글만 필터링됩니다.
-			    
-			    한 필터에 여러 개의 데이터를 넣고 싶은 경우 배열 형식이 아닌 두 번 작성해야 합니다.
-			    ex) "levels" : "RED", "levels" : "BLUE"
 
 			    결과가 없을 경우 204(No Content)를 반환합니다.
 			""", responses = { @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공"),
@@ -69,12 +73,12 @@ public class VideoController {
 			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
 			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class))) })
 	@GetMapping("")
-	public ResponseEntity<?> getVideoList(@ModelAttribute SearchBoardCondition search, @RequestParam(defaultValue = "0") int page,
-		    @RequestParam(defaultValue = "12") int size) {
-		
+	public ResponseEntity<?> getVideoList(@ModelAttribute SearchBoardCondition search,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
+
 		// 페이지네이션
 		Pageable pageable = PageRequest.of(page, size);
-		
+
 		Page<GetVideo> list = videoService.getVideoList(search, pageable);
 
 		if (list == null || list.isEmpty()) {
