@@ -33,7 +33,7 @@ public class VideoServiceImpl implements VideoService {
 	}
 
 	@Override
-	public List<Video> getVideoList(SearchBoardCondition search) throws ServerException {
+	public List<GetVideo> getVideoList(SearchBoardCondition search) throws ServerException {
 		return videoDao.selectAll(search);
 	}
 

@@ -12,14 +12,40 @@
 	</select> -->
 	
 	<!-- 머지하면 테이블명 수정 필요! -->
-<select id="selectAll" parameterType="SearchBoardCondition" resultType="Video">
+<select id="selectAll" parameterType="SearchBoardCondition" resultType="GetVideo">
 	SELECT * FROM videos v
 	<where>
 		<if test="keyword != null and keyword != ''">
 			(title LIKE concat('%', #{keyword}, '%')
 			OR description LIKE concat('%', #{keyword}, '%'))
 		</if>
+
+		<if test="locations != null and locations.size > 0">
+			<if test="keyword != null and keyword != ''">AND</if>
+			v.location IN
+			<foreach item="loc" collection="locations" open="(" separator="," close=")">
+				#{loc}
+			</foreach>
+		</if>
+
+		<if test="levels != null and levels.size > 0">
+			<if test="(keyword != null and keyword != '') or (locations != null and locations.size > 0)">AND</if>
+			v.level IN
+			<foreach item="lvl" collection="levels" open="(" separator="," close=")">
+				#{lvl}
+			</foreach>
+		</if>
+
+		<if test="skills != null and skills.size > 0">
+			<if test="(keyword != null and keyword != '') or (locations != null and locations.size > 0) or (levels != null and levels.size > 0)">
+				AND
+			</if>
+			<foreach item="sk" collection="skills" separator=" AND ">
+				FIND_IN_SET(#{sk}, v.skill)
+			</foreach>
+		</if>
 	</where>
+
 	<choose>
 		<when test="orderBy == 'favorites'">
 			ORDER BY (
@@ -37,6 +63,7 @@
 		</otherwise>
 	</choose>
 </select>
+
 
 	
 	<!-- 상세 게시글 조회	-->

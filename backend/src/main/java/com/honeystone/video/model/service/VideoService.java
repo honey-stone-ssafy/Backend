@@ -10,7 +10,7 @@ import com.honeystone.common.dto.video.GetVideo;
 import com.honeystone.common.dto.video.Video;
 
 public interface VideoService {
-	public List<Video> getVideoList(SearchBoardCondition search);
+	public List<GetVideo> getVideoList(SearchBoardCondition search);
 
 	public void createVideo(Video video, MultipartFile file) throws IOException;
 

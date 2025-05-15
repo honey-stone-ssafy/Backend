@@ -12,7 +12,9 @@ import com.honeystone.common.dto.video.VideoFile;
 @Mapper
 public interface VideoDao {
 
-	public List<Video> selectAll(SearchBoardCondition search);
+	public List<GetVideo> selectAll(SearchBoardCondition search);
+
+	public GetVideo getVideo(Long id);
 
 	public void createVideo(Video video);
 
@@ -27,8 +29,6 @@ public interface VideoDao {
 	public void completeDeleteVideo(Long id);
 
 	public void deleteFile(Long id);
-
-	public GetVideo getVideo(Long id);
 
 	public List<Video> findVideosToDelete();
 }
