@@ -58,12 +58,15 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public Boolean confirmNickname(String nickname) {
-		return userDao.countByNickname(nickname) == 0;
+	public Boolean confirmNickname(String nickname) throws ServerException {
+		if (userDao.countByNickname(nickname) != 0) {
+			throw new BusinessException("이미 존재하는 닉네임입니다.");
+		}
+		return true;
 	}
 
 	@Override
-	public List<User> searchUsersByNickname(String nickname) {
+	public List<User> searchUsersByNickname(String nickname) throws ServerException {
 		return userDao.searchByNickname(nickname);
 	}
 	

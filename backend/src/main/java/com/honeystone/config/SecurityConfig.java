@@ -35,7 +35,7 @@ public class SecurityConfig {
 		         // 인증 예외 경로 설정
 	            .requestMatchers(
 	                "/api/auth/**",         // 로그인
-	                "/api/users",           // 회원가입
+	                "/api/users/**",           // 회원가입
 	                "/v3/api-docs/**",      // Swagger
 	                "/swagger-ui/**",
 	                "/swagger-resources/**",
