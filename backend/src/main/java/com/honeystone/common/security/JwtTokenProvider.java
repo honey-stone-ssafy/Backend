@@ -21,10 +21,11 @@ public class JwtTokenProvider {
     
     @Value("${jwt.refresh-token-expire-ms}")
     private long refreshTokenExpireMs;
+ 
+    @Value("${jwt.token-valid-time}")
+    private long tokenValidTime;
 
     private Key key;
-
-    private final long TOKEN_VALID_TIME = 1000L * 60 * 60; // 1시간
 
     @PostConstruct
     protected void init() {
@@ -47,7 +48,7 @@ public class JwtTokenProvider {
     /** JWT 토큰 생성 **/
     public String generateToken(String email) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + TOKEN_VALID_TIME);
+        Date expiry = new Date(now.getTime() + tokenValidTime);
 
         return Jwts.builder()
                 .setSubject(email)
