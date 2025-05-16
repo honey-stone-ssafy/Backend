@@ -39,8 +39,8 @@ public class CleanupScheduler {
     }
 
     // 일정 영구 삭제
-//    @Scheduled(cron = "0 0 2 * * *") // 매일 새벽 2시에 실행
-    @Scheduled(cron = "0 */1 * * * *") // 매 1분마다 실행 (테스트용)
+    @Scheduled(cron = "0 0 2 * * *") // 매일 새벽 2시에 실행
+//    @Scheduled(cron = "0 */1 * * * *") // 매 1분마다 실행 (테스트용)
     public void deleteExpiredPlans(){
         List<Plan> expiredPlans = planDao.findPlansToDelete();
         System.out.println(expiredPlans);
