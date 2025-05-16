@@ -61,7 +61,6 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new BusinessException("존재하지 않는 게시물입니다.");
 
 		Review checkReview = reviewDao.existsById(reviewId);
-		System.out.println(checkReview);
 		if (checkReview == null){
 			throw new BusinessException("존재하지 않는 댓글입니다."); // pull 받으면 커스텀 예외로 수정하기
 		}else if(checkReview.getVideoId() != videoId){
@@ -80,8 +79,12 @@ public class ReviewServiceImpl implements ReviewService {
 		if (videoDao.existsById(videoId) == 0)
 			throw new BusinessException("존재하지 않는 게시물입니다.");
 
-		if (reviewDao.existsById(reviewId) == null)
-			throw new RuntimeException("존재하지 않는 댓글입니다."); // pull 받으면 커스텀 예외로 수정하기
+		Review checkReview = reviewDao.existsById(reviewId);
+		if (checkReview == null){
+			throw new BusinessException("존재하지 않는 댓글입니다.");
+		}else if(checkReview.getVideoId() != videoId){
+			throw new BusinessException("해당 게시물에 존재하지 않는 댓글입니다.");
+		}
 
 		reviewDao.deleteReview(reviewId);
 	}
