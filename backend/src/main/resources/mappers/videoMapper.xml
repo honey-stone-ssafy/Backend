@@ -6,49 +6,7 @@
 
 	<!-- 전체 게시글 조회 -->
 	<!-- 결과물 전체 수 -->
-	<select id="countBoards" parameterType="SearchBoardCondition"
-		resultType="long">
-		SELECT count(*) FROM videos v
-		<where>
-			v.deleted_at IS NULL
-			<if test="keyword != null and keyword != ''">
-				AND (title LIKE concat('%', #{keyword}, '%')
-				OR description
-				LIKE concat('%', #{keyword}, '%'))
-			</if>
 
-			<if test="locations != null and locations.size > 0">
-				<if test="keyword != null and keyword != ''">AND</if>
-				v.location IN
-				<foreach item="loc" collection="locations" open="("
-					separator="," close=")">
-					#{loc}
-				</foreach>
-			</if>
-
-			<if test="levels != null and levels.size > 0">
-				<if
-					test="(keyword != null and keyword != '') or (locations != null and locations.size > 0)">AND</if>
-				v.level IN
-				<foreach item="lvl" collection="levels" open="("
-					separator="," close=")">
-					#{lvl}
-				</foreach>
-			</if>
-
-			<if test="skills != null and skills.size > 0">
-				<if
-					test="(keyword != null and keyword != '') or (locations != null and locations.size > 0) or (levels != null and levels.size > 0)">
-					AND
-				</if>
-				<foreach item="sk" collection="skills" separator=" AND ">
-					FIND_IN_SET(#{sk}, v.skill)
-				</foreach>
-			</if>
-		</where>
-	</select>
-
-	<!-- 머지하면 테이블명 수정 필요! -->
 	<select id="getVideoList" parameterType="map"
 		resultType="GetVideo">
 		SELECT * FROM videos v
@@ -56,13 +14,13 @@
 			v.deleted_at IS NULL
 			<if test="search.keyword != null and search.keyword != ''">
 				AND (title LIKE concat('%', #{search.keyword}, '%')
-				OR description
+				OR
+				description
 				LIKE concat('%', #{search.keyword}, '%'))
 			</if>
 
 			<if test="search.locations != null and search.locations.size > 0">
-				<if test="search.keyword != null and search.keyword != ''">AND</if>
-				v.location IN
+				AND v.location IN
 				<foreach item="loc" collection="search.locations" open="("
 					separator="," close=")">
 					#{loc}
@@ -70,9 +28,7 @@
 			</if>
 
 			<if test="search.levels != null and search.levels.size > 0">
-				<if
-					test="(search.keyword != null and search.keyword != '') or (search.locations != null and search.locations.size > 0)">AND</if>
-				v.level IN
+				AND v.level IN
 				<foreach item="lvl" collection="search.levels" open="("
 					separator="," close=")">
 					#{lvl}
@@ -80,13 +36,12 @@
 			</if>
 
 			<if test="search.skills != null and search.skills.size > 0">
-				<if
-					test="(search.keyword != null and search.keyword != '') or (search.locations != null and search.locations.size > 0) or (search.levels != null and search.levels.size > 0)">
-					AND
-				</if>
-				<foreach item="sk" collection="search.skills" separator=" AND ">
+				AND(
+				<foreach item="sk" collection="search.skills"
+					separator=" AND ">
 					FIND_IN_SET(#{sk}, v.skill)
 				</foreach>
+				)
 			</if>
 		</where>
 
@@ -111,7 +66,45 @@
 		OFFSET #{pageable.offset}
 	</select>
 
+	<!-- 머지하면 테이블명 수정 필요! -->
+	<select id="countBoards" parameterType="SearchBoardCondition"
+		resultType="long">
+		SELECT count(*) FROM videos v
+		<where>
+			v.deleted_at IS NULL
+			<if test="keyword != null and keyword != ''">
+				AND (title LIKE concat('%', #{keyword}, '%')
+				OR
+				description
+				LIKE concat('%', #{keyword}, '%'))
+			</if>
 
+			<if test="locations != null and locations.size > 0">
+				AND v.location IN
+				<foreach item="loc" collection="locations" open="("
+					separator="," close=")">
+					#{loc}
+				</foreach>
+			</if>
+
+			<if test="levels != null and levels.size > 0">
+				AND v.level IN
+				<foreach item="lvl" collection="levels" open="("
+					separator="," close=")">
+					#{lvl}
+				</foreach>
+			</if>
+
+			<if test="skills != null and skills.size > 0">
+				AND(
+				<foreach item="sk" collection="skills"
+					separator=" AND ">
+					FIND_IN_SET(#{sk}, v.skill)
+				</foreach>
+				)
+			</if>
+		</where>
+	</select>
 
 	<!-- 상세 게시글 조회 -->
 	<select id="getVideo" resultType="GetVideo" parameterType="Long">

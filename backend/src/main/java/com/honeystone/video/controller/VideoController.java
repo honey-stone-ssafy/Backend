@@ -3,8 +3,8 @@ package com.honeystone.video.controller;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 import java.io.IOException;
-import java.util.List;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -73,7 +73,7 @@ public class VideoController {
 			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
 			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class))) })
 	@GetMapping("")
-	public ResponseEntity<?> getVideoList(@ModelAttribute SearchBoardCondition search,
+	public ResponseEntity<?> getVideoList(@ParameterObject @ModelAttribute SearchBoardCondition search,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
 
 		// 페이지네이션
