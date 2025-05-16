@@ -3,19 +3,23 @@ package com.honeystone.video.model.service;
 import java.io.IOException;
 import java.util.List;
 
-import com.honeystone.common.dto.video.GetVideo;
-import com.honeystone.common.util.FileRemove;
-import com.honeystone.common.util.FileUpload;
-import com.honeystone.common.dto.video.VideoFile;
-import com.honeystone.exception.BusinessException;
-import com.honeystone.exception.ServerException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import com.honeystone.video.model.dao.VideoDao;
-import com.honeystone.common.dto.video.Video;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.video.GetVideo;
+import com.honeystone.common.dto.video.Video;
+import com.honeystone.common.dto.video.VideoFile;
+import com.honeystone.common.util.FileRemove;
+import com.honeystone.common.util.FileUpload;
+import com.honeystone.exception.BusinessException;
+import com.honeystone.exception.ServerException;
+import com.honeystone.video.model.dao.VideoDao;
 
 @Transactional
 @Service
@@ -32,9 +36,13 @@ public class VideoServiceImpl implements VideoService {
 	}
 
 	@Override
-	public List<Video> getVideoList() {
-		System.out.println("게시글 전체 목록");
-		return videoDao.selectAll();
+	public Page<GetVideo> getVideoList(SearchBoardCondition search, Pageable pageable) throws ServerException {
+		
+		// 페이지네이션
+		long total = videoDao.countBoards(search);
+		List<GetVideo> boards = videoDao.getVideoList(search, pageable);
+		
+		return new PageImpl<>(boards, pageable, total);
 	}
 
 	@Override

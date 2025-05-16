@@ -5,52 +5,157 @@
 <mapper namespace="com.honeystone.video.model.dao.VideoDao">
 
 	<!-- 전체 게시글 조회 -->
-	<select id="selectAll" resultType="Video">
-		SELECT *
-		FROM videos
-		WHERE deleted_at IS NULL
+	<!-- 결과물 전체 수 -->
+
+	<select id="getVideoList" parameterType="map"
+		resultType="GetVideo">
+		SELECT * FROM videos v
+		<where>
+			v.deleted_at IS NULL
+			<if test="search.keyword != null and search.keyword != ''">
+				AND (title LIKE concat('%', #{search.keyword}, '%')
+				OR
+				description
+				LIKE concat('%', #{search.keyword}, '%'))
+			</if>
+
+			<if test="search.locations != null and search.locations.size > 0">
+				AND v.location IN
+				<foreach item="loc" collection="search.locations" open="("
+					separator="," close=")">
+					#{loc}
+				</foreach>
+			</if>
+
+			<if test="search.levels != null and search.levels.size > 0">
+				AND v.level IN
+				<foreach item="lvl" collection="search.levels" open="("
+					separator="," close=")">
+					#{lvl}
+				</foreach>
+			</if>
+
+			<if test="search.skills != null and search.skills.size > 0">
+				AND(
+				<foreach item="sk" collection="search.skills"
+					separator=" AND ">
+					FIND_IN_SET(#{sk}, v.skill)
+				</foreach>
+				)
+			</if>
+		</where>
+
+		<choose>
+			<when test="search.orderBy == 'favorites'">
+				ORDER BY (
+				SELECT count(*)
+				FROM favorites f
+				WHERE
+				f.video_id = v.id
+				) DESC, created_at DESC, title ASC
+			</when>
+			<otherwise>
+				ORDER BY created_at DESC, (
+				SELECT count(*)
+				FROM favorites f
+				WHERE f.video_id = v.id
+				) DESC, title ASC
+			</otherwise>
+		</choose>
+		LIMIT #{pageable.pageSize}
+		OFFSET #{pageable.offset}
 	</select>
 
-	<!-- 상세 게시글 조회	-->
+	<!-- 머지하면 테이블명 수정 필요! -->
+	<select id="countBoards" parameterType="SearchBoardCondition"
+		resultType="long">
+		SELECT count(*) FROM videos v
+		<where>
+			v.deleted_at IS NULL
+			<if test="keyword != null and keyword != ''">
+				AND (title LIKE concat('%', #{keyword}, '%')
+				OR
+				description
+				LIKE concat('%', #{keyword}, '%'))
+			</if>
+
+			<if test="locations != null and locations.size > 0">
+				AND v.location IN
+				<foreach item="loc" collection="locations" open="("
+					separator="," close=")">
+					#{loc}
+				</foreach>
+			</if>
+
+			<if test="levels != null and levels.size > 0">
+				AND v.level IN
+				<foreach item="lvl" collection="levels" open="("
+					separator="," close=")">
+					#{lvl}
+				</foreach>
+			</if>
+
+			<if test="skills != null and skills.size > 0">
+				AND(
+				<foreach item="sk" collection="skills"
+					separator=" AND ">
+					FIND_IN_SET(#{sk}, v.skill)
+				</foreach>
+				)
+			</if>
+		</where>
+	</select>
+
+	<!-- 상세 게시글 조회 -->
 	<select id="getVideo" resultType="GetVideo" parameterType="Long">
 		SELECT *
 		FROM videos v
 		INNER JOIN files f
 		ON v.id = f.video_id
-		WHERE v.id = #{id}
+		WHERE v.id
+		= #{id}
 		AND v.deleted_at IS NULL
 	</select>
 
-	<!-- 게시글 생성	-->
-	<insert id="createVideo" parameterType="Video" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		INSERT INTO videos (title, description, level, skill, created_at)
-		VALUES(#{title}, #{description}, #{level}, #{skill}, NOW())
+	<!-- 게시글 생성 -->
+	<insert id="createVideo" parameterType="Video"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO videos
+		(title, description, level, skill, created_at)
+		VALUES(#{title},
+		#{description}, #{level}, #{skill}, NOW())
 	</insert>
 
-	<insert id="createFile" parameterType="VideoFile" useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
-		INSERT INTO files (url, filename, video_id)
+	<insert id="createFile" parameterType="VideoFile"
+		useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
+		INSERT INTO
+		files (url, filename, video_id)
 		VALUES(#{url}, #{filename}, #{videoId})
 	</insert>
 
 	<!--게시글 수정 -->
 	<update id="updateVideo" parameterType="Video">
 		UPDATE videos
-		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}, updated_at = NOW()
+		SET title =
+		#{title}, description = #{description}, level = #{level}, skill =
+		#{skill}, updated_at = NOW()
 		WHERE id = #{id}
 	</update>
 
-	<!-- id로 게시글 존재 확인	-->
+	<!-- id로 게시글 존재 확인 -->
 	<select id="existsById" resultType="int" parameterType="long">
-		SELECT COUNT(*)
+		SELECT
+		COUNT(*)
 		FROM videos
 		WHERE id = #{id}
 		AND deleted_at IS NULL
 	</select>
 
-	<!-- 게시글 삭제(논리 삭제) deleted_at 변경 	-->
+	<!-- 게시글 삭제(논리 삭제) deleted_at 변경 -->
 	<update id="deleteVideo" parameterType="Long">
 		UPDATE videos
-		SET deleted_at = NOW()
+		SET
+		deleted_at = NOW()
 		WHERE id = #{id}
 	</update>
 
@@ -65,23 +170,20 @@
 	</select>
 
 	<!--논리 삭제 테스트용 -->
-	<!--<select id="findVideosToDelete" resultType="Video">
-		<![CDATA[
-    	SELECT *
-    	FROM videos
-    	WHERE deleted_at IS NOT NULL
-      	AND DATE_ADD(deleted_at, INTERVAL 1 MINUTE) <= NOW()
-    ]]>
-	</select>-->
+	<!--<select id="findVideosToDelete" resultType="Video"> <![CDATA[ SELECT 
+		* FROM videos WHERE deleted_at IS NOT NULL AND DATE_ADD(deleted_at, INTERVAL 
+		1 MINUTE) <= NOW() ]]> </select> -->
 
-	<!--영구 삭제-->
+	<!--영구 삭제 -->
 	<delete id="deleteFile" parameterType="Long">
 		DELETE FROM files
-		WHERE video_id = #{id}
+		WHERE
+		video_id = #{id}
 	</delete>
 
 	<delete id="completeDeleteVideo" parameterType="Long">
-		DELETE FROM videos
+		DELETE FROM
+		videos
 		WHERE id = #{id}
 	</delete>
 </mapper>
