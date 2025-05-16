@@ -29,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public ResponseEntity<?> login(UserLoginRequest request) throws ServerException {
+    public UserLoginResponse login(UserLoginRequest request) throws ServerException {
         User user = userDao.findByEmail(request.getEmail());
 
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -47,11 +47,11 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         refreshTokenDao.save(token);
-        return ResponseEntity.ok(new UserLoginResponse(accessToken, refreshToken));
+        return new UserLoginResponse(accessToken, refreshToken);
     }
 
     @Override
-    public ResponseEntity<?> refreshAccessToken(HttpServletRequest request) throws ServerException {
+    public UserLoginResponse refreshAccessToken(HttpServletRequest request) throws ServerException {
         String refreshToken = jwtTokenProvider.resolveToken(request);
 
         RefreshToken storedToken = refreshTokenDao.findByToken(refreshToken);
@@ -67,11 +67,11 @@ public class AuthServiceImpl implements AuthService {
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
         String newAccessToken = jwtTokenProvider.generateToken(email);
 
-        return ResponseEntity.ok(new UserLoginResponse(newAccessToken, refreshToken));
+        return new UserLoginResponse(newAccessToken, refreshToken);
     }
 
     @Override
-    public ResponseEntity<?> logout(HttpServletRequest request) throws ServerException {
+    public void logout(HttpServletRequest request) throws ServerException {
         String refreshToken = jwtTokenProvider.resolveToken(request);
 
         RefreshToken storedToken = refreshTokenDao.findByToken(refreshToken);
@@ -80,6 +80,5 @@ public class AuthServiceImpl implements AuthService {
         }
 
         refreshTokenDao.deleteByToken(refreshToken);
-        return ResponseEntity.ok("로그아웃 되었습니다.");
     }
 }
