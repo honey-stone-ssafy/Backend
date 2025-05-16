@@ -29,7 +29,7 @@
 	</insert>
 
 	<!--id로 댓글 존재 확인 -->
-	<select id="existsById" parameterType="Long" resultType="int">
+	<select id="existsById" parameterType="Long" resultType="Review">
 		SELECT count(*)
 		FROM reviews
 		WHERE id = #{reviewId}

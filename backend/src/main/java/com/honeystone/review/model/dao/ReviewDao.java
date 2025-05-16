@@ -23,7 +23,7 @@ public interface ReviewDao {
 
 	public void createReview(Review newReview);
 
-	public int existsById(Long reviewId);
+	public Review existsById(Long reviewId);
 
 	public void updatedReview(Review updatedReview);
 
