@@ -30,7 +30,7 @@
 
 	<!--id로 댓글 존재 확인 -->
 	<select id="existsById" parameterType="Long" resultType="Review">
-		SELECT count(*)
+		SELECT *
 		FROM reviews
 		WHERE id = #{reviewId}
 		AND deleted_at IS NULL
