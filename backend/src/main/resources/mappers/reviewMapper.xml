@@ -8,14 +8,14 @@
 	<select id="countReviews" resultType="long" parameterType="Long">
 		SELECT COUNT(*)
 		FROM reviews
-		WHERE video_id = #{videoId}
+		WHERE board_id = #{boardId}
 		AND deleted_at IS NULL
 	</select>
 
 	<select id="getReviewList" resultType="Review" parameterType="map">
 		SELECT *
 		FROM reviews
-		WHERE video_id = #{videoId}
+		WHERE board_id = #{boardId}
 		AND deleted_at IS NULL
 		ORDER BY created_at DESC
 		LIMIT #{pageable.pageSize}
@@ -24,8 +24,8 @@
 
 	<!--댓글 생성 -->
 	<insert id="createReview" parameterType="Review">
-		INSERT INTO reviews(content, created_at, user_id, video_id)
-		VALUES(#{content}, NOW(), #{userId}, #{videoId})
+		INSERT INTO reviews(content, created_at, user_id, board_id)
+		VALUES(#{content}, NOW(), #{userId}, #{boardId})
 	</insert>
 
 	<!--id로 댓글 존재 확인 -->

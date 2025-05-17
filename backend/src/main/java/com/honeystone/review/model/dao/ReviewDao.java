@@ -11,15 +11,10 @@ import com.honeystone.common.dto.review.Review;
 @Mapper
 public interface ReviewDao {
 
-	public long countReviews(Long videoId);
+	public long countReviews(Long boardId);
 
-
-	public List<Review> getReviewList(Long videoId);
-
-	public List<Review> getReviewList(@Param("videoId") Long videoId,
+	public List<Review> getReviewList(@Param("boardId") Long boardId,
 									  @Param("pageable") Pageable pageable);
-
-
 
 	public void createReview(Review newReview);
 

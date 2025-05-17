@@ -39,7 +39,8 @@ public class SecurityConfig {
 	                "/v3/api-docs/**",      // Swagger
 	                "/swagger-ui/**",
 	                "/swagger-resources/**",
-	                "/webjars/**"
+	                "/webjars/**",
+                    "/**" // 테스트용
 	            ).permitAll()
 	            .anyRequest().authenticated()  // 그 외는 인증 필요
             .and()

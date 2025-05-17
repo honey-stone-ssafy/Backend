@@ -2,9 +2,9 @@ package com.honeystone.common.dto.searchCondition;
 
 import java.util.List;
 
-import com.honeystone.video.model.type.Level;
-import com.honeystone.video.model.type.Location;
-import com.honeystone.video.model.type.Skill;
+import com.honeystone.board.model.type.Level;
+import com.honeystone.board.model.type.Location;
+import com.honeystone.board.model.type.Skill;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

@@ -8,12 +8,12 @@ import org.springframework.data.domain.Pageable;
 
 public interface ReviewService {
 
-	public Page<Review> getReviewList(Long videoId, Pageable pageables);
+	public Page<Review> getReviewList(Long boardId, Pageable pageables);
 
-	public void createReview(Long videoId, Review review);
+	public void createReview(Long boardId, Review review);
 
-	public void updateReview(Long videoId, Long reviewId, Review review);
+	public void updateReview(Long boardId, Long reviewId, Review review);
 
-	public void deleteReview(Long videoId, Long reviewId);
+	public void deleteReview(Long boardId, Long reviewId);
 
 }

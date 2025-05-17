@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.honeystone.board.model.dao.BoardDao">
+
+	<!-- 전체 게시글 조회 -->
+	<!-- 결과물 전체 수 -->
+
+	<select id="getBoardList" parameterType="map"
+		resultType="GetBoard">
+		SELECT * FROM boards b
+		<where>
+			b.deleted_at IS NULL
+			<if test="search.keyword != null and search.keyword != ''">
+				AND (title LIKE concat('%', #{search.keyword}, '%')
+				OR
+				description
+				LIKE concat('%', #{search.keyword}, '%'))
+			</if>
+
+			<if test="search.locations != null and search.locations.size > 0">
+				AND b.location IN
+				<foreach item="loc" collection="search.locations" open="("
+					separator="," close=")">
+					#{loc}
+				</foreach>
+			</if>
+
+			<if test="search.levels != null and search.levels.size > 0">
+				AND b.level IN
+				<foreach item="lvl" collection="search.levels" open="("
+					separator="," close=")">
+					#{lvl}
+				</foreach>
+			</if>
+
+			<if test="search.skills != null and search.skills.size > 0">
+				AND(
+				<foreach item="sk" collection="search.skills"
+					separator=" AND ">
+					FIND_IN_SET(#{sk}, b.skill)
+				</foreach>
+				)
+			</if>
+		</where>
+
+		<choose>
+			<when test="search.orderBy == 'favorites'">
+				ORDER BY (
+				SELECT count(*)
+				FROM favorites f
+				WHERE
+				f.board_id = b.id
+				) DESC, created_at DESC, title ASC
+			</when>
+			<otherwise>
+				ORDER BY created_at DESC, (
+				SELECT count(*)
+				FROM favorites f
+				WHERE f.board_id = b.id
+				) DESC, title ASC
+			</otherwise>
+		</choose>
+		LIMIT #{pageable.pageSize}
+		OFFSET #{pageable.offset}
+	</select>
+
+	<!-- 머지하면 테이블명 수정 필요! -->
+	<select id="countBoards" parameterType="SearchBoardCondition"
+		resultType="long">
+		SELECT count(*) FROM boards b
+		<where>
+			b.deleted_at IS NULL
+			<if test="keyword != null and keyword != ''">
+				AND (title LIKE concat('%', #{keyword}, '%')
+				OR
+				description
+				LIKE concat('%', #{keyword}, '%'))
+			</if>
+
+			<if test="locations != null and locations.size > 0">
+				AND b.location IN
+				<foreach item="loc" collection="locations" open="("
+					separator="," close=")">
+					#{loc}
+				</foreach>
+			</if>
+
+			<if test="levels != null and levels.size > 0">
+				AND b.level IN
+				<foreach item="lvl" collection="levels" open="("
+					separator="," close=")">
+					#{lvl}
+				</foreach>
+			</if>
+
+			<if test="skills != null and skills.size > 0">
+				AND(
+				<foreach item="sk" collection="skills"
+					separator=" AND ">
+					FIND_IN_SET(#{sk}, b.skill)
+				</foreach>
+				)
+			</if>
+		</where>
+	</select>
+
+	<!-- 상세 게시글 조회	-->
+	<select id="getBoard" resultType="GetBoard" parameterType="Long">
+		SELECT *
+		FROM boards b
+		INNER JOIN files f
+		ON b.id = f.Board_id
+		WHERE b.id = #{id}
+		AND b.deleted_at IS NULL
+	</select>
+
+	<!-- 게시글 생성	-->
+	<insert id="createBoard" parameterType="Board" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO boards (title, description, level, skill, created_at)
+		VALUES(#{title}, #{description}, #{level}, #{skill}, NOW())
+	</insert>
+
+	<insert id="createFile" parameterType="BoardFile" useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
+		INSERT INTO files (url, filename, board_id)
+		VALUES(#{url}, #{filename}, #{boardId})
+	</insert>
+
+	<!--게시글 수정 -->
+	<update id="updateBoard" parameterType="Board">
+		UPDATE boards
+		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}, updated_at = NOW()
+		WHERE id = #{id}
+	</update>
+
+	<!-- id로 게시글 존재 확인	-->
+	<select id="existsById" resultType="int" parameterType="long">
+		SELECT COUNT(*)
+		FROM boards
+		WHERE id = #{id}
+		AND deleted_at IS NULL
+	</select>
+
+	<!-- 게시글 삭제(논리 삭제) deleted_at 변경 	-->
+	<update id="deleteBoard" parameterType="Long">
+		UPDATE boards
+		SET deleted_at = NOW()
+		WHERE id = #{id}
+	</update>
+
+
+	<select id="findBoardsToDelete" resultType="Board">
+		<![CDATA[
+    	SELECT *
+    	FROM boards
+    	WHERE deleted_at IS NOT NULL
+      	AND DATE_ADD(deleted_at, INTERVAL 30 DAY) <= CURRENT_DATE
+    ]]>
+	</select>
+
+	<!--논리 삭제 테스트용 -->
+	<!--<select id="findboardsToDelete" resultType="Board">
+		<![CDATA[
+    	SELECT *
+    	FROM boards
+    	WHERE deleted_at IS NOT NULL
+      	AND DATE_ADD(deleted_at, INTERVAL 1 MINUTE) <= NOW()
+    ]]>
+	</select>-->
+
+	<!--영구 삭제-->
+	<delete id="deleteFile" parameterType="Long">
+		DELETE FROM files
+		WHERE board_id = #{id}
+	</delete>
+
+	<delete id="completeDeleteBoard" parameterType="Long">
+		DELETE FROM boards
+		WHERE id = #{id}
+	</delete>
+</mapper>

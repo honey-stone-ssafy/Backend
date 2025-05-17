@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.honeystone.plan.model.dao.PlanDao">
+
+    <!--일정 전체 조회-->
+    <select id="getPlanList" resultType="Plan" parameterType="Long">
+        SELECT *
+        FROM plans
+        WHERE user_id = #{userId}
+        AND deleted_at IS NULL
+    </select>
+
+    <select id="getPlan" resultType="Plan" parameterType="Long">
+        SELECT *
+        FROM plans
+        WHERE id = #{id}
+        AND deleted_at IS NULL
+    </select>
+
+    <!-- ID로 일정 확인 -->
+    <select id="existsPlanById" parameterType="Long" resultType="int">
+        SELECT count(*)
+        FROM plans
+        WHERE id = #{id}
+        AND deleted_at IS NULL
+    </select>
+
+    <!-- 일정 생성 -->
+    <insert id="createPlan" parameterType="Plan">
+        INSERT INTO plans(title, start, end, memo, location, scope, created_at, user_id)
+        VALUES(#{title}, #{start}, #{end}, #{memo}, #{location}, #{scope}, NOW(), #{userId})
+    </insert>
+
+    <!-- 일정 수정 -->
+    <update id="updatePlan" parameterType="Plan">
+        UPDATE plans
+        SET title = #{title}, start = #{start}, end = #{end}, memo = #{memo}, location = #{location}, scope = #{scope}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!--일정 삭제-->
+    <update id="deletePlan" parameterType="Long">
+        UPDATE plans
+        SET deleted_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!--영구 삭제-->
+    <select id="findPlansToDelete" resultType="Plan">
+        <![CDATA[
+    	SELECT *
+    	FROM plans
+    	WHERE deleted_at IS NOT NULL
+      	AND DATE_ADD(deleted_at, INTERVAL 30 DAY) <= CURRENT_DATE
+    ]]>
+    </select>
+
+    <!--논리 삭제 테스트용 -->
+<!--    <select id="findPlansToDelete" resultType="Plan">-->
+<!--        <![CDATA[-->
+<!--        SELECT *-->
+<!--        FROM plans-->
+<!--        WHERE deleted_at IS NOT NULL-->
+<!--          AND DATE_ADD(deleted_at, INTERVAL 1 MINUTE) <= NOW()-->
+<!--    ]]>-->
+<!--    </select>-->
+
+    <delete id="completeDeletePlan" parameterType="Long">
+        DELETE FROM plans
+        WHERE id = #{id}
+    </delete>
+</mapper>

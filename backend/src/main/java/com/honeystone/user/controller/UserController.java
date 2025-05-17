@@ -2,7 +2,7 @@ package com.honeystone.user.controller;
 
 import java.util.List;
 
-import com.honeystone.common.dto.video.GetVideo;
+import com.honeystone.common.dto.board.GetBoard;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

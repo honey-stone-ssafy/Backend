@@ -24,7 +24,7 @@ public class FileRemove {
 
 
     public void removeFile(Long id) {
-        final String file = String.format("video_%d", id);
+        final String file = String.format("board_%d", id);
         ObjectListing objectListing = amazonS3Client.listObjects(bucket, RV_DIR);
         for (S3ObjectSummary os : objectListing.getObjectSummaries()) {
             String filename = os.getKey();
