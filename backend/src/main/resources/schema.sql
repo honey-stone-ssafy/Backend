@@ -135,7 +135,7 @@ CREATE TABLE follows (
 -- 9. 사용자 테이블
 CREATE TABLE users (
   id             BIGINT       NOT NULL AUTO_INCREMENT,
-  email          VARCHAR(50)  NOT NULL,
+  email          VARCHAR(50)  NOT NULL UNIQUE,
   nickname       VARCHAR(50)  NOT NULL UNIQUE COMMENT '닉네임',
   password       VARCHAR(255) NOT NULL,
   created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -168,3 +168,16 @@ CREATE TABLE alarms (
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- 12. 리프레시 토큰 테이블
+CREATE TABLE refresh_tokens (
+  id           BIGINT       NOT NULL AUTO_INCREMENT,
+  user_id      BIGINT       NOT NULL,
+  token        VARCHAR(500) NOT NULL COMMENT 'JWT 리프레시 토큰',
+  created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  expired_at   TIMESTAMP    NULL COMMENT '만료 시각',
+  PRIMARY KEY (id),
+  UNIQUE KEY (token),  -- 하나의 토큰은 단 한 번만 유효
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
