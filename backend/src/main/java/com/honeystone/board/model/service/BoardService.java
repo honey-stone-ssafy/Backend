@@ -13,11 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 public interface BoardService {
 	public Page<GetBoard> getBoardList(SearchBoardCondition search, Pageable pageable);
 
-	public void createBoard(Board board, MultipartFile file) throws IOException;
+	public void createBoard(String userEmail, Board board, MultipartFile file) throws IOException;
 
-	public void updateBoard(Long id, Board board);
+	public void updateBoard(String userEmail, Long id, Board board);
 
-	public void deleteBoard(Long id);
+	public void deleteBoard(String userId, Long id);
 
 	public GetBoard getBoard(Long id);
 }

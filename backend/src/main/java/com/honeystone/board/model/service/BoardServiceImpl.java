@@ -11,6 +11,7 @@ import com.honeystone.common.util.FileUpload;
 import com.honeystone.common.dto.board.BoardFile;
 import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
+import com.honeystone.user.model.dao.UserDao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,11 +30,13 @@ public class BoardServiceImpl implements BoardService {
 	private final BoardDao boardDao;
 	private final FileUpload fileUpload;
 	private final FileRemove fileRemove;
+	private final UserDao userDao;
 
-	public BoardServiceImpl(BoardDao boardDao, FileUpload fileUpload, FileRemove fileRemove) {
+	public BoardServiceImpl(BoardDao boardDao, FileUpload fileUpload, FileRemove fileRemove, UserDao userDao) {
 		this.boardDao = boardDao;
 		this.fileUpload = fileUpload;
 		this.fileRemove = fileRemove;
+		this.userDao = userDao;
 	}
 
 	@Override
@@ -58,8 +61,9 @@ public class BoardServiceImpl implements BoardService {
 
 
 	@Override
-	public void createBoard(Board board, MultipartFile file) throws IOException {
-		// todo : 사용자 유효성 로직 필요
+	public void createBoard(String userEmail, Board board, MultipartFile file) throws IOException {
+		// 사용자 유효성 체크
+		if(userDao.existsByEmail(userEmail) != 1) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		if(file.isEmpty() || file == null) throw new BusinessException("파일 첨부는 필수입니다.");
 		// board 생성 로직
@@ -109,8 +113,10 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public void updateBoard(Long id, Board board) throws ServerException {
-		// 사용자 인증
+	public void updateBoard(String userEmail, Long id, Board board) throws ServerException {
+		// 사용자 유효성 체크
+		if(userDao.existsByEmail(userEmail) != 1) throw new BusinessException("존재하지 않는 사용자입니다.");
+
 		// 있는 게시물인지 확인
 		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
 		// 수정
@@ -125,8 +131,9 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public void deleteBoard(Long id) throws ServerException {
-		// todo: 사용자 인증
+	public void deleteBoard(String  userEmail, Long id) throws ServerException {
+		// 사용자 유효성 체크
+		if(userDao.existsByEmail(userEmail) != 1) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		// 있는 게시물인지 확인
 		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");

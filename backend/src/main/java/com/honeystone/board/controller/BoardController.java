@@ -1,10 +1,11 @@
 package com.honeystone.board.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.user.User;
+import com.honeystone.common.security.MyUserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,15 +15,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.honeystone.common.dto.board.Board;
 import com.honeystone.board.model.service.BoardService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import com.honeystone.common.dto.ApiError;
+import com.honeystone.common.dto.error.ApiError;
 import jakarta.validation.Valid;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -65,7 +66,6 @@ public class BoardController {
 	@GetMapping("")
 	public ResponseEntity<?> getBoardList(@ParameterObject @ModelAttribute SearchBoardCondition search,
 										  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
-
 		// 페이지네이션
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -107,11 +107,11 @@ public class BoardController {
 	)
 	@PostMapping(value = "", consumes = MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Void> createBoard(
+		@AuthenticationPrincipal MyUserPrincipal user,
 		@Parameter(description = "비디오 정보와 첨부 파일", schema = @Schema(implementation = Board.class))
 		@Valid @ModelAttribute Board board
 	) throws IOException {
-		// todo: 인증인가 구현되면 사용자 검증해야 함. (userId 받기)
-		boardService.createBoard(board, board.getFile());
+		boardService.createBoard(user.getEmail(), board, board.getFile());
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
 
@@ -141,8 +141,8 @@ public class BoardController {
 		}
 	)
 	@PatchMapping("/{id}")
-	public ResponseEntity<Void> updateBoard(@PathVariable("id") Long id, @RequestBody Board board){
-		boardService.updateBoard(id, board);
+	public ResponseEntity<Void> updateBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id, @RequestBody Board board){
+		boardService.updateBoard(user.getEmail(), id, board);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
@@ -169,8 +169,8 @@ public class BoardController {
 		}
 	)
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteBoard(@PathVariable("id") Long id){
-		boardService.deleteBoard(id);
+	public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id){
+		boardService.deleteBoard(user.getEmail(), id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
