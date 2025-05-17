@@ -5,10 +5,13 @@ import java.util.List;
 
 import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.board.Board;
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface BoardService {
-	public List<Board> getBoardList();
+	public Page<GetBoard> getBoardList(SearchBoardCondition search, Pageable pageable);
 
 	public void createBoard(Board board, MultipartFile file) throws IOException;
 

@@ -2,8 +2,11 @@ package com.honeystone.common.dto.board;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.honeystone.board.model.type.Level;
+import com.honeystone.board.model.type.Location;
 import com.honeystone.board.model.type.Skill;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -40,6 +43,10 @@ public class Board {
     @Schema(description = "기술명", example = "[\"PINCH\", \"SLOPER\"]")
     private Set<Skill> skill;
 
+    @Schema(description = "장소", example = "HONGDAE")
+    @Enumerated(EnumType.STRING)
+    private Location location;
+
     @Schema(description = "생성 시각", example = "2025-05-11T18:45:00")
     private LocalDateTime createdAt;
 
@@ -50,7 +57,6 @@ public class Board {
     private LocalDateTime deletedAt;
 
     @Schema(description = "첨부 파일", type = "string", format = "binary")
-    @NotNull(message = "파일 첨부는 필수입니다.")
     private MultipartFile file;
 
     @Override

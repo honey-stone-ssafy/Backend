@@ -5,20 +5,115 @@
 <mapper namespace="com.honeystone.board.model.dao.BoardDao">
 
 	<!-- 전체 게시글 조회 -->
-	<select id="selectAll" resultType="Board">
-		SELECT *
-		FROM boards
-		WHERE deleted_at IS NULL
+	<!-- 결과물 전체 수 -->
+
+	<select id="getBoardList" parameterType="map"
+		resultType="GetBoard">
+		SELECT * FROM boards b
+		<where>
+			b.deleted_at IS NULL
+			<if test="search.keyword != null and search.keyword != ''">
+				AND (title LIKE concat('%', #{search.keyword}, '%')
+				OR
+				description
+				LIKE concat('%', #{search.keyword}, '%'))
+			</if>
+
+			<if test="search.locations != null and search.locations.size > 0">
+				AND b.location IN
+				<foreach item="loc" collection="search.locations" open="("
+					separator="," close=")">
+					#{loc}
+				</foreach>
+			</if>
+
+			<if test="search.levels != null and search.levels.size > 0">
+				AND b.level IN
+				<foreach item="lvl" collection="search.levels" open="("
+					separator="," close=")">
+					#{lvl}
+				</foreach>
+			</if>
+
+			<if test="search.skills != null and search.skills.size > 0">
+				AND(
+				<foreach item="sk" collection="search.skills"
+					separator=" AND ">
+					FIND_IN_SET(#{sk}, b.skill)
+				</foreach>
+				)
+			</if>
+		</where>
+
+		<choose>
+			<when test="search.orderBy == 'favorites'">
+				ORDER BY (
+				SELECT count(*)
+				FROM favorites f
+				WHERE
+				f.board_id = b.id
+				) DESC, created_at DESC, title ASC
+			</when>
+			<otherwise>
+				ORDER BY created_at DESC, (
+				SELECT count(*)
+				FROM favorites f
+				WHERE f.board_id = b.id
+				) DESC, title ASC
+			</otherwise>
+		</choose>
+		LIMIT #{pageable.pageSize}
+		OFFSET #{pageable.offset}
+	</select>
+
+	<!-- 머지하면 테이블명 수정 필요! -->
+	<select id="countBoards" parameterType="SearchBoardCondition"
+		resultType="long">
+		SELECT count(*) FROM boards b
+		<where>
+			b.deleted_at IS NULL
+			<if test="keyword != null and keyword != ''">
+				AND (title LIKE concat('%', #{keyword}, '%')
+				OR
+				description
+				LIKE concat('%', #{keyword}, '%'))
+			</if>
+
+			<if test="locations != null and locations.size > 0">
+				AND b.location IN
+				<foreach item="loc" collection="locations" open="("
+					separator="," close=")">
+					#{loc}
+				</foreach>
+			</if>
+
+			<if test="levels != null and levels.size > 0">
+				AND b.level IN
+				<foreach item="lvl" collection="levels" open="("
+					separator="," close=")">
+					#{lvl}
+				</foreach>
+			</if>
+
+			<if test="skills != null and skills.size > 0">
+				AND(
+				<foreach item="sk" collection="skills"
+					separator=" AND ">
+					FIND_IN_SET(#{sk}, b.skill)
+				</foreach>
+				)
+			</if>
+		</where>
 	</select>
 
 	<!-- 상세 게시글 조회	-->
 	<select id="getBoard" resultType="GetBoard" parameterType="Long">
 		SELECT *
-		FROM boards v
+		FROM boards b
 		INNER JOIN files f
-		ON v.id = f.Board_id
-		WHERE v.id = #{id}
-		AND v.deleted_at IS NULL
+		ON b.id = f.Board_id
+		WHERE b.id = #{id}
+		AND b.deleted_at IS NULL
 	</select>
 
 	<!-- 게시글 생성	-->
@@ -55,7 +150,7 @@
 	</update>
 
 
-	<select id="findboardsToDelete" resultType="Board">
+	<select id="findBoardsToDelete" resultType="Board">
 		<![CDATA[
     	SELECT *
     	FROM boards

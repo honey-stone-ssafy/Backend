@@ -1,15 +1,20 @@
 package com.honeystone.board.model.service;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.util.List;
 
 import com.honeystone.common.dto.board.GetBoard;
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
 import com.honeystone.common.util.FileRemove;
 import com.honeystone.common.util.FileUpload;
 import com.honeystone.common.dto.board.BoardFile;
 import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.honeystone.board.model.dao.BoardDao;
@@ -32,9 +37,13 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public List<Board> getBoardList() {
-		System.out.println("게시글 전체 목록");
-		return boardDao.selectAll();
+	public Page<GetBoard> getBoardList(SearchBoardCondition search, Pageable pageable) throws ServerException {
+
+		// 페이지네이션
+		long total = boardDao.countBoards(search);
+		List<GetBoard> boards = boardDao.getBoardList(search, pageable);
+
+		return new PageImpl<>(boards, pageable, total);
 	}
 
 	@Override
@@ -46,10 +55,13 @@ public class BoardServiceImpl implements BoardService {
 		return board;
 	}
 
+
+
 	@Override
 	public void createBoard(Board board, MultipartFile file) throws IOException {
 		// todo : 사용자 유효성 로직 필요
 
+		if(file.isEmpty() || file == null) throw new BusinessException("파일 첨부는 필수입니다.");
 		// board 생성 로직
 		Board newBoard = Board.builder()
 				.title(board.getTitle())
