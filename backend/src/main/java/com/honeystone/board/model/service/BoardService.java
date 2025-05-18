@@ -17,7 +17,7 @@ public interface BoardService {
 
 	public void updateBoard(String userEmail, Long id, Board board);
 
-	public void deleteBoard(String userId, Long id);
+	public void deleteBoard(String userEmail, Long id);
 
 	public GetBoard getBoard(Long id);
 }

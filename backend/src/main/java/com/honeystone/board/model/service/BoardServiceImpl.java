@@ -63,7 +63,7 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public void createBoard(String userEmail, Board board, MultipartFile file) throws IOException {
 		// 사용자 유효성 체크
-		if(userDao.existsByEmail(userEmail) != 1) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		if(file.isEmpty() || file == null) throw new BusinessException("파일 첨부는 필수입니다.");
 		// board 생성 로직
@@ -115,7 +115,7 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public void updateBoard(String userEmail, Long id, Board board) throws ServerException {
 		// 사용자 유효성 체크
-		if(userDao.existsByEmail(userEmail) != 1) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		// 있는 게시물인지 확인
 		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
@@ -133,7 +133,7 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public void deleteBoard(String  userEmail, Long id) throws ServerException {
 		// 사용자 유효성 체크
-		if(userDao.existsByEmail(userEmail) != 1) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		// 있는 게시물인지 확인
 		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
