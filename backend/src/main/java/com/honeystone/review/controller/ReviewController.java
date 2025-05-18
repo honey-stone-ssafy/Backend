@@ -3,6 +3,7 @@ package com.honeystone.review.controller;
 import com.honeystone.common.security.MyUserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +29,6 @@ public class ReviewController {
 
     @Operation(summary = "리뷰 목록 조회", description = """
                 특정 영상(`boardId`)에 대한 모든 리뷰를 조회합니다.\n
-                사용자 인증 후 접근 가능합니다.\n
                 default로 한 페이지당 10개의 데이터를 가져옵니다. page, size를 원하는 수로 작성하여 테스트할 수 있습니다.
             """, responses = { @ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공"),
         @ApiResponse(responseCode = "400", description = "잘못된 요청"),
@@ -46,7 +46,11 @@ public class ReviewController {
     @Operation(summary = "리뷰 작성", description = """
             리뷰 내용을 JSON 형식으로 전송하여 새로운 리뷰를 등록합니다.\n
             `boardId`는 PathVariable로 전달하며, `Review` 객체의 `id`, `createdAt`, `updatedAt`, `deletedAt` 필드는 비워두어야 합니다.
+            
+            🔐 **인증 필요**  
+            요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
         """,
+        security = @SecurityRequirement(name = "bearerAuth"),
         responses = {
             @ApiResponse(responseCode = "200", description = "리뷰 작성 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
@@ -63,7 +67,11 @@ public class ReviewController {
             특정 영상(`boardId`)에 대한 특정 리뷰(`reviewId`)를 수정합니다.\n
             요청 본문에는 수정할 리뷰 내용만 포함시키면 됩니다.\n
             작성자 본인만 수정 가능하며, 사용자 인증이 필요합니다.
+            
+            🔐 **인증 필요**  
+            요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
         """,
+        security = @SecurityRequirement(name = "bearerAuth"),
         responses = {
             @ApiResponse(responseCode = "200", description = "리뷰 수정 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
@@ -81,7 +89,11 @@ public class ReviewController {
     @Operation(summary = "리뷰 삭제", description = """
             특정 영상(`boardId`)에 대한 특정 리뷰(`reviewId`)를 삭제합니다.\n
             작성자 본인만 삭제할 수 있으며, 사용자 인증이 필요합니다.
+            
+            🔐 **인증 필요**  
+            요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
         """,
+        security = @SecurityRequirement(name = "bearerAuth"),
         responses = {
             @ApiResponse(responseCode = "200", description = "리뷰 삭제 성공"),
             @ApiResponse(responseCode = "403", description = "삭제 권한 없음"),
