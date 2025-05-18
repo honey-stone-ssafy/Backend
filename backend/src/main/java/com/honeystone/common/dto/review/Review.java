@@ -41,4 +41,17 @@ public class Review {
 	@Schema(description = "연결된 영상 ID", example = "101")
 	@NotNull(message = "댓글을 달 게시물은 필수입니다.")
 	private Long boardId;
+
+	@Override
+	public String toString() {
+		return "Review{" +
+			"id=" + id +
+			", content='" + content + '\'' +
+			", createdAt=" + createdAt +
+			", updatedAt=" + updatedAt +
+			", deletedAt=" + deletedAt +
+			", userId=" + userId +
+			", boardId=" + boardId +
+			'}';
+	}
 }

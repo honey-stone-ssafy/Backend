@@ -1,5 +1,6 @@
 package com.honeystone.review.controller;
 
+import com.honeystone.common.security.MyUserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.honeystone.common.dto.review.Review;
@@ -34,8 +36,6 @@ public class ReviewController {
     @GetMapping()
     public ResponseEntity<Page<Review>> getReviewList(@PathVariable("boardId") Long boardId,
                                                       @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        // Authentication으로 사용자 받아와야 함.
-
         // 페이지네이션
         Pageable pageable = PageRequest.of(page, size);
         Page<Review> reviews = reviewService.getReviewList(boardId, pageable);
@@ -54,9 +54,8 @@ public class ReviewController {
         }
     )
     @PostMapping()
-    public ResponseEntity<Void> createReview(@PathVariable("boardId") Long boardId, @RequestBody Review review){
-        //Authentication으로 사용자 받아와야 함.
-        reviewService.createReview(boardId, review);
+    public ResponseEntity<Void> createReview(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("boardId") Long boardId, @RequestBody Review review){
+        reviewService.createReview(user.getEmail(), boardId, review);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -74,9 +73,8 @@ public class ReviewController {
         }
     )
     @PatchMapping("/{reviewId}")
-    public ResponseEntity<Void> updateReview(@PathVariable("boardId") Long boardId, @PathVariable("reviewId") Long reviewId, @RequestBody Review review){
-        //Authentication으로 사용자 받아와야 함.
-        reviewService.updateReview(boardId, reviewId, review);
+    public ResponseEntity<Void> updateReview(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("boardId") Long boardId, @PathVariable("reviewId") Long reviewId, @RequestBody Review review){
+        reviewService.updateReview(user.getEmail(), boardId, reviewId, review);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -92,9 +90,9 @@ public class ReviewController {
         }
     )
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable("boardId") Long boardId, @PathVariable("reviewId") Long reviewId){
+    public ResponseEntity<Void> deleteReview(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("boardId") Long boardId, @PathVariable("reviewId") Long reviewId){
         //Authentication으로 사용자 받아와야 함.
-        reviewService.deleteReview(boardId, reviewId);
+        reviewService.deleteReview(user.getEmail(), boardId, reviewId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
