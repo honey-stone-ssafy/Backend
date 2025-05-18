@@ -9,6 +9,7 @@ import com.honeystone.common.security.MyUserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -95,12 +96,19 @@ public class BoardController {
 		return new ResponseEntity<GetBoard>(board, HttpStatus.OK);
 	}
 
-	@Operation(summary = "게시글 업로드", description = """
-			Board DTO와 첨부 파일을 multipart/form-data로 전송합니다. skill 필드는 여러 개 선택 시 Shift 혹은 ctrl 이용하면 됩니다.\s
-			게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
-		""",
+	@Operation(
+		summary = "게시글 업로드",
+		description = """
+            Board DTO와 첨부 파일을 multipart/form-data로 전송합니다.  
+            skill 필드는 여러 개 선택 시 Shift 혹은 Ctrl 키를 이용하세요.  
+            게시물 인덱스, 생성 및 수정 날짜는 빈 값(empty)으로 보내주세요.
+
+            🔐 **인증 필요**  
+            요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+        """,
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
-			@ApiResponse(responseCode = "201", description = "비디오 업로드 성공"),
+			@ApiResponse(responseCode = "201", description = "게시글 업로드 성공"),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
 			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
 		}
@@ -118,9 +126,13 @@ public class BoardController {
 	@Operation(summary = "게시글 수정", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
       		수정 가능한 필드: title, description, level, skill
-      		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다. \s
+      		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다.
       		게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
-   	""",
+
+		    🔐 **인증 필요** \s
+		    요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+		""",
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
 			@ApiResponse(
@@ -148,7 +160,11 @@ public class BoardController {
 
 	@Operation(summary = "게시글 삭제", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 삭제합니다.
-    """,
+      		
+            🔐 **인증 필요**  
+            요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+        """,
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses   = {
 			@ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
 			@ApiResponse(
