@@ -95,13 +95,13 @@ CREATE TABLE reviews (
 );
 
 -- 5. 더클라임 지점 테이블
-CREATE TABLE the_climb (
-  id          BIGINT      NOT NULL AUTO_INCREMENT,
-  name        VARCHAR(50) NOT NULL,
-  wall        VARCHAR(50) NULL,
-  color       VARCHAR(50) NOT NULL,
-  PRIMARY KEY (id)
-);
+    CREATE TABLE the_climb (
+      id          BIGINT      NOT NULL AUTO_INCREMENT,
+      name        VARCHAR(50) NOT NULL,
+      wall        VARCHAR(50) NULL,
+      color       VARCHAR(50) NOT NULL,
+      PRIMARY KEY (id)
+    );
 
 -- 6. 사용자-계획 매핑 테이블 (요청 상태 포함)
 CREATE TABLE request_plans (
