@@ -136,7 +136,6 @@ public class BoardController {
 		@PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 		public ResponseEntity<Void> createBoard(
 			@AuthenticationPrincipal MyUserPrincipal user,
-
 			@Parameter(description = "게시글 정보와 첨부 파일, 클라이밍 정보", required = true)
 			@Valid @ModelAttribute Board board
 		) throws IOException {

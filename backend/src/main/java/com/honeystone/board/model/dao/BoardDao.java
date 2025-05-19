@@ -15,29 +15,33 @@ import com.honeystone.common.dto.theClimb.TheClimb;
 @Mapper
 public interface BoardDao {
 
-	public List<GetBoard> getBoardList(@Param("search") SearchBoardCondition search, @Param("pageable") Pageable pageable);
+	 List<GetBoard> getBoardList(@Param("search") SearchBoardCondition search, @Param("pageable") Pageable pageable);
 
-	public void createBoard(Board video);
+	 void createBoard(Board video);
 
-	public void createFile(BoardFile file);
+	 void createFile(BoardFile file);
 	
-	public Long findTheClimb(TheClimb theClimb);
+	 Long findTheClimb(TheClimb theClimb);
 	
-	void createTheClimbBoard(@Param("boardId") Long boardId, @Param("theClimbId") Long theClimbId);
+	 void createTheClimbBoard(@Param("boardId") Long boardId, @Param("theClimbId") Long theClimbId);
 
-	public void updateBoard(Board video);
+	 void updateTheClimbBoard(@Param("boardId") Long boardId, @Param("theClimbId") Long theClimbId);
 
-	public int existsById(Long id); // id로 게시물 조회
+	 void updateBoard(Board video);
 
-	public void deleteBoard(Long id);
+	 int existsById(Long id); // id로 게시물 조회
 
-	public void completeDeleteBoard(Long id);
+	 void deleteBoard(Long id);
 
-	public void deleteFile(Long id);
+	 void completeDeleteBoard(Long id);
 
-	public GetBoard getBoard(Long id);
+	 void deleteFile(Long id);
 
-	public List<Board> findBoardsToDelete();
+	 GetBoard getBoard(Long id);
 
-	public long countBoards(SearchBoardCondition search);
+	 List<Board> findBoardsToDelete();
+
+	 long countBoards(SearchBoardCondition search);
+
+	 void deleteTheClimbBoard(Long boardId);
 }

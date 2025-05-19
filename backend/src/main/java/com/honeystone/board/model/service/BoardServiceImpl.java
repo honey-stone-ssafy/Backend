@@ -53,7 +53,6 @@ public class BoardServiceImpl implements BoardService {
 	public GetBoard getBoard(Long id) throws ServerException {
 		// 있는 게시물인지 확인
 		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
-
 		GetBoard board = boardDao.getBoard(id);
 		return board;
 	}
@@ -83,16 +82,17 @@ public class BoardServiceImpl implements BoardService {
 		
 		// the climb - board 매핑 테이블에 저장 로직
 		TheClimb theClimb = TheClimb.builder()
+				.id(-1L)
 				.name(board.getName())
 				.wall(board.getWall())
 				.color(board.getColor())
 				.build();
-		
+
+
 		
 		Long theClimbId = boardDao.findTheClimb(theClimb);
-		if(theClimbId == 0) throw new BusinessException("잘못된 장소입니다.");
-		// todo: 지점, 벽, 색깔이 디비에 저장된 게 없는 경우 던지는 에러가 있어야 함.
-		
+		if(theClimbId == null) throw new BusinessException("해당 클라이밍 정보가 없습니다.");
+
 		try {	
 			boardDao.createTheClimbBoard(newBoard.getId(), theClimbId);
 		}catch(DataAccessException e) {
@@ -138,6 +138,24 @@ public class BoardServiceImpl implements BoardService {
 
 		// 있는 게시물인지 확인
 		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+
+		TheClimb theClimb = TheClimb.builder()
+			.id(-1L)
+			.name(board.getName())
+			.wall(board.getWall())
+			.color(board.getColor())
+			.build();
+		System.out.println(theClimb);
+		Long theClimbId = boardDao.findTheClimb(theClimb);
+		System.out.println(theClimbId);
+		if(theClimbId == null) throw new BusinessException("해당 클라이밍 정보가 없습니다.");
+
+		try {
+			boardDao.updateTheClimbBoard(id, theClimbId);
+		}catch(DataAccessException e) {
+			throw new ServerException("장소보트 매핑 중 DB 오류가 발생했습니다.");
+		}
+
 		// 수정
 		Board updateBoard = Board.builder()
 			.id(id)

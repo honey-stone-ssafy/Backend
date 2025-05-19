@@ -5,8 +5,6 @@
 <mapper namespace="com.honeystone.board.model.dao.BoardDao">
 
 	<!-- 전체 게시글 조회 -->
-	<!-- 결과물 전체 수 -->
-
 	<select id="getBoardList" parameterType="map"
 		resultType="GetBoard">
 		SELECT * FROM boards b
@@ -66,7 +64,7 @@
 		OFFSET #{pageable.offset}
 	</select>
 
-	<!-- 머지하면 테이블명 수정 필요! -->
+	<!-- 결과물 전체 수 -->
 	<select id="countBoards" parameterType="SearchBoardCondition"
 		resultType="long">
 		SELECT count(*) FROM boards b
@@ -109,8 +107,14 @@
 	<select id="getBoard" resultType="GetBoard" parameterType="Long">
 		SELECT *
 		FROM boards b
-		INNER JOIN files f
-		ON b.id = f.Board_id
+		LEFT JOIN files f
+		ON b.id = f.board_id
+
+		LEFT JOIN the_climb_board cb
+		ON b.id = cb.board_id
+
+		LEFT JOIN the_climb c
+		ON cb.the_climb_id = c.id
 		WHERE b.id
 		= #{id}
 		AND b.deleted_at IS NULL
@@ -139,9 +143,14 @@
 		<where>
 			name = #{name}
 			AND color = #{color}
-			<if test="wall != null and wall != ''">
-				AND wall = #{wall}
-			</if>
+			<choose>
+				<when test="wall != null and wall != ''">
+					AND wall = #{wall}
+				</when>
+				<otherwise>
+					AND wall IS NULL
+				</otherwise>
+			</choose>
 		</where>
 	</select>
 
@@ -150,7 +159,6 @@
 		VALUES(#{boardId}, #{theClimbId})
 	</insert>
 
-
 	<!--게시글 수정 -->
 	<update id="updateBoard" parameterType="Board">
 		UPDATE boards
@@ -158,6 +166,13 @@
 		#{title}, description = #{description}, level = #{level}, skill =
 		#{skill}, updated_at = NOW()
 		WHERE id = #{id}
+	</update>
+
+	<update id="updateTheClimbBoard" parameterType="map">
+		UPDATE the_climb_board
+		SET the_climb_id = #{theClimbId}
+		WHERE board_id = #{boardId}
+
 	</update>
 
 	<!-- id로 게시글 존재 확인 -->
@@ -203,5 +218,11 @@
 		DELETE FROM
 		boards
 		WHERE id = #{id}
+	</delete>
+
+	<delete id="deleteTheClimbBoard" parameterType="Long">
+		DELETE FROM
+		the_climb_board
+		WHERE board_id = #{boardId}
 	</delete>
 </mapper>

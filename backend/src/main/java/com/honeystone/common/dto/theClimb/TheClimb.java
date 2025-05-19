@@ -33,4 +33,14 @@ public class TheClimb {
 
     @Schema(description = "벽 이름", example = "사과")
     private String wall;
+
+    @Override
+    public String toString() {
+        return "TheClimb{" +
+            "id=" + id +
+            ", name=" + name +
+            ", color=" + color +
+            ", wall='" + wall + '\'' +
+            '}';
+    }
 }
