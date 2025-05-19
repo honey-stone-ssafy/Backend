@@ -2,14 +2,15 @@ package com.honeystone.board.model.dao;
 
 import java.util.List;
 
-import com.honeystone.common.dto.board.GetBoard;
-import com.honeystone.common.dto.board.BoardFile;
-import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
 import org.apache.ibatis.annotations.Mapper;
-
-import com.honeystone.common.dto.board.Board;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+
+import com.honeystone.common.dto.board.Board;
+import com.honeystone.common.dto.board.BoardFile;
+import com.honeystone.common.dto.board.GetBoard;
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.theClimb.TheClimb;
 
 @Mapper
 public interface BoardDao {
@@ -19,6 +20,10 @@ public interface BoardDao {
 	public void createBoard(Board video);
 
 	public void createFile(BoardFile file);
+	
+	public Long findTheClimb(TheClimb theClimb);
+	
+	void createTheClimbBoard(@Param("boardId") Long boardId, @Param("theClimbId") Long theClimbId);
 
 	public void updateBoard(Board video);
 

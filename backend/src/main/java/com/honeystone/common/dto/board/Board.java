@@ -1,20 +1,28 @@
 package com.honeystone.common.dto.board;
 
+import java.time.LocalDateTime;
+import java.util.Set;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.honeystone.board.model.type.Level;
 import com.honeystone.board.model.type.Location;
 import com.honeystone.board.model.type.Skill;
+import com.honeystone.common.dto.theClimb.TheClimb;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
-import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -45,11 +53,6 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private Set<Skill> skill;
 
-    @Schema(description = "장소", example = "HONGDAE")
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "장소는 필수입니다.")
-    private Location location;
-
     @Schema(description = "생성 시각", example = "2025-05-11T18:45:00")
     private LocalDateTime createdAt;
 
@@ -62,13 +65,30 @@ public class Board {
     @Schema(description = "첨부 파일", type = "string", format = "binary")
     @NotNull(message = "파일 첨부는 필수입니다.")
     private MultipartFile file;
+    
+	@Schema(description = "장소", example = "HONGDAE")
+	@NotNull(message = "장소는 필수입니다.")
+	@Enumerated(EnumType.STRING)
+	private Location name;
+
+	@Schema(description = "벽", example = "사과")
+	private String wall;
+	
+	@Schema(description = "벽 색깔", example = "RED")
+	@NotNull(message = "벽 색깔은 필수입니다.")
+	@Enumerated(EnumType.STRING)
+	private Level color;
 
 	@Override
 	public String toString() {
 		return "Board [id=" + id + ", title=" + title + ", description=" + description + ", level=" + level + ", skill="
-				+ skill + ", location=" + location + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-				+ ", deletedAt=" + deletedAt + ", file=" + file + "]";
+				+ skill + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt
+				+ ", file=" + file + ", name=" + name + ", wall=" + wall + ", color=" + color + "]";
 	}
+
+
+
+
 
  
 }

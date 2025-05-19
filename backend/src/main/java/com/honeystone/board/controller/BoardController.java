@@ -2,32 +2,41 @@ package com.honeystone.board.controller;
 
 import java.io.IOException;
 
-import com.honeystone.common.dto.board.GetBoard;
-import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
-import com.honeystone.common.dto.user.User;
-import com.honeystone.common.security.MyUserPrincipal;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.honeystone.common.dto.board.Board;
 import com.honeystone.board.model.service.BoardService;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import com.honeystone.common.dto.board.Board;
+import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.error.ApiError;
-import jakarta.validation.Valid;
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.theClimb.TheClimb;
+import com.honeystone.common.security.MyUserPrincipal;
 
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/boards")
@@ -97,31 +106,44 @@ public class BoardController {
 	}
 
 	@Operation(
-		summary = "게시글 업로드",
-		description = """
-            Board DTO와 첨부 파일을 multipart/form-data로 전송합니다.  
-            skill 필드는 여러 개 선택 시 Shift 혹은 Ctrl 키를 이용하세요.  
-            게시물 인덱스, 생성 및 수정 날짜는 빈 값(empty)으로 보내주세요.
+			summary = "게시글 업로드",
+			description = """
+		        Board DTO, TheClimb DTO, 그리고 첨부 파일을 multipart/form-data로 전송합니다.  
+		        skill 필드는 여러 개 선택 시 Shift 혹은 Ctrl 키를 이용하세요.  
+		        게시물 인덱스, 생성 및 수정 날짜는 빈 값(empty)으로 보내주세요.
 
-            🔐 **인증 필요**  
-            요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
-        """,
-		security = @SecurityRequirement(name = "bearerAuth"),
-		responses = {
-			@ApiResponse(responseCode = "201", description = "게시글 업로드 성공"),
-			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
-			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
+		        🔐 **인증 필요**  
+		        요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+		    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+				description = "게시글 정보와 클라이밍 정보 및 첨부 파일",
+				required = true,
+				content = @Content(
+					mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+					schema = @Schema(
+						implementation = Board.class,
+						description = "Board 및 TheClimb DTO는 @ModelAttribute로 처리됩니다."
+					)
+				)
+			),
+			responses = {
+				@ApiResponse(responseCode = "201", description = "게시글 업로드 성공"),
+				@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
+				@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
+			}
+		)
+		@PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+		public ResponseEntity<Void> createBoard(
+			@AuthenticationPrincipal MyUserPrincipal user,
+
+			@Parameter(description = "게시글 정보와 첨부 파일, 클라이밍 정보", required = true)
+			@Valid @ModelAttribute Board board
+		) throws IOException {
+			boardService.createBoard(user.getEmail(), board, board.getFile());
+			return new ResponseEntity<>(HttpStatus.CREATED);
 		}
-	)
-	@PostMapping(value = "", consumes = MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Void> createBoard(
-		@AuthenticationPrincipal MyUserPrincipal user,
-		@Parameter(description = "비디오 정보와 첨부 파일", schema = @Schema(implementation = Board.class))
-		@Valid @ModelAttribute Board board
-	) throws IOException {
-		boardService.createBoard(user.getEmail(), board, board.getFile());
-		return new ResponseEntity<Void>(HttpStatus.CREATED);
-	}
+
 
 	@Operation(summary = "게시글 수정", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 수정합니다.

@@ -1,27 +1,27 @@
 package com.honeystone.board.model.service;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.util.List;
 
-import com.honeystone.common.dto.board.GetBoard;
-import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
-import com.honeystone.common.util.FileRemove;
-import com.honeystone.common.util.FileUpload;
-import com.honeystone.common.dto.board.BoardFile;
-import com.honeystone.exception.BusinessException;
-import com.honeystone.exception.ServerException;
-import com.honeystone.user.model.dao.UserDao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.honeystone.board.model.dao.BoardDao;
 import com.honeystone.common.dto.board.Board;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import com.honeystone.common.dto.board.BoardFile;
+import com.honeystone.common.dto.board.GetBoard;
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.theClimb.TheClimb;
+import com.honeystone.common.util.FileRemove;
+import com.honeystone.common.util.FileUpload;
+import com.honeystone.exception.BusinessException;
+import com.honeystone.exception.ServerException;
+import com.honeystone.user.model.dao.UserDao;
 
 @Transactional
 @Service
@@ -70,15 +70,33 @@ public class BoardServiceImpl implements BoardService {
 		Board newBoard = Board.builder()
 				.title(board.getTitle())
 				.description(board.getDescription())
-				.location(board.getLocation())
 				.level(board.getLevel())
 				.skill(board.getSkill())
 				.build();
-
+		
+		
 		try {
 			boardDao.createBoard(newBoard);
 		} catch (DataAccessException e) {
-			throw new ServerException("비디오 생성 중 DB 오류가 발생했습니다.", e);
+			throw new ServerException("게시물 생성 중 DB 오류가 발생했습니다.", e);
+		}
+		
+		// the climb - board 매핑 테이블에 저장 로직
+		TheClimb theClimb = TheClimb.builder()
+				.name(board.getName())
+				.wall(board.getWall())
+				.color(board.getColor())
+				.build();
+		
+		
+		Long theClimbId = boardDao.findTheClimb(theClimb);
+		if(theClimbId == 0) throw new BusinessException("잘못된 장소입니다.");
+		// todo: 지점, 벽, 색깔이 디비에 저장된 게 없는 경우 던지는 에러가 있어야 함.
+		
+		try {	
+			boardDao.createTheClimbBoard(newBoard.getId(), theClimbId);
+		}catch(DataAccessException e) {
+			throw new ServerException("장소보트 매핑 중 DB 오류가 발생했습니다.");
 		}
 
 		// 파일 처리 로직
@@ -124,7 +142,6 @@ public class BoardServiceImpl implements BoardService {
 		Board updateBoard = Board.builder()
 			.id(id)
 			.title(board.getTitle())
-			.location(board.getLocation())
 			.description(board.getDescription())
 			.level(board.getLevel())
 			.skill(board.getSkill())

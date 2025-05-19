@@ -100,9 +100,7 @@ CREATE TABLE the_climb (
   name        VARCHAR(50) NOT NULL,
   wall        VARCHAR(50) NULL,
   color       VARCHAR(50) NOT NULL,
-  board_id    BIGINT      NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (board_id) REFERENCES boards(id)
+  PRIMARY KEY (id)
 );
 
 -- 6. 사용자-계획 매핑 테이블 (요청 상태 포함)
@@ -190,5 +188,15 @@ CREATE TABLE refresh_tokens (
   PRIMARY KEY (id),
   UNIQUE KEY (token),  -- 하나의 토큰은 단 한 번만 유효
   FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- 13. 더 클라임 - 게시물 매핑 테이블
+CREATE TABLE the_climb_board (
+	id		BIGINT  	NOT NULL AUTO_INCREMENT,
+    board_id 	BIGINT 	NOT NULL,
+    the_climb_id 	BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (board_id) REFERENCES boards(id),
+    FOREIGN KEY (the_climb_id) REFERENCES the_climb(id)
 );
 
