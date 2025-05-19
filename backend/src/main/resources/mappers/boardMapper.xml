@@ -132,8 +132,8 @@
 	<insert id="createBoard" parameterType="Board"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO boards
-		(title, description, level, skill, created_at)
-		VALUES(#{title}, #{description}, #{level}, #{skill},
+		(title, description, level, skill, user_id, created_at)
+		VALUES(#{title}, #{description}, #{level}, #{skill}, #{userId},
 		NOW())
 	</insert>
 

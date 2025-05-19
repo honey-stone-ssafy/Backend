@@ -14,11 +14,11 @@ import com.honeystone.common.dto.theClimb.TheClimb;
 public interface BoardService {
 	public Page<GetBoard> getBoardList(SearchBoardCondition search, Pageable pageable);
 
-	public void createBoard(String userEmail, Board board, MultipartFile file) throws IOException;
+	public void createBoard(Long userId, Board board, MultipartFile file) throws IOException;
 
-	public void updateBoard(String userEmail, Long id, Board board);
+	public void updateBoard(Long userId, Long id, Board board);
 
-	public void deleteBoard(String userEmail, Long id);
+	public void deleteBoard(Long userId, Long id);
 
 	public GetBoard getBoard(Long id);
 }

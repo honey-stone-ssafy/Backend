@@ -139,7 +139,7 @@ public class BoardController {
 			@Parameter(description = "게시글 정보와 첨부 파일, 클라이밍 정보", required = true)
 			@Valid @ModelAttribute Board board
 		) throws IOException {
-			boardService.createBoard(user.getEmail(), board, board.getFile());
+			boardService.createBoard(user.getId(), board, board.getFile());
 			return new ResponseEntity<>(HttpStatus.CREATED);
 		}
 
@@ -175,7 +175,7 @@ public class BoardController {
 	)
 	@PatchMapping("/{id}")
 	public ResponseEntity<Void> updateBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id, @RequestBody Board board){
-		boardService.updateBoard(user.getEmail(), id, board);
+		boardService.updateBoard(user.getId(), id, board);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
@@ -208,7 +208,7 @@ public class BoardController {
 	)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id){
-		boardService.deleteBoard(user.getEmail(), id);
+		boardService.deleteBoard(user.getId(), id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

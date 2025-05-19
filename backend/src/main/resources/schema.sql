@@ -48,10 +48,12 @@ CREATE TABLE boards (
     'CAMPUSING',
     'TOE_CATCH'
   ) NOT NULL COMMENT '기술 명',
+  user_id  BIGINT NOT NULL,
   created_at   TIMESTAMP NOT NULL,
   updated_at   TIMESTAMP NULL,
   deleted_at   TIMESTAMP NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id)  REFERENCES users(id)
 );
 
 -- 3. 즐겨찾기 테이블 (user ↔ board)

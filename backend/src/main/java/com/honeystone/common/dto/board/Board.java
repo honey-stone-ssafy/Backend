@@ -53,6 +53,9 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private Set<Skill> skill;
 
+    @Schema(description = "작성자 인덱스")
+    private Long userId;
+
     @Schema(description = "생성 시각", example = "2025-05-11T18:45:00")
     private LocalDateTime createdAt;
 

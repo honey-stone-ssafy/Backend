@@ -60,9 +60,9 @@ public class BoardServiceImpl implements BoardService {
 
 
 	@Override
-	public void createBoard(String userEmail, Board board, MultipartFile file) throws IOException {
+	public void createBoard(Long userId, Board board, MultipartFile file) throws IOException {
 		// 사용자 유효성 체크
-		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.existsById(userId) == 0) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		if(file.isEmpty() || file == null) throw new BusinessException("파일 첨부는 필수입니다.");
 		// board 생성 로직
@@ -71,6 +71,7 @@ public class BoardServiceImpl implements BoardService {
 				.description(board.getDescription())
 				.level(board.getLevel())
 				.skill(board.getSkill())
+				.userId(userId)
 				.build();
 		
 		
@@ -96,7 +97,7 @@ public class BoardServiceImpl implements BoardService {
 		try {	
 			boardDao.createTheClimbBoard(newBoard.getId(), theClimbId);
 		}catch(DataAccessException e) {
-			throw new ServerException("장소보트 매핑 중 DB 오류가 발생했습니다.");
+			throw new ServerException("더클라임-게시판 매핑 중 DB 오류가 발생했습니다.");
 		}
 
 		// 파일 처리 로직
@@ -132,12 +133,14 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public void updateBoard(String userEmail, Long id, Board board) throws ServerException {
+	public void updateBoard(Long userId, Long id, Board board) throws ServerException {
 		// 사용자 유효성 체크
-		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.existsById(userId) == 0) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		// 있는 게시물인지 확인
-		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+		GetBoard checkBoard = boardDao.getBoard(id);
+		if(checkBoard == null) throw new BusinessException("존재하지 않는 게시물입니다.");
+		if(checkBoard.getUserId() != userId) throw new BusinessException(("해당 게시물을 수정할 권한이 없습니다."));
 
 		TheClimb theClimb = TheClimb.builder()
 			.id(-1L)
@@ -145,9 +148,7 @@ public class BoardServiceImpl implements BoardService {
 			.wall(board.getWall())
 			.color(board.getColor())
 			.build();
-		System.out.println(theClimb);
 		Long theClimbId = boardDao.findTheClimb(theClimb);
-		System.out.println(theClimbId);
 		if(theClimbId == null) throw new BusinessException("해당 클라이밍 정보가 없습니다.");
 
 		try {
@@ -168,12 +169,14 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public void deleteBoard(String  userEmail, Long id) throws ServerException {
+	public void deleteBoard(Long userId, Long id) throws ServerException {
 		// 사용자 유효성 체크
-		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.existsById(userId) == 0) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		// 있는 게시물인지 확인
-		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+		GetBoard checkBoard = boardDao.getBoard(id);
+		if(checkBoard == null) throw new BusinessException("존재하지 않는 게시물입니다.");
+		if(checkBoard.getUserId() != userId) throw new BusinessException(("해당 게시물을 삭제할 권한이 없습니다."));
 
 		// 삭제
 		// 1. db에서 변경
