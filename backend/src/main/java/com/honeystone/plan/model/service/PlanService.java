@@ -13,5 +13,5 @@ public interface PlanService {
 
     public void updatePlan(Long userId, Long id, Plan plan);
 
-    public void deletePlan(Long uesrId, Long id);
+    public void deletePlan(Long userId, Long id);
 }
