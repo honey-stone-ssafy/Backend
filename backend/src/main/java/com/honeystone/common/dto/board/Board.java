@@ -38,13 +38,16 @@ public class Board {
 
     @Schema(description = "난이도", example = "RED")
     @NotNull(message = "난이도는 필수입니다.")
+    @Enumerated(EnumType.STRING)
     private Level level;
 
     @Schema(description = "기술명", example = "[\"PINCH\", \"SLOPER\"]")
+    @Enumerated(EnumType.STRING)
     private Set<Skill> skill;
 
     @Schema(description = "장소", example = "HONGDAE")
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "장소는 필수입니다.")
     private Location location;
 
     @Schema(description = "생성 시각", example = "2025-05-11T18:45:00")
@@ -57,17 +60,15 @@ public class Board {
     private LocalDateTime deletedAt;
 
     @Schema(description = "첨부 파일", type = "string", format = "binary")
-    @NotNull
+    @NotNull(message = "파일 첨부는 필수입니다.")
     private MultipartFile file;
 
-    @Override
-    public String toString() {
-        return "Board{" +
-            "id=" + id +
-            ", title='" + title + '\'' +
-            ", description='" + description + '\'' +
-            ", level='" + level + '\'' +
-            ", skill='" + skill + '\'' +
-            '}';
-    }
+	@Override
+	public String toString() {
+		return "Board [id=" + id + ", title=" + title + ", description=" + description + ", level=" + level + ", skill="
+				+ skill + ", location=" + location + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+				+ ", deletedAt=" + deletedAt + ", file=" + file + "]";
+	}
+
+ 
 }

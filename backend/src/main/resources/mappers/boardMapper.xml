@@ -118,8 +118,8 @@
 
 	<!-- 게시글 생성	-->
 	<insert id="createBoard" parameterType="Board" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		INSERT INTO boards (title, description, level, skill, created_at)
-		VALUES(#{title}, #{description}, #{level}, #{skill}, NOW())
+		INSERT INTO boards (title, description, level, skill, location, created_at)
+		VALUES(#{title}, #{description}, #{level}, #{skill}, #{location}, NOW())
 	</insert>
 
 	<insert id="createFile" parameterType="BoardFile" useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
@@ -130,7 +130,7 @@
 	<!--게시글 수정 -->
 	<update id="updateBoard" parameterType="Board">
 		UPDATE boards
-		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}, updated_at = NOW()
+		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}, location = #{location}, updated_at = NOW()
 		WHERE id = #{id}
 	</update>
 

@@ -70,6 +70,7 @@ public class BoardServiceImpl implements BoardService {
 		Board newBoard = Board.builder()
 				.title(board.getTitle())
 				.description(board.getDescription())
+				.location(board.getLocation())
 				.level(board.getLevel())
 				.skill(board.getSkill())
 				.build();
@@ -123,6 +124,7 @@ public class BoardServiceImpl implements BoardService {
 		Board updateBoard = Board.builder()
 			.id(id)
 			.title(board.getTitle())
+			.location(board.getLocation())
 			.description(board.getDescription())
 			.level(board.getLevel())
 			.skill(board.getSkill())
