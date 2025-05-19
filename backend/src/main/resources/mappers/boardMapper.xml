@@ -8,6 +8,14 @@
 	<select id="getBoardList" parameterType="map"
 		resultType="GetBoard">
 		SELECT * FROM boards b
+		LEFT JOIN files f
+		ON b.id = f.board_id
+
+		LEFT JOIN the_climb_board cb
+		ON b.id = cb.board_id
+
+		LEFT JOIN the_climb c
+		ON cb.the_climb_id = c.id
 		<where>
 			b.deleted_at IS NULL
 			<if test="search.keyword != null and search.keyword != ''">
