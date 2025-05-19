@@ -146,7 +146,7 @@ public class BoardController {
 
 	@Operation(summary = "게시글 수정", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
-      		수정 가능한 필드: title, description, level, skill
+      		수정 가능한 필드: title, description, level, skill, name, color, wall
       		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다.
       		게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
 
@@ -181,6 +181,7 @@ public class BoardController {
 
 	@Operation(summary = "게시글 삭제", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 삭제합니다.
+      		함께 매핑된 the_climb_board 내용도 삭제됩니다.
       		
             🔐 **인증 필요**  
             요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
