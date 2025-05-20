@@ -95,6 +95,7 @@ public class BoardController {
 		""",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "게시글 상세 조회 성공"),
+			@ApiResponse(responseCode = "204", description = "조건에 해당하는 게시글이 없음"),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
 			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
 		}
@@ -150,7 +151,7 @@ public class BoardController {
 
 	@Operation(summary = "게시글 수정", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
-      		수정 가능한 필드: title, description, level, skill, name, color, wall
+      		수정 가능한 필드: title, description, level, skill, name, wallColor, wall
       		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다.
       		게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
 
