@@ -53,4 +53,13 @@
         AND board_id = #{boardId}
     </delete>
 
+	<!-- 찜 여부 확인 -->
+	<select id="existsFavorite" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM favorites
+		WHERE user_id = #{userId}
+		AND board_id = #{boardId}
+	</select>
+
+
 </mapper>

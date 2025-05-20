@@ -52,6 +52,8 @@ public class BoardFavoriteServiceImpl implements BoardFavoriteService {
 		}
 
 		//이미 좋아요 되어 있는 게시물 예외 처리
+		if (boardFavoriteDao.existsFavorite(userId, boardId) > 0)
+			throw new BusinessException("이미 찜한 게시물입니다.");
 		
 		boardFavoriteDao.insertFavorite(userId, boardId);
 	}
@@ -66,6 +68,8 @@ public class BoardFavoriteServiceImpl implements BoardFavoriteService {
 		}
 
 		//애초에 좋아요를 누르지 않은 게시물 예외 처리
+		if (boardFavoriteDao.existsFavorite(userId, boardId) == 0)
+			throw new BusinessException("찜하지 않은 게시물입니다.");
 
 		boardFavoriteDao.deleteFavorite(userId, boardId);
 	}
