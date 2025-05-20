@@ -1,7 +1,9 @@
 package com.honeystone.common.security;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,6 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         request.getMethod(), requestURI, token);
                     SecurityContextHolder.clearContext();
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
+                    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                     response.getWriter().write("{\"error\":\"유효하지 않은 토큰입니다.\"}");
                     return;
                 }

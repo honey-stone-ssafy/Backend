@@ -9,6 +9,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
@@ -21,7 +22,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     ) throws IOException {
 
         response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
         String body = "{\"error\":\"권한이 없습니다.\"}";
         response.getWriter().write(body);
