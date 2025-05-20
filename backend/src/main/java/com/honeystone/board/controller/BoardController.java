@@ -102,6 +102,10 @@ public class BoardController {
 	@GetMapping("/{id}")
 	public ResponseEntity<GetBoard> getBoard(@PathVariable("id") Long id){
 		GetBoard board = boardService.getBoard(id);
+		
+		if (board == null) {
+			return new ResponseEntity<GetBoard>(HttpStatus.NO_CONTENT);
+		}
 		return new ResponseEntity<GetBoard>(board, HttpStatus.OK);
 	}
 
