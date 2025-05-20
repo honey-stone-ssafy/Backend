@@ -76,6 +76,7 @@ CREATE TABLE favorites (
   user_id  BIGINT NOT NULL,
   board_id BIGINT NOT NULL,
   PRIMARY KEY (id),
+  UNIQUE KEY (user_id, board_id),
   FOREIGN KEY (user_id)  REFERENCES users(id),
   FOREIGN KEY (board_id) REFERENCES boards(id)
 );
