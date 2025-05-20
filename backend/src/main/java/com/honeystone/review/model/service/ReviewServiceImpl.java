@@ -62,18 +62,13 @@ public class ReviewServiceImpl implements ReviewService {
 		// 사용자 유효성 체크
 		User user = userDao.findByEmail(email);
 		Review checkReview = reviewDao.existsById(reviewId);
-
+		
+		if (checkReview == null) throw new BusinessException("존재하지 않는 댓글입니다."); 
+		if (boardDao.existsById(boardId) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");		
 		if(user == null) throw new BusinessException("존재하지 않는 사용자입니다.");
-		else if (user.getId() != checkReview.getUserId()) throw new BusinessException("댓글을 수정할 권한이 없습니다.");
 
-		if (boardDao.existsById(boardId) == 0)
-			throw new BusinessException("존재하지 않는 게시물입니다.");
-
-		if (checkReview == null){
-			throw new BusinessException("존재하지 않는 댓글입니다."); // pull 받으면 커스텀 예외로 수정하기
-		}else if(checkReview.getBoardId() != boardId){
-			throw new BusinessException("해당 게시물에 존재하지 않는 댓글입니다.");
-		}
+		if(checkReview.getBoardId() != boardId) throw new BusinessException("해당 게시물에 존재하지 않는 댓글입니다.");
+		if (user.getId() != checkReview.getUserId()) throw new BusinessException("댓글을 수정할 권한이 없습니다.");
 
 		Review updatedReview = Review.builder().id(reviewId).content(review.getContent()).build();
 
@@ -87,17 +82,12 @@ public class ReviewServiceImpl implements ReviewService {
 		User user = userDao.findByEmail(email);
 		Review checkReview = reviewDao.existsById(reviewId);
 
+		if (checkReview == null) throw new BusinessException("존재하지 않는 댓글입니다."); 
+		if (boardDao.existsById(boardId) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");		
 		if(user == null) throw new BusinessException("존재하지 않는 사용자입니다.");
-		else if (user.getId() != checkReview.getUserId()) throw new BusinessException("댓글을 수정할 권한이 없습니다.");
 
-		if (boardDao.existsById(boardId) == 0)
-			throw new BusinessException("존재하지 않는 게시물입니다.");
-
-		if (checkReview == null){
-			throw new BusinessException("존재하지 않는 댓글입니다.");
-		}else if(checkReview.getBoardId() != boardId){
-			throw new BusinessException("해당 게시물에 존재하지 않는 댓글입니다.");
-		}
+		if(checkReview.getBoardId() != boardId) throw new BusinessException("해당 게시물에 존재하지 않는 댓글입니다.");
+		if (user.getId() != checkReview.getUserId()) throw new BusinessException("댓글을 삭제할 권한이 없습니다.");
 
 		reviewDao.deleteReview(reviewId);
 	}
