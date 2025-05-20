@@ -26,7 +26,7 @@
 			</if>
 
 			<if test="search.locations != null and search.locations.size > 0">
-				AND b.location IN
+				AND c.name IN
 				<foreach item="loc" collection="search.locations" open="("
 					separator="," close=")">
 					#{loc}
@@ -76,6 +76,15 @@
 	<select id="countBoards" parameterType="SearchBoardCondition"
 		resultType="long">
 		SELECT count(*) FROM boards b
+		
+		LEFT JOIN files f
+		ON b.id = f.board_id
+
+		LEFT JOIN the_climb_board cb
+		ON b.id = cb.board_id
+
+		LEFT JOIN the_climb c
+		ON cb.the_climb_id = c.id
 		<where>
 			b.deleted_at IS NULL
 			<if test="keyword != null and keyword != ''">
@@ -86,7 +95,7 @@
 			</if>
 
 			<if test="locations != null and locations.size > 0">
-				AND b.location IN
+				AND c.name IN
 				<foreach item="loc" collection="locations" open="("
 					separator="," close=")">
 					#{loc}
