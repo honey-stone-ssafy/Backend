@@ -54,7 +54,8 @@ public class SecurityConfig {
 	                "/v3/api-docs/**",      // Swagger
 	                "/swagger-ui/**",
 	                "/swagger-resources/**",
-	                "/webjars/**"
+	                "/webjars/**",
+	                "/api/recommandations/**"
 	            ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll()
 	            .anyRequest().authenticated()  // 그 외는 인증 필요
