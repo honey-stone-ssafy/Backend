@@ -1,5 +1,6 @@
 package com.honeystone.favorite.model.service;
 
+import com.honeystone.common.security.MyUserPrincipal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -8,7 +9,7 @@ import com.honeystone.common.dto.board.GetBoard;
 public interface BoardFavoriteService {
 
 	Page<GetBoard> getFavoriteBoardList(Long userId, Pageable pageable);
-	void addFavorite(String userEmail, Long userId, Long boardId);
-    void removeFavorite(String userEmail, Long userId, Long boardId);
+	void addFavorite(MyUserPrincipal user, Long userId, Long boardId);
+    void removeFavorite(MyUserPrincipal user, Long userId, Long boardId);
 
 }

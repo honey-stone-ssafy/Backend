@@ -54,10 +54,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 String email = jwtTokenProvider.getEmailFromToken(token);
-//                logger.info("Token validated successfully for email: {}", email);
+                logger.info("Token validated successfully for email: {}", email);
                 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-//                logger.info("User details loaded for email: {}", email);
+                logger.info("User details loaded for email: {}", email);
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
@@ -86,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         // 로그인, 회원가입 등 인증이 필요없는 경로는 필터링하지 않음
         boolean shouldNotFilter = path.startsWith("/api/auth/") || 
-                                path.startsWith("/api/users/") ||
+//                                path.startsWith("/api/users/") ||
                                 path.startsWith("/v3/api-docs/") ||
                                 path.startsWith("/swagger-ui/") ||
                                 path.startsWith("/swagger-resources/") ||

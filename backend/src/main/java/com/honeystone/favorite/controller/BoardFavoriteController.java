@@ -74,7 +74,7 @@ public class BoardFavoriteController {
                     @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
             })
     public ResponseEntity<?> addFavorite(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("userId") Long userId, @PathVariable("boardId") Long boardId) {
-		favoriteService.addFavorite(user.getEmail(), userId, boardId);
+		favoriteService.addFavorite(user, userId, boardId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 	
@@ -87,7 +87,7 @@ public class BoardFavoriteController {
                     @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
             })
     public ResponseEntity<?> removeFavorite(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("userId") Long userId, @PathVariable("boardId") Long boardId) {
-        favoriteService.removeFavorite(user.getEmail(), userId, boardId);
+        favoriteService.removeFavorite(user, userId, boardId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 	
