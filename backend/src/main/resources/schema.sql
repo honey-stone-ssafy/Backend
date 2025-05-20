@@ -18,7 +18,7 @@ CREATE TABLE plans (
   FOREIGN KEY (user_id)  REFERENCES users(id)
 );
 
--- 2. 동영상 테이블
+-- 2. 게시판 테이블
 CREATE TABLE boards (
   id          BIGINT       NOT NULL AUTO_INCREMENT,
   title       VARCHAR(50)  NOT NULL,
@@ -47,7 +47,8 @@ CREATE TABLE boards (
     'RUN_AND_JUMP',
     'CAMPUSING',
     'TOE_CATCH'
-  ) NOT NULL COMMENT '기술 명',
+  ) NULL COMMENT '기술 명',
+  wall_color       VARCHAR(50) NULL,
   user_id  BIGINT NOT NULL,
   created_at   TIMESTAMP NOT NULL,
   updated_at   TIMESTAMP NULL,
@@ -85,10 +86,9 @@ CREATE TABLE reviews (
       id          BIGINT      NOT NULL AUTO_INCREMENT,
       name        VARCHAR(50) NOT NULL,
       wall        VARCHAR(50) NULL,
-      color       VARCHAR(50) NOT NULL,
       PRIMARY KEY (id)
     );
-
+	
 -- 6. 사용자-계획 매핑 테이블 (요청 상태 포함)
 CREATE TABLE request_plans (
   id       BIGINT      NOT NULL AUTO_INCREMENT,

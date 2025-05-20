@@ -116,7 +116,7 @@
 					FIND_IN_SET(#{sk}, b.skill)
 				</foreach>
 				)
-			</if>
+			</if>			
 		</where>
 	</select>
 
@@ -141,8 +141,8 @@
 	<insert id="createBoard" parameterType="Board"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO boards
-		(title, description, level, skill, user_id, created_at)
-		VALUES(#{title}, #{description}, #{level}, #{skill}, #{userId},
+		(title, description, level, skill, wall_color, user_id, created_at)
+		VALUES(#{title}, #{description}, #{level}, #{skill}, #{color}, #{userId},
 		NOW())
 	</insert>
 
@@ -159,7 +159,6 @@
 		FROM the_climb
 		<where>
 			name = #{name}
-			AND color = #{color}
 			<choose>
 				<when test="wall != null and wall != ''">
 					AND wall = #{wall}
@@ -181,7 +180,7 @@
 		UPDATE boards
 		SET title =
 		#{title}, description = #{description}, level = #{level}, skill =
-		#{skill}, updated_at = NOW()
+		#{skill}, wall_color = #{color}, updated_at = NOW()
 		WHERE id = #{id}
 	</update>
 

@@ -71,6 +71,7 @@ public class BoardServiceImpl implements BoardService {
 				.description(board.getDescription())
 				.level(board.getLevel())
 				.skill(board.getSkill())
+				.wallColor(board.getWallColor())
 				.userId(userId)
 				.build();
 		
@@ -86,7 +87,6 @@ public class BoardServiceImpl implements BoardService {
 				.id(-1L)
 				.name(board.getName())
 				.wall(board.getWall())
-				.color(board.getColor())
 				.build();
 
 
@@ -146,7 +146,6 @@ public class BoardServiceImpl implements BoardService {
 			.id(-1L)
 			.name(board.getName())
 			.wall(board.getWall())
-			.color(board.getColor())
 			.build();
 		Long theClimbId = boardDao.findTheClimb(theClimb);
 		if(theClimbId == null) throw new BusinessException("해당 클라이밍 정보가 없습니다.");
@@ -164,6 +163,7 @@ public class BoardServiceImpl implements BoardService {
 			.description(board.getDescription())
 			.level(board.getLevel())
 			.skill(board.getSkill())
+			.wallColor(board.getWallColor())
 			.build();
 		boardDao.updateBoard(updateBoard);
 	}

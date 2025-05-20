@@ -26,11 +26,6 @@ public class TheClimb {
     @Enumerated(EnumType.STRING)
     private Location name;
 
-    @Schema(description = "벽 색깔", example = "RED")
-    @NotNull(message = "벽 색깔은 필수입니다.")
-    @Enumerated(EnumType.STRING)
-    private Level color;
-
     @Schema(description = "벽 이름", example = "사과")
     private String wall;
 
@@ -39,7 +34,6 @@ public class TheClimb {
         return "TheClimb{" +
             "id=" + id +
             ", name=" + name +
-            ", color=" + color +
             ", wall='" + wall + '\'' +
             '}';
     }
