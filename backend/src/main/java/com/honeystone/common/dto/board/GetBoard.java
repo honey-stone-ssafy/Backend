@@ -42,9 +42,11 @@ public class GetBoard {
     @Enumerated(EnumType.STRING)
     private Set<Skill> skill;
 
-    @Schema(description = "장소", example = "HONGDAE")
-    @Enumerated(EnumType.STRING)
-    private Location location;
+    @Schema(description = "홀드 색깔", example = "빨강")
+    private String holdColor;
+
+    @Schema(description = "작성자 인덱스")
+    private Long userId;
 
     @Schema(description = "생성 시각", example = "2025-05-11T18:45:00")
     private LocalDateTime createdAt;
@@ -63,10 +65,18 @@ public class GetBoard {
 
     @Schema(description = "파일명", example = "file.png")
     private String filename;
-    
+
     @Schema(description = "댓글 수")
     private Long reviewCount;
     
     @Schema(description = "좋아요 수")
     private Long favoriteCount;
+
+    @Schema(description = "장소", example = "HONGDAE")
+    @Enumerated(EnumType.STRING)
+    private Location location;
+
+    @Schema(description = "벽", example = "사과")
+    private String wall;
+
 }

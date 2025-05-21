@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.honeystone.recommandation.model.dao.RecommandDao">
+
+	<select id="getList" resultType="getBoard" parameterType="com.honeystone.board.model.type.Level">
+		<![CDATA[
+		SELECT * FROM boards b
+		LEFT JOIN files f
+		ON b.id = f.board_id
+
+		LEFT JOIN
+		the_climb_board cb
+		ON b.id = cb.board_id
+
+		LEFT JOIN the_climb c
+		ON
+		cb.the_climb_id = c.id
+		
+		WHERE b.level = #{level}
+		AND deleted_at IS NULL
+		AND DATE_SUB(now(), INTERVAL 7 DAY) <= b.created_at
+	    ]]>
+	</select>
+</mapper>
