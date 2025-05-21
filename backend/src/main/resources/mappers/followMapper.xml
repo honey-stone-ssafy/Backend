@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.honeystone.follow.model.dao.FollowDao">
+
+    <!-- 팔로잉 추가 -->
+    <insert id="insertFollow" parameterType="map">
+        INSERT IGNORE INTO follows (follower_id, followee_id)
+        VALUES (#{userId}, #{followingUserId})
+    </insert>
+
+    <!-- 팔로잉 삭제 -->
+    <delete id="deleteFollow" parameterType="map">
+        DELETE FROM follows
+        WHERE follower_id = #{userId}
+        AND followee_id = #{followingUserId}
+    </delete>
+
+    <!-- 팔로잉 여부 확인 -->
+    <select id="existsFollow" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM follows
+        WHERE follower_id = #{userId}
+        AND followee_id = #{followingUserId}
+    </select>
+
+</mapper>
