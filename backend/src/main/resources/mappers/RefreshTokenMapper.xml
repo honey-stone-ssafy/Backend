@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.honeystone.auth.model.dao.RefreshTokenDao">
+	
+	<insert id="save" parameterType="com.honeystone.common.dto.auth.RefreshToken">
+        INSERT INTO refresh_tokens (user_id, token, created_at, expired_at)
+        VALUES (#{userId}, #{token}, #{createdAt}, #{expiredAt})
+    </insert>
+
+    <select id="findByToken" parameterType="string" resultType="com.honeystone.common.dto.auth.RefreshToken">
+        SELECT * FROM refresh_tokens WHERE token = #{token}
+    </select>
+
+    <delete id="deleteByToken" parameterType="string">
+        DELETE FROM refresh_tokens WHERE token = #{token}
+    </delete>
+
+    <delete id="deleteByUserId" parameterType="long">
+        DELETE FROM refresh_tokens WHERE user_id = #{userId}
+    </delete>
+    
+</mapper>

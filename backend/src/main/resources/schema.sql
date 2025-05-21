@@ -5,14 +5,21 @@ USE honeystone;
 CREATE TABLE plans (
   id          BIGINT       NOT NULL AUTO_INCREMENT,
   title       VARCHAR(50)  NULL,
-  scheduled_at TIMESTAMP    NOT NULL COMMENT '시간까지',
-  content     VARCHAR(255) NULL,
+  start       TIMESTAMP    NOT NULL COMMENT '시간까지',
+  end         TIMESTAMP    NOT NULL COMMENT '시간까지',
+  memo     VARCHAR(255) NULL,
+  location    VARCHAR(50) NULL,
   scope       ENUM('ALL','FRIENDS','PRIVATE') NOT NULL COMMENT '전체/친구/비공개',
-  PRIMARY KEY (id)
+  created_at  TIMESTAMP NOT NULL,
+  updated_at  TIMESTAMP NULL,
+  deleted_at  TIMESTAMP NULL,
+  user_id     BIGINT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id)  REFERENCES users(id)
 );
 
 -- 2. 동영상 테이블
-CREATE TABLE videos (
+CREATE TABLE boards (
   id          BIGINT       NOT NULL AUTO_INCREMENT,
   title       VARCHAR(50)  NOT NULL,
   description VARCHAR(255) NULL,
@@ -41,20 +48,36 @@ CREATE TABLE videos (
     'CAMPUSING',
     'TOE_CATCH'
   ) NOT NULL COMMENT '기술 명',
+  location     ENUM(
+      'HONGDAE',
+      'ILSAN',
+      'MAGOK',
+      'SEOULDAE',
+      'YANGJAE',
+      'SINLIM',
+      'YEONNAM',
+      'GANGNAM',
+      'SADANG',
+      'SINSA',
+      'NONHYEON',
+      'MULLAE',
+      'ISU',
+      'SUNGSU'
+    ) NOT NULL COMMENT '지점 위치',
   created_at   TIMESTAMP NOT NULL,
   updated_at   TIMESTAMP NULL,
   deleted_at   TIMESTAMP NULL,
   PRIMARY KEY (id)
 );
 
--- 3. 즐겨찾기 테이블 (user ↔ video)
+-- 3. 즐겨찾기 테이블 (user ↔ board)
 CREATE TABLE favorites (
   id       BIGINT NOT NULL AUTO_INCREMENT,
   user_id  BIGINT NOT NULL,
-  video_id BIGINT NOT NULL,
+  board_id BIGINT NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id)  REFERENCES users(id),
-  FOREIGN KEY (video_id) REFERENCES videos(id)
+  FOREIGN KEY (board_id) REFERENCES boards(id)
 );
 
 -- 4. 리뷰 테이블
@@ -65,10 +88,10 @@ CREATE TABLE reviews (
   updated_at   TIMESTAMP NULL,
   deleted_at   TIMESTAMP NULL,
   user_id      BIGINT    NOT NULL,
-  video_id     BIGINT    NOT NULL,
+  board_id     BIGINT    NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id)  REFERENCES users(id),
-  FOREIGN KEY (video_id) REFERENCES videos(id)
+  FOREIGN KEY (board_id) REFERENCES boards(id)
 );
 
 -- 5. 더클라임 지점 테이블
@@ -77,17 +100,21 @@ CREATE TABLE the_climb (
   name        VARCHAR(50) NOT NULL,
   wall        VARCHAR(50) NULL,
   color       VARCHAR(50) NOT NULL,
-  video_id    BIGINT      NULL,
+  board_id    BIGINT      NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (video_id) REFERENCES videos(id)
+  FOREIGN KEY (board_id) REFERENCES boards(id)
 );
 
 -- 6. 사용자-계획 매핑 테이블 (요청 상태 포함)
-CREATE TABLE user_plans (
+CREATE TABLE request_plans (
   id       BIGINT      NOT NULL AUTO_INCREMENT,
   status   ENUM('PENDING','ACCEPTED','REJECTED') NOT NULL COMMENT '요청 상태',
   user_id  BIGINT      NOT NULL,
   plan_id  BIGINT      NOT NULL,
+  role ENUM('OWNER', 'PARTICIPANT') NOT NULL DEFAULT 'PARTICIPANT',
+  created_at   TIMESTAMP NOT NULL,
+  updated_at   TIMESTAMP NULL,
+  deleted_at   TIMESTAMP NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (plan_id) REFERENCES plans(id)
@@ -119,7 +146,7 @@ CREATE TABLE follows (
 -- 9. 사용자 테이블
 CREATE TABLE users (
   id             BIGINT       NOT NULL AUTO_INCREMENT,
-  email          VARCHAR(50)  NOT NULL,
+  email          VARCHAR(50)  NOT NULL UNIQUE,
   nickname       VARCHAR(50)  NOT NULL UNIQUE COMMENT '닉네임',
   password       VARCHAR(255) NOT NULL,
   created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -135,9 +162,9 @@ CREATE TABLE files (
   id        BIGINT      NOT NULL AUTO_INCREMENT,
   url       VARCHAR(255) NOT NULL,
   filename  VARCHAR(255) NOT NULL,
-  video_id  BIGINT      NOT NULL,
+  board_id  BIGINT      NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (video_id) REFERENCES videos(id)
+  FOREIGN KEY (board_id) REFERENCES boards(id)
 );
 
 -- 11. 알람(알림) 테이블
@@ -152,3 +179,16 @@ CREATE TABLE alarms (
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- 12. 리프레시 토큰 테이블
+CREATE TABLE refresh_tokens (
+  id           BIGINT       NOT NULL AUTO_INCREMENT,
+  user_id      BIGINT       NOT NULL,
+  token        VARCHAR(500) NOT NULL COMMENT 'JWT 리프레시 토큰',
+  created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  expired_at   TIMESTAMP    NULL COMMENT '만료 시각',
+  PRIMARY KEY (id),
+  UNIQUE KEY (token),  -- 하나의 토큰은 단 한 번만 유효
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
