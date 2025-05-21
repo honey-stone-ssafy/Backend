@@ -7,6 +7,14 @@
 	<!-- 전체 게시글 조회 -->
 	<select id="getBoardList" parameterType="map"
 		resultType="GetBoard">
+
+		SELECT 
+			b.*,
+			(SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id) AS reviewCount,
+	        (SELECT COUNT(*) FROM favorites fav2 WHERE fav2.board_id = b.id) AS favoriteCount
+		
+		FROM boards b
+
 		SELECT * FROM boards b
 		LEFT JOIN files f
 		ON b.id = f.board_id
@@ -16,6 +24,7 @@
 
 		LEFT JOIN the_climb c
 		ON cb.the_climb_id = c.id
+
 		<where>
 			b.deleted_at IS NULL
 			<if test="search.keyword != null and search.keyword != ''">

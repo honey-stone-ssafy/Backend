@@ -66,6 +66,12 @@ public class GetBoard {
     @Schema(description = "파일명", example = "file.png")
     private String filename;
 
+    @Schema(description = "댓글 수")
+    private Long reviewCount;
+    
+    @Schema(description = "좋아요 수")
+    private Long favoriteCount;
+
     @Schema(description = "장소", example = "HONGDAE")
     @Enumerated(EnumType.STRING)
     private Location location;
