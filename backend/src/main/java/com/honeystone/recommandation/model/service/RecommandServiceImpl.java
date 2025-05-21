@@ -44,7 +44,7 @@ public class RecommandServiceImpl implements RecommandService {
 
 
 		for(GetBoard loc : boardList) {
-			Location cur = loc.getName();
+			Location cur = loc.getLocation();
 			switch(cur) {
 			case HONGDAE :
 				rank[0].cnt++;
