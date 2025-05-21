@@ -38,6 +38,7 @@ public class CleanupScheduler {
             Long id = board.getId();
             boardDao.deleteFile(id);
             boardDao.completeDeleteBoard(id);
+            boardDao.deleteTheClimbBoard(id);
             fileRemove.removeFile(id);
         }
     }

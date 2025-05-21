@@ -1,5 +1,7 @@
 package com.honeystone.board.model.type;
 
+import java.util.Arrays;
+
 public enum Skill {
     PINCH("핀치"),
     SLOPER("슬로퍼"),
@@ -32,5 +34,12 @@ public enum Skill {
 
     public String getKorName() {
         return korName;
+    }
+    
+    public static Skill from(String value) {
+        return Arrays.stream(Skill.values())
+                .filter(e -> e.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("허용되지 않은 Skill 값입니다: " + value));
     }
 }
