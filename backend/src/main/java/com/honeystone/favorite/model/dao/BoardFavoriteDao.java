@@ -20,5 +20,6 @@ public interface BoardFavoriteDao {
 
 	public void deleteFavorite(Long userId, Long boardId);
 
-    int existsFavorite(Long userId, Long boardId);
+    int existsFavorite(@Param("userId") Long userId, @Param("boardId") Long boardId);
+
 }

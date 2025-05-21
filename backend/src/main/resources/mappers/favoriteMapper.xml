@@ -6,20 +6,28 @@
 
 	<!-- 찜한 게시글 목록 조회 -->
 	<select id="getBoardList" parameterType="map" resultType="GetBoard">
-		SELECT *
+		SELECT
+			b.id AS id,
+	        b.title,
+	        b.description,
+	        b.level,
+	        b.skill,
+	        f.url,
+	        (SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id) AS reviewCount,
+	        (SELECT COUNT(*) FROM favorites fav2 WHERE fav2.board_id = b.id) AS favoriteCount
+	        
 		FROM favorites fav
-		LEFT JOIN boards b ON fav.board_id = b.id
 		
+		LEFT JOIN boards b ON fav.board_id = b.id
 		LEFT JOIN files f
 		ON b.id = f.board_id
-
 		LEFT JOIN the_climb_board cb
 		ON b.id = cb.board_id
-
 		LEFT JOIN the_climb c
-		ON cb.the_climb_id = c.id
+		ON cb.the_climb_id = c.id  
 		
 		WHERE fav.user_id = #{userId}
+		ORDER BY fav.id DESC
 		LIMIT #{size} OFFSET #{offset}
 	</select>
 

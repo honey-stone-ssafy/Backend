@@ -9,7 +9,13 @@
 
 	<select id="getBoardList" parameterType="map"
 		resultType="GetBoard">
-		SELECT * FROM boards b
+		SELECT 
+			b.*,
+			(SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id) AS reviewCount,
+	        (SELECT COUNT(*) FROM favorites fav2 WHERE fav2.board_id = b.id) AS favoriteCount
+		
+		FROM boards b
+		
 		<where>
 			b.deleted_at IS NULL
 			<if test="search.keyword != null and search.keyword != ''">
