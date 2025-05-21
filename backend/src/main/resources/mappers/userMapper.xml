@@ -42,4 +42,9 @@
 	    </where>
 	</select>
 
+    <select id="existsById" parameterType="Long" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE id = #{userId}
+    </select>
 </mapper>

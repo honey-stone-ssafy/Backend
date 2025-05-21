@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.honeystone.common.dto.ApiError;
+import com.honeystone.common.dto.error.ApiError;
 import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
 import com.honeystone.exception.ValidationException;

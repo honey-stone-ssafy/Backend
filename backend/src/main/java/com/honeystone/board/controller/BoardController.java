@@ -1,28 +1,30 @@
 package com.honeystone.board.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.user.User;
+import com.honeystone.common.security.MyUserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import com.honeystone.common.dto.board.Board;
 import com.honeystone.board.model.service.BoardService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import com.honeystone.common.dto.ApiError;
+import com.honeystone.common.dto.error.ApiError;
 import jakarta.validation.Valid;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -65,7 +67,6 @@ public class BoardController {
 	@GetMapping("")
 	public ResponseEntity<?> getBoardList(@ParameterObject @ModelAttribute SearchBoardCondition search,
 										  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
-
 		// 페이지네이션
 		Pageable pageable = PageRequest.of(page, size);
 
@@ -95,32 +96,43 @@ public class BoardController {
 		return new ResponseEntity<GetBoard>(board, HttpStatus.OK);
 	}
 
-	@Operation(summary = "게시글 업로드", description = """
-			Board DTO와 첨부 파일을 multipart/form-data로 전송합니다. skill 필드는 여러 개 선택 시 Shift 혹은 ctrl 이용하면 됩니다.\s
-			게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
-		""",
+	@Operation(
+		summary = "게시글 업로드",
+		description = """
+            Board DTO와 첨부 파일을 multipart/form-data로 전송합니다.  
+            skill 필드는 여러 개 선택 시 Shift 혹은 Ctrl 키를 이용하세요.  
+            게시물 인덱스, 생성 및 수정 날짜는 빈 값(empty)으로 보내주세요.
+
+            🔐 **인증 필요**  
+            요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+        """,
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
-			@ApiResponse(responseCode = "201", description = "비디오 업로드 성공"),
+			@ApiResponse(responseCode = "201", description = "게시글 업로드 성공"),
 			@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
 			@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
 		}
 	)
 	@PostMapping(value = "", consumes = MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Void> createBoard(
+		@AuthenticationPrincipal MyUserPrincipal user,
 		@Parameter(description = "비디오 정보와 첨부 파일", schema = @Schema(implementation = Board.class))
 		@Valid @ModelAttribute Board board
 	) throws IOException {
-		// todo: 인증인가 구현되면 사용자 검증해야 함. (userId 받기)
-		boardService.createBoard(board, board.getFile());
+		boardService.createBoard(user.getEmail(), board, board.getFile());
 		return new ResponseEntity<Void>(HttpStatus.CREATED);
 	}
 
 	@Operation(summary = "게시글 수정", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
       		수정 가능한 필드: title, description, level, skill
-      		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다. \s
+      		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다.
       		게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
-   	""",
+
+		    🔐 **인증 필요** \s
+		    요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+		""",
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
 			@ApiResponse(
@@ -141,14 +153,18 @@ public class BoardController {
 		}
 	)
 	@PatchMapping("/{id}")
-	public ResponseEntity<Void> updateBoard(@PathVariable("id") Long id, @RequestBody Board board){
-		boardService.updateBoard(id, board);
+	public ResponseEntity<Void> updateBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id, @RequestBody Board board){
+		boardService.updateBoard(user.getEmail(), id, board);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@Operation(summary = "게시글 삭제", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 삭제합니다.
-    """,
+      		
+            🔐 **인증 필요**  
+            요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+        """,
+		security = @SecurityRequirement(name = "bearerAuth"),
 		responses   = {
 			@ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
 			@ApiResponse(
@@ -169,8 +185,8 @@ public class BoardController {
 		}
 	)
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deleteBoard(@PathVariable("id") Long id){
-		boardService.deleteBoard(id);
+	public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id){
+		boardService.deleteBoard(user.getEmail(), id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

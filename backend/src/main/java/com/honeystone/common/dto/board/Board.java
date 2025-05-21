@@ -57,11 +57,12 @@ public class Board {
     private LocalDateTime deletedAt;
 
     @Schema(description = "첨부 파일", type = "string", format = "binary")
+    @NotNull
     private MultipartFile file;
 
     @Override
     public String toString() {
-        return "Video{" +
+        return "Board{" +
             "id=" + id +
             ", title='" + title + '\'' +
             ", description='" + description + '\'' +
