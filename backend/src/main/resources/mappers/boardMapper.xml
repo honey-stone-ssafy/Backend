@@ -5,11 +5,17 @@
 <mapper namespace="com.honeystone.board.model.dao.BoardDao">
 
 	<!-- 전체 게시글 조회 -->
-	<!-- 결과물 전체 수 -->
-
 	<select id="getBoardList" parameterType="map"
 		resultType="GetBoard">
 		SELECT * FROM boards b
+		LEFT JOIN files f
+		ON b.id = f.board_id
+
+		LEFT JOIN the_climb_board cb
+		ON b.id = cb.board_id
+
+		LEFT JOIN the_climb c
+		ON cb.the_climb_id = c.id
 		<where>
 			b.deleted_at IS NULL
 			<if test="search.keyword != null and search.keyword != ''">
@@ -20,7 +26,7 @@
 			</if>
 
 			<if test="search.locations != null and search.locations.size > 0">
-				AND b.location IN
+				AND c.location IN
 				<foreach item="loc" collection="search.locations" open="("
 					separator="," close=")">
 					#{loc}
@@ -66,10 +72,19 @@
 		OFFSET #{pageable.offset}
 	</select>
 
-	<!-- 머지하면 테이블명 수정 필요! -->
+	<!-- 결과물 전체 수 -->
 	<select id="countBoards" parameterType="SearchBoardCondition"
 		resultType="long">
 		SELECT count(*) FROM boards b
+		
+		LEFT JOIN files f
+		ON b.id = f.board_id
+
+		LEFT JOIN the_climb_board cb
+		ON b.id = cb.board_id
+
+		LEFT JOIN the_climb c
+		ON cb.the_climb_id = c.id
 		<where>
 			b.deleted_at IS NULL
 			<if test="keyword != null and keyword != ''">
@@ -80,7 +95,7 @@
 			</if>
 
 			<if test="locations != null and locations.size > 0">
-				AND b.location IN
+				AND c.location IN
 				<foreach item="loc" collection="locations" open="("
 					separator="," close=")">
 					#{loc}
@@ -97,55 +112,99 @@
 
 			<if test="skills != null and skills.size > 0">
 				AND(
-				<foreach item="sk" collection="skills"
-					separator=" AND ">
+				<foreach item="sk" collection="skills" separator=" AND ">
 					FIND_IN_SET(#{sk}, b.skill)
 				</foreach>
 				)
-			</if>
+			</if>			
 		</where>
 	</select>
 
-	<!-- 상세 게시글 조회	-->
+	<!-- 상세 게시글 조회 -->
 	<select id="getBoard" resultType="GetBoard" parameterType="Long">
 		SELECT *
 		FROM boards b
-		INNER JOIN files f
-		ON b.id = f.Board_id
-		WHERE b.id = #{id}
+		LEFT JOIN files f
+		ON b.id = f.board_id
+
+		LEFT JOIN the_climb_board cb
+		ON b.id = cb.board_id
+
+		LEFT JOIN the_climb c
+		ON cb.the_climb_id = c.id
+		WHERE b.id
+		= #{id}
 		AND b.deleted_at IS NULL
 	</select>
 
-	<!-- 게시글 생성	-->
-	<insert id="createBoard" parameterType="Board" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		INSERT INTO boards (title, description, level, skill, created_at)
-		VALUES(#{title}, #{description}, #{level}, #{skill}, NOW())
+	<!-- 게시글 생성 -->
+	<insert id="createBoard" parameterType="Board"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO boards
+		(title, description, level, skill, hold_color, user_id, created_at)
+		VALUES(#{title}, #{description}, #{level}, #{skill}, #{holdColor}, #{userId},
+		NOW())
 	</insert>
 
-	<insert id="createFile" parameterType="BoardFile" useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
-		INSERT INTO files (url, filename, board_id)
+	<insert id="createFile" parameterType="BoardFile"
+		useGeneratedKeys="true" keyProperty="fileId" keyColumn="id">
+		INSERT INTO
+		files (url, filename, board_id)
 		VALUES(#{url}, #{filename}, #{boardId})
+	</insert>
+
+	<select id="findTheClimb" parameterType="TheClimb"
+		resultType="Long">
+		SELECT id
+		FROM the_climb
+		<where>
+			location = #{location}
+			<choose>
+				<when test="wall != null and wall != ''">
+					AND wall = #{wall}
+				</when>
+				<otherwise>
+					AND wall IS NULL
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<insert id="createTheClimbBoard" parameterType="map">
+		INSERT INTO the_climb_board(board_id, the_climb_id)
+		VALUES(#{boardId}, #{theClimbId})
 	</insert>
 
 	<!--게시글 수정 -->
 	<update id="updateBoard" parameterType="Board">
 		UPDATE boards
-		SET title = #{title}, description = #{description}, level = #{level}, skill = #{skill}, updated_at = NOW()
+		SET title =
+		#{title}, description = #{description}, level = #{level}, skill =
+		#{skill}, hold_color = #{holdColor}, updated_at = NOW()
 		WHERE id = #{id}
 	</update>
 
-	<!-- id로 게시글 존재 확인	-->
+	<update id="updateTheClimbBoard" parameterType="map">
+		UPDATE the_climb_board
+		SET the_climb_id = #{theClimbId}
+		WHERE board_id = #{boardId}
+
+	</update>
+
+	<!-- id로 게시글 존재 확인 -->
 	<select id="existsById" resultType="int" parameterType="long">
-		SELECT COUNT(*)
+		SELECT
+		COUNT(*)
 		FROM boards
 		WHERE id = #{id}
 		AND deleted_at IS NULL
 	</select>
 
-	<!-- 게시글 삭제(논리 삭제) deleted_at 변경 	-->
+	<!-- 게시글 삭제(논리 삭제) deleted_at 변경 -->
 	<update id="deleteBoard" parameterType="Long">
 		UPDATE boards
-		SET deleted_at = NOW()
+		SET
+		deleted_at = NOW()
 		WHERE id = #{id}
 	</update>
 
@@ -160,23 +219,26 @@
 	</select>
 
 	<!--논리 삭제 테스트용 -->
-	<!--<select id="findboardsToDelete" resultType="Board">
-		<![CDATA[
-    	SELECT *
-    	FROM boards
-    	WHERE deleted_at IS NOT NULL
-      	AND DATE_ADD(deleted_at, INTERVAL 1 MINUTE) <= NOW()
-    ]]>
-	</select>-->
+	<!--<select id="findboardsToDelete" resultType="Board"> <![CDATA[ SELECT 
+		* FROM boards WHERE deleted_at IS NOT NULL AND DATE_ADD(deleted_at, INTERVAL 
+		1 MINUTE) <= NOW() ]]> </select> -->
 
-	<!--영구 삭제-->
+	<!--영구 삭제 -->
 	<delete id="deleteFile" parameterType="Long">
 		DELETE FROM files
-		WHERE board_id = #{id}
+		WHERE
+		board_id = #{id}
 	</delete>
 
 	<delete id="completeDeleteBoard" parameterType="Long">
-		DELETE FROM boards
+		DELETE FROM
+		boards
 		WHERE id = #{id}
+	</delete>
+
+	<delete id="deleteTheClimbBoard" parameterType="Long">
+		DELETE FROM
+		the_climb_board
+		WHERE board_id = #{boardId}
 	</delete>
 </mapper>

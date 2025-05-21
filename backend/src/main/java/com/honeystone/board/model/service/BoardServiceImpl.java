@@ -1,27 +1,27 @@
 package com.honeystone.board.model.service;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.util.List;
 
-import com.honeystone.common.dto.board.GetBoard;
-import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
-import com.honeystone.common.util.FileRemove;
-import com.honeystone.common.util.FileUpload;
-import com.honeystone.common.dto.board.BoardFile;
-import com.honeystone.exception.BusinessException;
-import com.honeystone.exception.ServerException;
-import com.honeystone.user.model.dao.UserDao;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.honeystone.board.model.dao.BoardDao;
 import com.honeystone.common.dto.board.Board;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import com.honeystone.common.dto.board.BoardFile;
+import com.honeystone.common.dto.board.GetBoard;
+import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
+import com.honeystone.common.dto.theClimb.TheClimb;
+import com.honeystone.common.util.FileRemove;
+import com.honeystone.common.util.FileUpload;
+import com.honeystone.exception.BusinessException;
+import com.honeystone.exception.ServerException;
+import com.honeystone.user.model.dao.UserDao;
 
 @Transactional
 @Service
@@ -53,7 +53,6 @@ public class BoardServiceImpl implements BoardService {
 	public GetBoard getBoard(Long id) throws ServerException {
 		// 있는 게시물인지 확인
 		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
-
 		GetBoard board = boardDao.getBoard(id);
 		return board;
 	}
@@ -61,9 +60,9 @@ public class BoardServiceImpl implements BoardService {
 
 
 	@Override
-	public void createBoard(String userEmail, Board board, MultipartFile file) throws IOException {
+	public void createBoard(Long userId, Board board, MultipartFile file) throws IOException {
 		// 사용자 유효성 체크
-		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.existsById(userId) == 0) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		if(file.isEmpty() || file == null) throw new BusinessException("파일 첨부는 필수입니다.");
 		// board 생성 로직
@@ -72,12 +71,33 @@ public class BoardServiceImpl implements BoardService {
 				.description(board.getDescription())
 				.level(board.getLevel())
 				.skill(board.getSkill())
+				.holdColor(board.getHoldColor())
+				.userId(userId)
 				.build();
-
+		
+		
 		try {
 			boardDao.createBoard(newBoard);
 		} catch (DataAccessException e) {
-			throw new ServerException("비디오 생성 중 DB 오류가 발생했습니다.", e);
+			throw new ServerException("게시물 생성 중 DB 오류가 발생했습니다.", e);
+		}
+		
+		// the climb - board 매핑 테이블에 저장 로직
+		TheClimb theClimb = TheClimb.builder()
+				.id(-1L)
+				.location(board.getLocation())
+				.wall(board.getWall())
+				.build();
+
+
+		
+		Long theClimbId = boardDao.findTheClimb(theClimb);
+		if(theClimbId == null) throw new BusinessException("해당 클라이밍 정보가 없습니다.");
+
+		try {	
+			boardDao.createTheClimbBoard(newBoard.getId(), theClimbId);
+		}catch(DataAccessException e) {
+			throw new ServerException("더클라임-게시판 매핑 중 DB 오류가 발생했습니다.");
 		}
 
 		// 파일 처리 로직
@@ -113,12 +133,29 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public void updateBoard(String userEmail, Long id, Board board) throws ServerException {
+	public void updateBoard(Long userId, Long id, Board board) throws ServerException {
 		// 사용자 유효성 체크
-		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.existsById(userId) == 0) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		// 있는 게시물인지 확인
-		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+		GetBoard checkBoard = boardDao.getBoard(id);
+		if(checkBoard == null) throw new BusinessException("존재하지 않는 게시물입니다.");
+		if(checkBoard.getUserId() != userId) throw new BusinessException(("해당 게시물을 수정할 권한이 없습니다."));
+
+		TheClimb theClimb = TheClimb.builder()
+			.id(-1L)
+			.location(board.getLocation())
+			.wall(board.getWall())
+			.build();
+		Long theClimbId = boardDao.findTheClimb(theClimb);
+		if(theClimbId == null) throw new BusinessException("해당 클라이밍 정보가 없습니다.");
+
+		try {
+			boardDao.updateTheClimbBoard(id, theClimbId);
+		}catch(DataAccessException e) {
+			throw new ServerException("장소보트 매핑 중 DB 오류가 발생했습니다.");
+		}
+
 		// 수정
 		Board updateBoard = Board.builder()
 			.id(id)
@@ -126,17 +163,20 @@ public class BoardServiceImpl implements BoardService {
 			.description(board.getDescription())
 			.level(board.getLevel())
 			.skill(board.getSkill())
+			.holdColor(board.getHoldColor())
 			.build();
 		boardDao.updateBoard(updateBoard);
 	}
 
 	@Override
-	public void deleteBoard(String  userEmail, Long id) throws ServerException {
+	public void deleteBoard(Long userId, Long id) throws ServerException {
 		// 사용자 유효성 체크
-		if(userDao.findByEmail(userEmail) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
+		if(userDao.existsById(userId) == 0) throw new BusinessException("존재하지 않는 사용자입니다.");
 
 		// 있는 게시물인지 확인
-		if(boardDao.existsById(id) == 0) throw new BusinessException("존재하지 않는 게시물입니다.");
+		GetBoard checkBoard = boardDao.getBoard(id);
+		if(checkBoard == null) throw new BusinessException("존재하지 않는 게시물입니다.");
+		if(checkBoard.getUserId() != userId) throw new BusinessException(("해당 게시물을 삭제할 권한이 없습니다."));
 
 		// 삭제
 		// 1. db에서 변경

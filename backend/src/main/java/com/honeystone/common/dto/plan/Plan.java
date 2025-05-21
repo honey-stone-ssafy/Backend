@@ -1,10 +1,16 @@
 package com.honeystone.common.dto.plan;
 
-import com.honeystone.plan.model.type.Scope;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.time.LocalDateTime;
+
+import com.honeystone.board.model.type.Location;
+import com.honeystone.plan.model.type.Scope;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -29,7 +35,7 @@ public class Plan {
     private String memo;
 
     @Schema(description = "운동 지점", example = "강남", nullable = true)
-    private String location;
+    private Location location;
 
     @Schema(description = "공개 범위", example = "FRIENDS", allowableValues = {"ALL", "FRIENDS", "PRIVATE"})
     private Scope scope;

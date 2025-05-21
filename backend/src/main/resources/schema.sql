@@ -18,7 +18,7 @@ CREATE TABLE plans (
   FOREIGN KEY (user_id)  REFERENCES users(id)
 );
 
--- 2. 동영상 테이블
+-- 2. 게시판 테이블
 CREATE TABLE boards (
   id          BIGINT       NOT NULL AUTO_INCREMENT,
   title       VARCHAR(50)  NOT NULL,
@@ -47,27 +47,14 @@ CREATE TABLE boards (
     'RUN_AND_JUMP',
     'CAMPUSING',
     'TOE_CATCH'
-  ) NOT NULL COMMENT '기술 명',
-  location     ENUM(
-      'HONGDAE',
-      'ILSAN',
-      'MAGOK',
-      'SEOULDAE',
-      'YANGJAE',
-      'SINLIM',
-      'YEONNAM',
-      'GANGNAM',
-      'SADANG',
-      'SINSA',
-      'NONHYEON',
-      'MULLAE',
-      'ISU',
-      'SUNGSU'
-    ) NOT NULL COMMENT '지점 위치',
+  ) NULL COMMENT '기술 명',
+  hold_color       VARCHAR(50) NULL,
+  user_id  BIGINT NOT NULL,
   created_at   TIMESTAMP NOT NULL,
   updated_at   TIMESTAMP NULL,
   deleted_at   TIMESTAMP NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id)  REFERENCES users(id)
 );
 
 -- 3. 즐겨찾기 테이블 (user ↔ board)
@@ -95,16 +82,13 @@ CREATE TABLE reviews (
 );
 
 -- 5. 더클라임 지점 테이블
-CREATE TABLE the_climb (
-  id          BIGINT      NOT NULL AUTO_INCREMENT,
-  name        VARCHAR(50) NOT NULL,
-  wall        VARCHAR(50) NULL,
-  color       VARCHAR(50) NOT NULL,
-  board_id    BIGINT      NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (board_id) REFERENCES boards(id)
-);
-
+    CREATE TABLE the_climb (
+      id          BIGINT      NOT NULL AUTO_INCREMENT,
+      location        VARCHAR(50) NOT NULL,
+      wall        VARCHAR(50) NULL,
+      PRIMARY KEY (id)
+    );
+	
 -- 6. 사용자-계획 매핑 테이블 (요청 상태 포함)
 CREATE TABLE request_plans (
   id       BIGINT      NOT NULL AUTO_INCREMENT,
@@ -190,5 +174,15 @@ CREATE TABLE refresh_tokens (
   PRIMARY KEY (id),
   UNIQUE KEY (token),  -- 하나의 토큰은 단 한 번만 유효
   FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- 13. 더 클라임 - 게시물 매핑 테이블
+CREATE TABLE the_climb_board (
+	id		BIGINT  	NOT NULL AUTO_INCREMENT,
+    board_id 	BIGINT 	NOT NULL,
+    the_climb_id 	BIGINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (board_id) REFERENCES boards(id),
+    FOREIGN KEY (the_climb_id) REFERENCES the_climb(id)
 );
 
