@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.honeystone.auth.model.dao.RefreshTokenDao;
 import com.honeystone.common.dto.auth.RefreshToken;
@@ -23,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 	
+	private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
+	
 	private final UserDao userDao;
     private final RefreshTokenDao refreshTokenDao;
     private final PasswordEncoder passwordEncoder;
@@ -31,9 +35,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserLoginResponse login(UserLoginRequest request) throws ServerException {
         User user = userDao.findByEmail(request.getEmail());
+        
+        if(user == null) throw new BusinessException("존재하지 않는 이메일입니다.");
 
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-        	throw new BusinessException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        	throw new BusinessException("비밀번호가 일치하지 않습니다.");
         }
 
         String accessToken = jwtTokenProvider.generateToken(user.getEmail());
@@ -59,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         	throw new BusinessException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
             refreshTokenDao.deleteByToken(refreshToken);
             throw new BusinessException("리프레시 토큰이 만료되었습니다.");
         }
@@ -72,13 +78,24 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(HttpServletRequest request) throws ServerException {
-        String refreshToken = jwtTokenProvider.resolveToken(request);
-
-        RefreshToken storedToken = refreshTokenDao.findByToken(refreshToken);
-        if (storedToken == null) {
-        	throw new BusinessException("이미 삭제되었거나 존재하지 않는 리프레시 토큰입니다.");
+        // 액세스 토큰 처리
+        String accessToken = jwtTokenProvider.resolveToken(request);
+        if (accessToken != null) {
+            String email = jwtTokenProvider.getEmailFromToken(accessToken);
+            // 사용자의 토큰 버전을 증가시켜 현재 액세스 토큰을 무효화
+            jwtTokenProvider.incrementTokenVersion(email);
+//            logger.info("Access token invalidated for user: {}", email);
         }
 
-        refreshTokenDao.deleteByToken(refreshToken);
+        // 리프레시 토큰 처리
+        String refreshToken = request.getHeader("Refresh-Token");
+        if (refreshToken != null) {
+            RefreshToken storedToken = refreshTokenDao.findByToken(refreshToken);
+            if (storedToken != null) {
+                // 리프레시 토큰 삭제
+                refreshTokenDao.deleteByToken(refreshToken);
+//                logger.info("Refresh token deleted: {}", refreshToken);
+            }
+        }
     }
 }
