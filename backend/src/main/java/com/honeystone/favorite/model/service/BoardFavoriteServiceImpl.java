@@ -41,10 +41,9 @@ public class BoardFavoriteServiceImpl implements BoardFavoriteService {
 	}
 
 	@Override
-	public void addFavorite(MyUserPrincipal user, Long userId, Long boardId) throws ServerException {
+	public void addFavorite(MyUserPrincipal user, Long boardId) throws ServerException {
 		//사용자 유효성 체크
 		if(userDao.findByEmail(user.getEmail()) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
-		if(user.getId() != userId) throw new BusinessException("좋아요를 추가할 권한이 없는 사용자입니다.");
 		
 		//게시글 유효성 체크
 		if (boardId == null || boardDao.existsById(boardId) == 0) {
@@ -52,26 +51,25 @@ public class BoardFavoriteServiceImpl implements BoardFavoriteService {
 		}
 
 		//이미 좋아요 되어 있는 게시물 예외 처리
-		if (boardFavoriteDao.existsFavorite(userId, boardId) > 0)
+		if (boardFavoriteDao.existsFavorite(user.getId(), boardId) > 0)
 			throw new BusinessException("이미 찜한 게시물입니다.");
 		
-		boardFavoriteDao.insertFavorite(userId, boardId);
+		boardFavoriteDao.insertFavorite(user.getId(), boardId);
 	}
 
 	@Override
-	public void removeFavorite(MyUserPrincipal user, Long userId, Long boardId) throws ServerException {
+	public void removeFavorite(MyUserPrincipal user, Long boardId) throws ServerException {
 		if(userDao.findByEmail(user.getEmail()) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
-		if(user.getId() != userId) throw new BusinessException("좋아요를 삭제할 권한이 없는 사용자입니다.");
 
 		if (boardId == null || boardDao.existsById(boardId) == 0) {
 			throw new BusinessException("존재하지 않는 게시물입니다.");
 		}
 
 		//애초에 좋아요를 누르지 않은 게시물 예외 처리
-		if (boardFavoriteDao.existsFavorite(userId, boardId) == 0)
+		if (boardFavoriteDao.existsFavorite(user.getId(), boardId) == 0)
 			throw new BusinessException("찜하지 않은 게시물입니다.");
 
-		boardFavoriteDao.deleteFavorite(userId, boardId);
+		boardFavoriteDao.deleteFavorite(user.getId(), boardId);
 	}
 
 }

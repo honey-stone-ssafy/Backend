@@ -9,7 +9,7 @@ import com.honeystone.common.dto.board.GetBoard;
 public interface BoardFavoriteService {
 
 	Page<GetBoard> getFavoriteBoardList(Long userId, Pageable pageable);
-	void addFavorite(MyUserPrincipal user, Long userId, Long boardId);
-    void removeFavorite(MyUserPrincipal user, Long userId, Long boardId);
+	void addFavorite(MyUserPrincipal user, Long boardId);
+    void removeFavorite(MyUserPrincipal user, Long boardId);
 
 }

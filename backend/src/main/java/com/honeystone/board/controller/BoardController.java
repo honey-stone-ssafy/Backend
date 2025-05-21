@@ -6,6 +6,8 @@ import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
 import com.honeystone.common.dto.user.User;
 import com.honeystone.common.security.MyUserPrincipal;
+import com.honeystone.favorite.model.service.BoardFavoriteService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,9 +37,10 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 public class BoardController {
 
 	private final BoardService boardService;
-	public BoardController(BoardService boardService) {
-
+	private final BoardFavoriteService favoriteService;
+	public BoardController(BoardService boardService, BoardFavoriteService favoriteService) {
 		this.boardService = boardService;
+		this.favoriteService = favoriteService;
 	}
 	@Operation(summary = "게시글 목록 조회", description = """
 			    게시글 목록을 조건에 따라 필터링 및 정렬하여 조회합니다.
@@ -191,5 +194,30 @@ public class BoardController {
 	}
 
 
+	@PostMapping("/{boardId}/favorites")
+    @Operation(summary = "찜 추가", description = "게시글을 찜 목록에 추가합니다.",
+    		security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "찜 추가 성공"),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
+                    @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
+            })
+    public ResponseEntity<?> addFavorite(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("boardId") Long boardId) {
+		favoriteService.addFavorite(user, boardId);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+	
+	@DeleteMapping("/{boardId}/favorites")
+    @Operation(summary = "찜 삭제", description = "게시글을 찜 목록에서 제거합니다.",
+    		security = @SecurityRequirement(name = "bearerAuth"),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "찜 삭제 성공"),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
+                    @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
+            })
+    public ResponseEntity<?> removeFavorite(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("boardId") Long boardId) {
+        favoriteService.removeFavorite(user, boardId);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
 
 }
