@@ -71,7 +71,7 @@ public class BoardServiceImpl implements BoardService {
 				.description(board.getDescription())
 				.level(board.getLevel())
 				.skill(board.getSkill())
-				.wallColor(board.getWallColor())
+				.holdColor(board.getHoldColor())
 				.userId(userId)
 				.build();
 		
@@ -85,7 +85,7 @@ public class BoardServiceImpl implements BoardService {
 		// the climb - board 매핑 테이블에 저장 로직
 		TheClimb theClimb = TheClimb.builder()
 				.id(-1L)
-				.name(board.getName())
+				.location(board.getLocation())
 				.wall(board.getWall())
 				.build();
 
@@ -144,7 +144,7 @@ public class BoardServiceImpl implements BoardService {
 
 		TheClimb theClimb = TheClimb.builder()
 			.id(-1L)
-			.name(board.getName())
+			.location(board.getLocation())
 			.wall(board.getWall())
 			.build();
 		Long theClimbId = boardDao.findTheClimb(theClimb);
@@ -163,7 +163,7 @@ public class BoardServiceImpl implements BoardService {
 			.description(board.getDescription())
 			.level(board.getLevel())
 			.skill(board.getSkill())
-			.wallColor(board.getWallColor())
+			.holdColor(board.getHoldColor())
 			.build();
 		boardDao.updateBoard(updateBoard);
 	}

@@ -26,7 +26,7 @@
 			</if>
 
 			<if test="search.locations != null and search.locations.size > 0">
-				AND c.name IN
+				AND c.location IN
 				<foreach item="loc" collection="search.locations" open="("
 					separator="," close=")">
 					#{loc}
@@ -95,7 +95,7 @@
 			</if>
 
 			<if test="locations != null and locations.size > 0">
-				AND c.name IN
+				AND c.location IN
 				<foreach item="loc" collection="locations" open="("
 					separator="," close=")">
 					#{loc}
@@ -141,8 +141,8 @@
 	<insert id="createBoard" parameterType="Board"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO boards
-		(title, description, level, skill, wall_color, user_id, created_at)
-		VALUES(#{title}, #{description}, #{level}, #{skill}, #{color}, #{userId},
+		(title, description, level, skill, hold_color, user_id, created_at)
+		VALUES(#{title}, #{description}, #{level}, #{skill}, #{holdColor}, #{userId},
 		NOW())
 	</insert>
 
@@ -158,7 +158,7 @@
 		SELECT id
 		FROM the_climb
 		<where>
-			name = #{name}
+			location = #{location}
 			<choose>
 				<when test="wall != null and wall != ''">
 					AND wall = #{wall}
@@ -180,7 +180,7 @@
 		UPDATE boards
 		SET title =
 		#{title}, description = #{description}, level = #{level}, skill =
-		#{skill}, wall_color = #{color}, updated_at = NOW()
+		#{skill}, hold_color = #{holdColor}, updated_at = NOW()
 		WHERE id = #{id}
 	</update>
 

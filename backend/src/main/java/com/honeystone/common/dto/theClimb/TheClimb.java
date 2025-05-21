@@ -24,7 +24,7 @@ public class TheClimb {
     @Schema(description = "지점", example = "HONGDAE")
     @NotNull(message = "지점은 필수입니다.")
     @Enumerated(EnumType.STRING)
-    private Location name;
+    private Location location;
 
     @Schema(description = "벽 이름", example = "사과")
     private String wall;
@@ -33,7 +33,7 @@ public class TheClimb {
     public String toString() {
         return "TheClimb{" +
             "id=" + id +
-            ", name=" + name +
+            ", location=" + location +
             ", wall='" + wall + '\'' +
             '}';
     }

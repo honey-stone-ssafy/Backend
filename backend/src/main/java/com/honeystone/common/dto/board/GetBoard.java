@@ -42,8 +42,8 @@ public class GetBoard {
     @Enumerated(EnumType.STRING)
     private Set<Skill> skill;
 
-    @Schema(description = "벽 색깔", example = "빨강")
-    private String wallColor;
+    @Schema(description = "홀드 색깔", example = "빨강")
+    private String holdColor;
 
     @Schema(description = "작성자 인덱스")
     private Long userId;
@@ -68,7 +68,7 @@ public class GetBoard {
 
     @Schema(description = "장소", example = "HONGDAE")
     @Enumerated(EnumType.STRING)
-    private Location name;
+    private Location location;
 
     @Schema(description = "벽", example = "사과")
     private String wall;

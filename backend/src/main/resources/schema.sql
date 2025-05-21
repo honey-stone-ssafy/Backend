@@ -48,7 +48,7 @@ CREATE TABLE boards (
     'CAMPUSING',
     'TOE_CATCH'
   ) NULL COMMENT '기술 명',
-  wall_color       VARCHAR(50) NULL,
+  hold_color       VARCHAR(50) NULL,
   user_id  BIGINT NOT NULL,
   created_at   TIMESTAMP NOT NULL,
   updated_at   TIMESTAMP NULL,
@@ -84,7 +84,7 @@ CREATE TABLE reviews (
 -- 5. 더클라임 지점 테이블
     CREATE TABLE the_climb (
       id          BIGINT      NOT NULL AUTO_INCREMENT,
-      name        VARCHAR(50) NOT NULL,
+      location        VARCHAR(50) NOT NULL,
       wall        VARCHAR(50) NULL,
       PRIMARY KEY (id)
     );
