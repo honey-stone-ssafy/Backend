@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
     "com.honeystone.auth.model.dao",
     "com.honeystone.review.model.dao",
     "com.honeystone.plan.model.dao",
+    "com.honeystone.favorite.model.dao"
     "com.honeystone.recommandation.model.dao"
 })
 public class DBConfig {}
