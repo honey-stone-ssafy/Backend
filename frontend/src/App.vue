@@ -3,16 +3,22 @@ import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
+  <div id="app">
+    <!-- 헤더 -->
+    <header>
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/">main</RouterLink>
       </nav>
-    </div>
-  </header>
+    </header>
 
-  <RouterView />
+    <!-- 렌더링 할 뷰 -->
+    <main>
+      <RouterView />
+    </main>
+
+    <!-- 푸터 -->
+    <footer></footer>
+  </div>
 </template>
 
 <style scoped></style>
