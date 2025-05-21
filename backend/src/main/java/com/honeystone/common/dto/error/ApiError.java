@@ -1,4 +1,4 @@
-package com.honeystone.common.dto;
+package com.honeystone.common.dto.error;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

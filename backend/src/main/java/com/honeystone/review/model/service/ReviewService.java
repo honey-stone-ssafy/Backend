@@ -10,10 +10,10 @@ public interface ReviewService {
 
 	public Page<Review> getReviewList(Long boardId, Pageable pageables);
 
-	public void createReview(Long boardId, Review review);
+	public void createReview(String email, Long boardId, Review review);
 
-	public void updateReview(Long boardId, Long reviewId, Review review);
+	public void updateReview(String email, Long boardId, Long reviewId, Review review);
 
-	public void deleteReview(Long boardId, Long reviewId);
+	public void deleteReview(String email, Long boardId, Long reviewId);
 
 }

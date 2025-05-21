@@ -20,4 +20,6 @@ public interface UserDao {
 	User findByEmail(@Param("email") String email);
 	
 	List<User> searchByNickname(String nickname);
+
+	int existsById(Long userId);
 }

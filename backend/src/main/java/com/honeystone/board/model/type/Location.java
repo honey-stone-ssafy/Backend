@@ -1,5 +1,7 @@
 package com.honeystone.board.model.type;
 
+import java.util.Arrays;
+
 public enum Location {
 
     HONGDAE("홍대"),
@@ -25,6 +27,13 @@ public enum Location {
 
     public String getKorName() {
         return korName;
+    }
+    
+    public static Location from(String value) {
+        return Arrays.stream(Location.values())
+                .filter(e -> e.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("허용되지 않은 Location 값입니다: " + value));
     }
 }
 
