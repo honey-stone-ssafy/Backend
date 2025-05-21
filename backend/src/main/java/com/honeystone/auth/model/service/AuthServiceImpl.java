@@ -35,9 +35,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserLoginResponse login(UserLoginRequest request) throws ServerException {
         User user = userDao.findByEmail(request.getEmail());
+        
+        if(user == null) throw new BusinessException("존재하지 않는 이메일입니다.");
 
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-        	throw new BusinessException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        	throw new BusinessException("비밀번호가 일치하지 않습니다.");
         }
 
         String accessToken = jwtTokenProvider.generateToken(user.getEmail());

@@ -1,5 +1,7 @@
 package com.honeystone.board.model.type;
 
+import java.util.Arrays;
+
 public enum Level {
     WHITE("하양"),
     YELLOW("노랑"),
@@ -20,5 +22,12 @@ public enum Level {
 
     public String getKorName() {
         return korName;
+    }
+    
+    public static Level from(String value) {
+        return Arrays.stream(Level.values())
+                .filter(e -> e.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("허용되지 않은 Level 값입니다: " + value));
     }
 }

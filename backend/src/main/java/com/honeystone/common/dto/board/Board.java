@@ -53,6 +53,9 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private Set<Skill> skill;
 
+    @Schema(description = "홀드 색깔", example = "빨강")
+    private String holdColor;
+
     @Schema(description = "작성자 인덱스")
     private Long userId;
 
@@ -72,21 +75,17 @@ public class Board {
 	@Schema(description = "장소", example = "HONGDAE")
 	@NotNull(message = "장소는 필수입니다.")
 	@Enumerated(EnumType.STRING)
-	private Location name;
+	private Location location;
 
 	@Schema(description = "벽", example = "사과")
 	private String wall;
 	
-	@Schema(description = "벽 색깔", example = "RED")
-	@NotNull(message = "벽 색깔은 필수입니다.")
-	@Enumerated(EnumType.STRING)
-	private Level color;
 
 	@Override
 	public String toString() {
 		return "Board [id=" + id + ", title=" + title + ", description=" + description + ", level=" + level + ", skill="
 				+ skill + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt
-				+ ", file=" + file + ", name=" + name + ", wall=" + wall + ", color=" + color + "]";
+				+ ", file=" + file + ", location=" + location + ", wall=" + wall + ", holdColor=" + holdColor + "]";
 	}
 
 
