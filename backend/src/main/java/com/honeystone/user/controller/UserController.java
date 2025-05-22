@@ -2,10 +2,9 @@ package com.honeystone.user.controller;
 
 import java.util.List;
 
-import com.honeystone.common.dto.board.GetBoard;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.honeystone.common.dto.user.GetUser;
 import com.honeystone.common.dto.user.User;
 import com.honeystone.common.dto.user.UserSignupRequest;
+import com.honeystone.common.security.MyUserPrincipal;
 import com.honeystone.user.model.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -98,13 +101,14 @@ public class UserController {
         입력한 닉네임이 포함된 유저들을 조회합니다.  
         닉네임이 빈 문자열일 경우 전체 유저 목록을 반환합니다.
     """,
+    		security = @SecurityRequirement(name = "bearerAuth"),
 			responses = {
 					@ApiResponse(responseCode = "200", description = "유저 목록 조회 성공"),
 					@ApiResponse(responseCode = "400", description = "잘못된 요청")
 			})
 
-	public ResponseEntity<List<User>> searchUsers(@RequestParam(required = false, defaultValue = "") String nickname) {
-	    List<User> users = userService.searchUsersByNickname(nickname);
-		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+	public ResponseEntity<List<GetUser>> searchUsers(@AuthenticationPrincipal MyUserPrincipal requestUser, @RequestParam(required = false, defaultValue = "") String nickname) {
+	    List<GetUser> users = userService.searchUsersByNickname(requestUser, nickname);
+		return new ResponseEntity<List<GetUser>>(users, HttpStatus.OK);
 	}
 }

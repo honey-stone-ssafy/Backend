@@ -32,12 +32,19 @@
     </select>
     
     <!-- 닉네임으로 유저 검색 -->
-    <select id="searchByNickname" parameterType="string" resultType="com.honeystone.common.dto.user.User">
-	    SELECT * 
-	    FROM users 
+    <select id="searchByNickname" parameterType="string" resultType="GetUser">
+	    SELECT 
+	    	u.*,
+			EXISTS (
+	            SELECT 1 
+	            FROM follows f
+	            WHERE f.follower_id = #{requestUserId}
+	              AND f.followee_id = u.id
+	        	) AS isFollowing 
+	    FROM users u 
 	    <where>
 	        <if test="nickname != null and nickname != ''">
-	            nickname LIKE CONCAT('%', #{nickname}, '%')
+	            u.nickname LIKE CONCAT('%', #{nickname}, '%')
 	        </if>
 	    </where>
 	</select>
