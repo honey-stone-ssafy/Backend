@@ -6,8 +6,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.honeystone.common.dto.user.User;
+import com.honeystone.common.dto.user.GetUser;
 import com.honeystone.common.dto.user.UserSignupRequest;
+import com.honeystone.common.security.MyUserPrincipal;
 import com.honeystone.common.util.FileRemove;
 import com.honeystone.common.util.FileUpload;
 import com.honeystone.exception.BusinessException;
@@ -66,8 +67,8 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public List<User> searchUsersByNickname(String nickname) throws ServerException {
-		return userDao.searchByNickname(nickname);
+	public List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname) throws ServerException {
+		return userDao.searchByNickname(requestUser == null ? -1 : requestUser.getId(), nickname);
 	}
 	
 }
