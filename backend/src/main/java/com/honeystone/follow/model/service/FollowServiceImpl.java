@@ -20,7 +20,8 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public void addFollow(MyUserPrincipal user, Long followingUserId) {
-        if(userDao.findByEmail(user.getEmail()) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
+        if(userDao.findByEmail(user.getEmail()) == null || userDao.existsById(followingUserId) == 0)
+        	throw new BusinessException("존재하지 않는 사용자입니다.");
 
         if (followDao.existsFollow(user.getId(), followingUserId) > 0)
             throw new BusinessException("이미 팔로잉 중인 사용자입니다.");
@@ -30,7 +31,8 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public void removeFollow(MyUserPrincipal user, Long followingUserId) {
-        if(userDao.findByEmail(user.getEmail()) == null) throw new BusinessException("존재하지 않는 사용자입니다.");
+        if(userDao.findByEmail(user.getEmail()) == null || userDao.existsById(followingUserId) == 0)
+        	throw new BusinessException("존재하지 않는 사용자입니다.");
 
         if (followDao.existsFollow(user.getId(), followingUserId) == 0)
             throw new BusinessException("팔로잉 중인 사용자가 아닙니다.");
