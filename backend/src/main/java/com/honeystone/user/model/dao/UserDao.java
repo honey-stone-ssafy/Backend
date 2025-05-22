@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.honeystone.common.dto.user.GetUser;
 import com.honeystone.common.dto.user.User;
 import com.honeystone.common.dto.user.UserSignupRequest;
 
@@ -19,7 +20,7 @@ public interface UserDao {
 
 	User findByEmail(@Param("email") String email);
 	
-	List<User> searchByNickname(String nickname);
+	List<GetUser> searchByNickname(@Param("requestUserId") Long requestUserId, String nickname);
 
 	int existsById(Long userId);
 }
