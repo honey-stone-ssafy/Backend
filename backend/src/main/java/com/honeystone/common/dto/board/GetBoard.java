@@ -1,19 +1,26 @@
 package com.honeystone.common.dto.board;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.honeystone.board.model.type.Level;
 import com.honeystone.board.model.type.Location;
 import com.honeystone.board.model.type.Skill;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-
-import java.time.LocalDateTime;
-import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -37,10 +44,26 @@ public class GetBoard {
     @Schema(description = "난이도", example = "RED")
     @Enumerated(EnumType.STRING)
     private Level level;
+    
+    @JsonProperty("korLevel")
+    @Schema(description = "난이도 한글명", example = "빨강")
+    private String getKorLevel() {
+    	return level.getKorName();
+    }
 
     @Schema(description = "기술명", example = "[\"PINCH\", \"SLOPER\"]")
     @Enumerated(EnumType.STRING)
     private Set<Skill> skill;
+    
+    @JsonProperty("korSkill")
+    @Schema(description = "기술 한글명", example = "핀치")
+    private List<String> getKorSkill() {
+    	List<String> skills = new ArrayList<>();
+    	for(Skill s : skill) {
+    		skills.add(s.getKorName());
+    	}
+    	return skills;
+    }
 
     @Schema(description = "홀드 색깔", example = "빨강")
     private String holdColor;
@@ -75,6 +98,12 @@ public class GetBoard {
     @Schema(description = "장소", example = "HONGDAE")
     @Enumerated(EnumType.STRING)
     private Location location;
+    
+    @JsonProperty("korLocation")
+    @Schema(description = "장소 한글명", example = "홍대")
+    private String getKorLocation() {
+    	return location.getKorName();
+    }
 
     @Schema(description = "벽", example = "사과")
     private String wall;
