@@ -50,8 +50,25 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
+	//이메일 중복 확인
+		@GetMapping("/confirm/email")
+		@Operation(summary = "이메일 중복 확인", description = """
+	        이미 가입한 이메일인지 확인합니다.  
+	        가입하지 않은 경우 true, 가입한 경우 false를 반환합니다.
+	    """,
+				responses = {
+						@ApiResponse(responseCode = "200", description = "중복 확인 성공"),
+						@ApiResponse(responseCode = "400", description = "잘못된 요청")
+				})
+
+		public ResponseEntity<Boolean> confirmEmail(@RequestParam String email) {
+			boolean isAvailable = userService.confirmEmail(email);
+			return ResponseEntity.ok(isAvailable);
+		}
+	
+	
 	//닉네임 중복 확인
-	@GetMapping("/cofirm")
+	@GetMapping("/confirm/nickname")
 	@Operation(summary = "닉네임 중복 확인", description = """
         닉네임이 이미 사용 중인지 확인합니다.  
         중복되지 않은 경우 true, 중복된 경우 false를 반환합니다.
