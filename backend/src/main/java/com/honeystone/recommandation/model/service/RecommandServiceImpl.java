@@ -27,20 +27,20 @@ public class RecommandServiceImpl implements RecommandService {
 		List<GetBoard> boardList = recommandDao.getList(level);
 
 		LocClass[] rank = new LocClass[14];
-		rank[0] = new LocClass(0, 0, Location.HONGDAE);
-		rank[1] = new LocClass(1, 0, Location.ILSAN);
-		rank[2] = new LocClass(2, 0, Location.MAGOK);
-		rank[3] = new LocClass(3, 0, Location.SEOULDAE);
-		rank[4] = new LocClass(4, 0, Location.YANGJAE);
-		rank[5] = new LocClass(5, 0, Location.SINLIM);
-		rank[6] = new LocClass(6, 0, Location.YEONNAM);
-		rank[7] = new LocClass(7, 0, Location.GANGNAM);
-		rank[8] = new LocClass(8, 0, Location.SADANG);
-		rank[9] = new LocClass(9, 0, Location.SINSA);
-		rank[10] = new LocClass(10, 0, Location.NONHYEON);
-		rank[11] = new LocClass(11, 0, Location.MULLAE);
-		rank[12] = new LocClass(12, 0, Location.ISU);
-		rank[13] = new LocClass(13, 0, Location.SUNGSU);
+		rank[0] = new LocClass(0, 0, Location.HONGDAE, Location.HONGDAE.getKorName());
+		rank[1] = new LocClass(1, 0, Location.ILSAN, Location.ILSAN.getKorName());
+		rank[2] = new LocClass(2, 0, Location.MAGOK, Location.MAGOK.getKorName());
+		rank[3] = new LocClass(3, 0, Location.SEOULDAE, Location.SEOULDAE.getKorName());
+		rank[4] = new LocClass(4, 0, Location.YANGJAE, Location.YANGJAE.getKorName());
+		rank[5] = new LocClass(5, 0, Location.SINLIM, Location.SINLIM.getKorName());
+		rank[6] = new LocClass(6, 0, Location.YEONNAM, Location.YEONNAM.getKorName());
+		rank[7] = new LocClass(7, 0, Location.GANGNAM, Location.GANGNAM.getKorName());
+		rank[8] = new LocClass(8, 0, Location.SADANG, Location.SADANG.getKorName());
+		rank[9] = new LocClass(9, 0, Location.SINSA, Location.SINSA.getKorName());
+		rank[10] = new LocClass(10, 0, Location.NONHYEON, Location.NONHYEON.getKorName());
+		rank[11] = new LocClass(11, 0, Location.MULLAE, Location.MULLAE.getKorName());
+		rank[12] = new LocClass(12, 0, Location.ISU, Location.ISU.getKorName());
+		rank[13] = new LocClass(13, 0, Location.SUNGSU, Location.SUNGSU.getKorName());
 
 
 		for(GetBoard loc : boardList) {
