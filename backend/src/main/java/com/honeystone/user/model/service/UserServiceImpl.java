@@ -65,6 +65,14 @@ public class UserServiceImpl implements UserService{
 		}
 		return true;
 	}
+	
+	@Override
+	public Boolean confirmEmail(String email) throws ServerException {
+		if (userDao.countByEmail(email) != 0) {
+			throw new BusinessException("이미 가입한 이메일입니다.");
+		}
+		return true;
+	}
 
 	@Override
 	public List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname) throws ServerException {

@@ -12,5 +12,7 @@ public interface UserService {
 
 	Boolean confirmNickname(String nickname);
 	
+	Boolean confirmEmail(String email);
+	
 	List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname);
 }
