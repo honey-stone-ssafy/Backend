@@ -2,6 +2,7 @@ package com.honeystone.user.model.dao;
 
 import java.util.List;
 
+import com.honeystone.common.dto.user.UserFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,4 +24,12 @@ public interface UserDao {
 	List<GetUser> searchByNickname(@Param("requestUserId") Long requestUserId, String nickname);
 
 	int existsById(Long userId);
+
+	void updateProfileImage(@Param("userId") Long userId, @Param("img") String img);
+
+	void createUserFile(UserFile userFile);
+
+	UserFile findUserFileByUserId(Long userId);
+
+	void deleteUserFileByUserId(Long userId);
 }

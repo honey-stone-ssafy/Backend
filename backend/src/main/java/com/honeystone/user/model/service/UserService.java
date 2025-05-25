@@ -5,6 +5,7 @@ import java.util.List;
 import com.honeystone.common.dto.user.GetUser;
 import com.honeystone.common.dto.user.UserSignupRequest;
 import com.honeystone.common.security.MyUserPrincipal;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 	
@@ -15,4 +16,6 @@ public interface UserService {
 	Boolean confirmEmail(String email);
 	
 	List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname);
+
+	void updateUserProfileImage(Long userId, MultipartFile file);
 }

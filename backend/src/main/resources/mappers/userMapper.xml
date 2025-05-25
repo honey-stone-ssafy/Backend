@@ -54,4 +54,25 @@
         FROM users
         WHERE id = #{userId}
     </select>
+
+	<insert id="createUserFile" parameterType="UserFile">
+		INSERT INTO user_files (user_id, url, filename)
+		VALUES (#{userId}, #{url}, #{filename})
+	</insert>
+
+	<update id="updateProfileImage">
+		UPDATE users
+		SET img = #{img},
+		updated_at = NOW()
+		WHERE id = #{userId}
+	</update>
+
+	<select id="findUserFileByUserId" resultType="UserFile">
+		SELECT * FROM user_files WHERE user_id = #{userId}
+	</select>
+
+	<delete id="deleteUserFileByUserId">
+		DELETE FROM user_files WHERE user_id = #{userId}
+	</delete>
+
 </mapper>

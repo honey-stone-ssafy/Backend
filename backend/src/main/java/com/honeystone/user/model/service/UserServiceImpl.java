@@ -1,7 +1,9 @@
 package com.honeystone.user.model.service;
 
+import java.io.IOException;
 import java.util.List;
 
+import com.honeystone.common.dto.user.UserFile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import com.honeystone.common.util.FileUpload;
 import com.honeystone.exception.BusinessException;
 import com.honeystone.exception.ServerException;
 import com.honeystone.user.model.dao.UserDao;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -78,5 +81,39 @@ public class UserServiceImpl implements UserService{
 	public List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname) throws ServerException {
 		return userDao.searchByNickname(requestUser == null ? -1 : requestUser.getId(), nickname);
 	}
-	
+
+	@Override
+	public void updateUserProfileImage(Long userId, MultipartFile file) throws ServerException {
+		if (file == null || file.isEmpty()) {
+			throw new BusinessException("파일이 비어 있습니다.");
+		}
+
+		// 기존 파일 조회
+		UserFile oldFile = userDao.findUserFileByUserId(userId);
+
+		// 기존 파일 삭제
+		if (oldFile != null) {
+			userDao.deleteUserFileByUserId(userId);
+			fileRemove.removeUserProfileFile(oldFile.getUrl());
+		}
+
+		// 새 파일 업로드
+		String filename = fileUpload.generateFileName("user", userId, file);
+		String fileUrl;
+		try {
+			fileUrl = fileUpload.uploadFile(file, filename, "users");
+		} catch (IOException e) {
+			throw new ServerException("S3 업로드 실패", e);
+		}
+
+		UserFile newFile = UserFile.builder()
+				.userId(userId)
+				.filename(filename)
+				.url(fileUrl)
+				.build();
+
+		userDao.createUserFile(newFile);
+		userDao.updateProfileImage(userId, fileUrl);
+	}
+
 }

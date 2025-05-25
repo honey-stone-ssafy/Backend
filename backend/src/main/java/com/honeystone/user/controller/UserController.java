@@ -5,15 +5,9 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.honeystone.common.dto.user.GetUser;
-import com.honeystone.common.dto.user.User;
 import com.honeystone.common.dto.user.UserSignupRequest;
 import com.honeystone.common.security.MyUserPrincipal;
 import com.honeystone.user.model.service.UserService;
@@ -23,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
@@ -123,9 +118,28 @@ public class UserController {
 					@ApiResponse(responseCode = "200", description = "유저 목록 조회 성공"),
 					@ApiResponse(responseCode = "400", description = "잘못된 요청")
 			})
-
 	public ResponseEntity<List<GetUser>> searchUsers(@AuthenticationPrincipal MyUserPrincipal requestUser, @RequestParam(required = false, defaultValue = "") String nickname) {
 	    List<GetUser> users = userService.searchUsersByNickname(requestUser, nickname);
 		return new ResponseEntity<List<GetUser>>(users, HttpStatus.OK);
 	}
+
+	@PatchMapping("/{userId}/profile")
+	@Operation(summary = "프로필 이미지 변경", description = """
+        유저의 프로필 이미지를 변경합니다.
+        🔐 **인증 필요** \s
+			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "프로필 이미지 변경 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청")
+			})
+	public ResponseEntity<Void> updateUser(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("userId") Long userId, @RequestPart("file") MultipartFile file) {
+		System.out.println("파일명: " + file.getOriginalFilename());
+		System.out.println("사이즈: " + file.getSize());
+
+		userService.updateUserProfileImage(userId, file);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 }

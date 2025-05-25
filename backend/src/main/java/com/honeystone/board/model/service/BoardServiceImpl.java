@@ -102,10 +102,10 @@ public class BoardServiceImpl implements BoardService {
 
 		// 파일 처리 로직
 		Long fileId = null;
-		String filename = fileUpload.generateFileName(newBoard.getId(), file);
+		String filename = fileUpload.generateFileName("board", newBoard.getId(), file);
 		String fileUrl = null;
 		try {
-			fileUrl = fileUpload.uploadFile(file, filename);
+			fileUrl = fileUpload.uploadFile(file, filename, "boards");
 		} catch (IOException e) {
 			throw new ServerException("S3 파일 업로드 중 오류가 발생했습니다.", e);
 		}
