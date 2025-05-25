@@ -108,4 +108,10 @@ public class GetBoard {
     @Schema(description = "벽", example = "사과")
     private String wall;
 
+    @Schema(description = "유저 닉네임", example = "허니스톤")
+    private String nickname;
+
+    @Schema(description = "유저 프로필 이미지", example = "default.png")
+    private String profile;
+
 }

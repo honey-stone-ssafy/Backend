@@ -13,8 +13,10 @@
 	</select>
 
 	<select id="getReviewList" resultType="Review" parameterType="map">
-		SELECT *
-		FROM reviews
+		SELECT r.*,
+		(SELECT nickname FROM users u WHERE r.user_id = u.id) AS nickname,
+		(SELECT img FROM users u WHERE r.user_id = u.id) AS profile
+		FROM reviews r
 		WHERE board_id = #{boardId}
 		AND deleted_at IS NULL
 		ORDER BY created_at DESC

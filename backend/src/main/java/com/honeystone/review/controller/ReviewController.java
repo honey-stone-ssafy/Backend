@@ -45,7 +45,7 @@ public class ReviewController {
         @ApiResponse(responseCode = "500", description = "서버 내부 오류") })
     @GetMapping()
     public ResponseEntity<Page<Review>> getReviewList(@PathVariable("boardId") Long boardId,
-                                                      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+                                                      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
         // 페이지네이션
         Pageable pageable = PageRequest.of(page, size);
         Page<Review> reviews = reviewService.getReviewList(boardId, pageable);

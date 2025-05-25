@@ -40,6 +40,13 @@ public class Review {
 	@Schema(description = "연결된 영상 ID", example = "101")
 	private Long boardId;
 
+	@Schema(description = "유저 닉네임", example = "허니스톤")
+	private String nickname;
+
+	@Schema(description = "유저 프로필 이미지", example = "default.png")
+	private String profile;
+
+
 	@Override
 	public String toString() {
 		return "Review{" +
