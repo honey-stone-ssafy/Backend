@@ -124,7 +124,7 @@ public class UserController {
 	}
 
 	@PatchMapping("/{userId}")
-	@Operation(summary = "프로필 이미지 변경", description = """
+	@Operation(summary = "프로필 정보 변경", description = """
         유저의 프로필 정보를 변경합니다.
         🔐 **인증 필요** \s
 			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
@@ -141,7 +141,26 @@ public class UserController {
 			@RequestPart("nickname") String nickname,
 			@RequestPart(value = "description", required = false) String description
 	) {
-		userService.updateUserProfile(userId, nickname, description, file);
+		userService.updateUserProfile(user, userId, nickname, description, file);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{userId}")
+	@Operation(summary = "회원 탈퇴", description = """
+        회원 가입을 철회하고 유저 정보를 삭제합니다.
+        🔐 **인증 필요** \s
+			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "회원탈퇴 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청")
+			})
+	public ResponseEntity<Void> deleteUser(
+			@AuthenticationPrincipal MyUserPrincipal user,
+			@PathVariable("userId") Long userId
+	) {
+		userService.deleteUser(user, userId);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

@@ -36,4 +36,7 @@ public interface UserDao {
 	String findNicknameByUserId(Long userId);
 
 	void updateNicknameAndDescription(@Param("userId")Long userId, @Param("nickname")String nickname, @Param("description") String description);
+
+	void deleteUser(Long userId);
+
 }
