@@ -14,4 +14,7 @@ public class UserLoginResponse {
     
     @Schema(description = "리프레시 토큰")
     private String refreshToken;
+
+    @Schema(description = "사용자 정보")
+    private GetUser user;
 }
