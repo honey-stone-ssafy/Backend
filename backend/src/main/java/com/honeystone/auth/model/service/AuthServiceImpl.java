@@ -2,6 +2,7 @@ package com.honeystone.auth.model.service;
 
 import java.time.LocalDateTime;
 
+import com.honeystone.common.dto.user.GetUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,17 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         refreshTokenDao.save(token);
-        return new UserLoginResponse(accessToken, refreshToken);
+
+        GetUser getUserInfo = GetUser.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .description(user.getDescription())
+                .img(user.getImg())
+                .isFollowing(false) // 로그인한 본인이므로 false 또는 필요에 따라 설정
+                .build();
+
+        return new UserLoginResponse(accessToken, refreshToken, getUserInfo);
     }
 
     @Override
@@ -73,7 +84,18 @@ public class AuthServiceImpl implements AuthService {
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
         String newAccessToken = jwtTokenProvider.generateToken(email);
 
-        return new UserLoginResponse(newAccessToken, refreshToken);
+        // 사용자 정보 조회
+        User user = userDao.findByEmail(email);
+        GetUser getUserInfo = GetUser.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .description(user.getDescription())
+                .img(user.getImg())
+                .isFollowing(false)
+                .build();
+
+        return new UserLoginResponse(newAccessToken, refreshToken, getUserInfo);
     }
 
     @Override
