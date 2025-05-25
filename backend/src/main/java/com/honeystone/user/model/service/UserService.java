@@ -22,4 +22,6 @@ public interface UserService {
 	void deleteUser(MyUserPrincipal user, Long userId);
 
 	void verifyPassword(MyUserPrincipal user, Long userId, String password);
+
+	void changePassword(MyUserPrincipal user, Long userId, String newPassword);
 }

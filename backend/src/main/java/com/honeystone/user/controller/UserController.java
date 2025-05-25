@@ -186,4 +186,26 @@ public class UserController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@PatchMapping("/{userId}/verify-password")
+	@Operation(summary = "비밀번호 변경", description = """
+        새로운 비밀번호로 변경합니다.
+        🔐 **인증 필요** \s
+			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청")
+			})
+	public ResponseEntity<Void> changePassword(
+			@AuthenticationPrincipal MyUserPrincipal user,
+			@PathVariable("userId") Long userId,
+			@RequestBody Map<String, String> request
+	) {
+		String newPassword = request.get("newPassword");
+
+		userService.changePassword(user, userId, newPassword);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 }
