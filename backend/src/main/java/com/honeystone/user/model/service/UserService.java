@@ -20,4 +20,6 @@ public interface UserService {
 	void updateUserProfile(MyUserPrincipal user, Long userId, String nickname, String description, MultipartFile file);
 
 	void deleteUser(MyUserPrincipal user, Long userId);
+
+	void verifyPassword(MyUserPrincipal user, Long userId, String password);
 }

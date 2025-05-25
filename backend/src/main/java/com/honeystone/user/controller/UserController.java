@@ -1,6 +1,7 @@
 package com.honeystone.user.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -161,6 +162,27 @@ public class UserController {
 			@PathVariable("userId") Long userId
 	) {
 		userService.deleteUser(user, userId);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/{userId}/verify-password")
+	@Operation(summary = "비밀번호 확인", description = """
+        비밀번호 변경을 위해 현재 비밀번호를 확인합니다.
+        🔐 **인증 필요** \s
+			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "비밀번호 확인 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청")
+			})
+	public ResponseEntity<Void> verifyPassword(
+			@AuthenticationPrincipal MyUserPrincipal user,
+			@PathVariable("userId") Long userId,
+			@RequestBody Map<String, String> request
+	) {
+		String password = request.get("password");
+		userService.verifyPassword(user, userId, password);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

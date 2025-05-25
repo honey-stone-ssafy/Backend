@@ -184,4 +184,19 @@ public class UserServiceImpl implements UserService{
 		}
 	}
 
+	@Override
+	public void verifyPassword(MyUserPrincipal user, Long userId, String password) {
+		if (user == null || user.getId() != userId) {
+			throw new BusinessException("접근할 권한이 없는 유저입니다.");
+		}
+
+		if (userDao.existsById(userId) == 0) {
+			throw new BusinessException("존재하지 않는 유저입니다.");
+		}
+
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new BusinessException("비밀번호가 일치하지 않습니다.");
+		}
+	}
+
 }
