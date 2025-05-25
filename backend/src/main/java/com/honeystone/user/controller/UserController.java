@@ -123,22 +123,25 @@ public class UserController {
 		return new ResponseEntity<List<GetUser>>(users, HttpStatus.OK);
 	}
 
-	@PatchMapping("/{userId}/profile")
+	@PatchMapping("/{userId}")
 	@Operation(summary = "프로필 이미지 변경", description = """
-        유저의 프로필 이미지를 변경합니다.
+        유저의 프로필 정보를 변경합니다.
         🔐 **인증 필요** \s
 			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
     """,
 			security = @SecurityRequirement(name = "bearerAuth"),
 			responses = {
-					@ApiResponse(responseCode = "200", description = "프로필 이미지 변경 성공"),
+					@ApiResponse(responseCode = "200", description = "프로필 정보 변경 성공"),
 					@ApiResponse(responseCode = "400", description = "잘못된 요청")
 			})
-	public ResponseEntity<Void> updateUser(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("userId") Long userId, @RequestPart("file") MultipartFile file) {
-		System.out.println("파일명: " + file.getOriginalFilename());
-		System.out.println("사이즈: " + file.getSize());
-
-		userService.updateUserProfileImage(userId, file);
+	public ResponseEntity<Void> updateUser(
+			@AuthenticationPrincipal MyUserPrincipal user,
+			@PathVariable("userId") Long userId,
+			@RequestPart(value = "file", required = false) MultipartFile file,
+			@RequestPart("nickname") String nickname,
+			@RequestPart(value = "description", required = false) String description
+	) {
+		userService.updateUserProfile(userId, nickname, description, file);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

@@ -17,5 +17,5 @@ public interface UserService {
 	
 	List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname);
 
-	void updateUserProfileImage(Long userId, MultipartFile file);
+	void updateUserProfile(Long userId, String nickname, String description, MultipartFile file);
 }

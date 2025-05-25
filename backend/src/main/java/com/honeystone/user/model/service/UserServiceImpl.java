@@ -83,7 +83,23 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public void updateUserProfileImage(Long userId, MultipartFile file) throws ServerException {
+	public void updateUserProfile(Long userId, String nickname, String description, MultipartFile file) throws ServerException {
+		// 닉네임 중복 검사 (현재 닉네임과 다를 때만 검사)
+		String currentNickname = userDao.findNicknameByUserId(userId);
+		if (!nickname.equals(currentNickname)) {
+			if (userDao.countByNickname(nickname) > 0) {
+				throw new BusinessException("이미 존재하는 닉네임입니다.");
+			}
+		}
+
+		// 닉네임/소개글 업데이트
+		try {
+			userDao.updateNicknameAndDescription(userId, nickname, description);
+		} catch (DataAccessException e) {
+			throw new ServerException("닉네임/소개글 수정 중 DB 오류가 발생했습니다.", e);
+		}
+
+		// 파일 유효성 검사
 		if (file == null || file.isEmpty()) {
 			throw new BusinessException("파일이 비어 있습니다.");
 		}
@@ -112,8 +128,12 @@ public class UserServiceImpl implements UserService{
 				.url(fileUrl)
 				.build();
 
-		userDao.createUserFile(newFile);
-		userDao.updateProfileImage(userId, fileUrl);
+		try {
+			userDao.createUserFile(newFile);
+			userDao.updateProfileImage(userId, fileUrl);
+		} catch (DataAccessException e) {
+			throw new ServerException("프로필 이미지 저장 중 DB 오류가 발생했습니다.", e);
+		}
 	}
 
 }

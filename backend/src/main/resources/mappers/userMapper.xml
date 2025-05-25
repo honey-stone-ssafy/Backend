@@ -75,4 +75,16 @@
 		DELETE FROM user_files WHERE user_id = #{userId}
 	</delete>
 
+	<select id="findNicknameByUserId" resultType="String">
+		SELECT nickname FROM users WHERE id = #{userId}
+	</select>
+
+	<update id="updateNicknameAndDescription">
+		UPDATE users
+		SET nickname = #{nickname},
+		description = #{description},
+		updated_at = NOW()
+		WHERE id = #{userId}
+	</update>
+
 </mapper>
