@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.util.List;
 
 import com.honeystone.auth.model.dao.RefreshTokenDao;
+import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.user.UserFile;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -211,6 +215,16 @@ public class UserServiceImpl implements UserService{
 
 		String encodedNewPassword = passwordEncoder.encode(newPassword);
 		userDao.updatePassword(userId, encodedNewPassword);
+	}
+
+	@Override
+	public Page<GetBoard> getUserBoardList(Long userId, Pageable pageable) {
+		long total = userDao.countBoards(userId);
+		int offset = pageable.getPageNumber() * pageable.getPageSize();
+		int size = pageable.getPageSize();
+
+		List<GetBoard> boards = userDao.getBoardList(userId, offset, size);
+		return new PageImpl<>(boards, pageable, total);
 	}
 
 }

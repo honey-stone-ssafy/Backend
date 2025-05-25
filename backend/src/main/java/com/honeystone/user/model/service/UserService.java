@@ -2,9 +2,12 @@ package com.honeystone.user.model.service;
 
 import java.util.List;
 
+import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.user.GetUser;
 import com.honeystone.common.dto.user.UserSignupRequest;
 import com.honeystone.common.security.MyUserPrincipal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
@@ -24,4 +27,6 @@ public interface UserService {
 	void verifyPassword(MyUserPrincipal user, Long userId, String password);
 
 	void changePassword(MyUserPrincipal user, Long userId, String newPassword);
+
+	Page<GetBoard> getUserBoardList(Long userId, Pageable pageable);
 }

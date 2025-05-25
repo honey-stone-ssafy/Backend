@@ -2,6 +2,7 @@ package com.honeystone.user.model.dao;
 
 import java.util.List;
 
+import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.user.UserFile;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -40,4 +41,8 @@ public interface UserDao {
 	void deleteUser(Long userId);
 
 	void updatePassword(@Param("userId") Long userId, @Param("newPassword") String newPassword);
+
+	long countBoards(Long userId);
+
+	List<GetBoard> getBoardList(Long userId, int offset, int size);
 }
