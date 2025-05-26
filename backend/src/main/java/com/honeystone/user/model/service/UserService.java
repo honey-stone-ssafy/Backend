@@ -20,7 +20,7 @@ public interface UserService {
 	
 	List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname);
 
-	void updateUserProfile(MyUserPrincipal user, Long userId, String nickname, String description, MultipartFile file);
+	GetUser updateUserProfile(MyUserPrincipal user, Long userId, String nickname, String description, MultipartFile file);
 
 	void deleteUser(MyUserPrincipal user, Long userId);
 

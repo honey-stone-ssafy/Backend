@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public void updateUserProfile(MyUserPrincipal user, Long userId, String nickname, String description, MultipartFile file) throws ServerException {
+	public GetUser updateUserProfile(MyUserPrincipal user, Long userId, String nickname, String description, MultipartFile file) throws ServerException {
 		if (user == null || user.getId() != userId) {
 			throw new BusinessException("접근할 권한이 없는 유저입니다.");
 		}
@@ -115,9 +115,9 @@ public class UserServiceImpl implements UserService{
 		}
 
 		// 파일 유효성 검사
-		if (file == null || file.isEmpty()) {
-			throw new BusinessException("파일이 비어 있습니다.");
-		}
+//		if (file == null || file.isEmpty()) {
+//			throw new BusinessException("파일이 비어 있습니다.");
+//		}
 
 		// 기존 파일 조회
 		UserFile oldFile = userDao.findUserFileByUserId(userId);
@@ -149,6 +149,7 @@ public class UserServiceImpl implements UserService{
 		} catch (DataAccessException e) {
 			throw new ServerException("프로필 이미지 저장 중 DB 오류가 발생했습니다.", e);
 		}
+		return userDao.searchByNickname(userId, nickname).get(0);
 	}
 
 	@Override

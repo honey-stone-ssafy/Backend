@@ -135,15 +135,15 @@ public class UserController {
 					@ApiResponse(responseCode = "200", description = "프로필 정보 변경 성공"),
 					@ApiResponse(responseCode = "400", description = "잘못된 요청")
 			})
-	public ResponseEntity<Void> updateUser(
+	public ResponseEntity<GetUser> updateUser(
 			@AuthenticationPrincipal MyUserPrincipal user,
 			@PathVariable("userId") Long userId,
 			@RequestPart(value = "file", required = false) MultipartFile file,
 			@RequestPart("nickname") String nickname,
 			@RequestPart(value = "description", required = false) String description
 	) {
-		userService.updateUserProfile(user, userId, nickname, description, file);
-		return new ResponseEntity<>(HttpStatus.OK);
+		GetUser updateUser = userService.updateUserProfile(user, userId, nickname, description, file);
+		return new ResponseEntity<GetUser>(updateUser, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{userId}")
