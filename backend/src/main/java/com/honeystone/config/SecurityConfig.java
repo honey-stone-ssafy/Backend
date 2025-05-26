@@ -17,12 +17,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.honeystone.common.security.CustomAccessDeniedHandler;
 import com.honeystone.common.security.CustomAuthenticationEntryPoint;
 import com.honeystone.common.security.JwtAuthenticationFilter;
+
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,44 +34,45 @@ import lombok.RequiredArgsConstructor;
 @EnableScheduling
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     @Autowired
-    CustomAuthenticationEntryPoint authEntryPoint;
+    private CustomAuthenticationEntryPoint authEntryPoint;
+
     @Autowired
-    CustomAccessDeniedHandler accessHandler;
+    private CustomAccessDeniedHandler accessHandler;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
-        	.cors()
-        	.and()
+            .cors()
+            .and()
             .csrf().disable()
             .formLogin().disable()
             .httpBasic().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .anonymous().disable()
             .authorizeHttpRequests()
-		         // 인증 예외 경로 설정
-	            .requestMatchers(
-	                "/api/auth/**",         // 로그인
-	                "/api/users/**",           // 회원가입
-	                "/v3/api-docs/**",      // Swagger
-	                "/swagger-ui/**",
-	                "/swagger-resources/**",
-	                "/webjars/**",
-	                "/api/recommandations/**"
-	            ).permitAll()
+                .requestMatchers(
+                    "/api/auth/**",
+                    "/api/users/**",
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-resources/**",
+                    "/webjars/**",
+                    "/api/recommandations/**"
+                ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll()
-	            .anyRequest().authenticated()  // 그 외는 인증 필요
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ✅ CORS Preflight 허용
+                .anyRequest().authenticated()
             .and()
             .exceptionHandling()
-                .authenticationEntryPoint(authEntryPoint)  // 인증 실패(401)
-                .accessDeniedHandler(accessHandler)        // 권한 부족(403)
+                .authenticationEntryPoint(authEntryPoint)
+                .accessDeniedHandler(accessHandler)
             .and()
             .addFilterAfter(jwtAuthenticationFilter, SecurityContextPersistenceFilter.class);
+
         return http.build();
     }
 
@@ -78,22 +82,24 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // AuthenticationManager Bean 등록 (로그인 인증용)
+    // AuthenticationManager Bean 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
-    
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-      CorsConfiguration config = new CorsConfiguration();
-      config.setAllowedOrigins(List.of("http://localhost:5173"));  // 절대 * 아님
-      config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-      config.setAllowedHeaders(List.of("*"));
-      config.setAllowCredentials(true);
 
-      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-      source.registerCorsConfiguration("/**", config);
-      return source;
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);  // 쿠키 및 인증정보 허용
+        config.setAllowedOrigins(List.of("http://localhost:5173"));  // 프론트 주소
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));  // 모든 헤더 허용
+        config.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
+
 }

@@ -21,7 +21,14 @@ public class FileRemove {
     private String bucket;
     private static final String RV_DIR = "file/deleted/";
 
-
+    public void removeUserProfileFile(String fileUrl) {
+        if (amazonS3Client.doesObjectExist(bucket, fileUrl)) {
+            amazonS3Client.deleteObject(bucket, fileUrl);
+            log.info("프로필 이미지 {} 를 삭제했습니다.", fileUrl);
+        } else {
+            log.warn("삭제 시도한 파일 {} 이 존재하지 않습니다.", fileUrl);
+        }
+    }
 
     public void removeFile(Long id) {
         final String file = String.format("board_%d", id);

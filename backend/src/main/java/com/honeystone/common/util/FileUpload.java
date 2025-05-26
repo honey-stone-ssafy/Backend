@@ -21,9 +21,8 @@ public class FileUpload {
     private AmazonS3 amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    private static final String RV_DIR = "file/boards/";
 
-    public String generateFileName(Long id, MultipartFile file) {
+    public String generateFileName(String prefix, Long id, MultipartFile file) {
 
 
             String originalFileName = file.getOriginalFilename();
@@ -32,15 +31,15 @@ public class FileUpload {
                 : ""; // 기본값을 빈 문자열로 설정
 
             String formattedFileName = String.format(
-                "board_%d%s", id,  extension
+                "%s_%d%s", prefix, id, extension
             );
 
         return formattedFileName;
     }
 
-    public String uploadFile(MultipartFile file, String fileName) throws IOException {
+    public String uploadFile(MultipartFile file, String fileName, String type) throws IOException {
 
-        String fileUrl = RV_DIR + fileName;
+        String fileUrl = "file/" + type + "/" + fileName;
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());

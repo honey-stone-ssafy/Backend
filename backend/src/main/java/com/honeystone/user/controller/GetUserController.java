@@ -41,6 +41,33 @@ public class GetUserController {
 		this.favoriteService = favoriteService;
 		this.followService = followService;
 	}
+
+	@Operation(summary = "작성한 게시글 목록 조회", description = """
+		    유저가 작성한 게시글 목록을 최신순으로 조회합니다.
+
+		    페이징 관련 파라미터:
+		    - `page`: 페이지 번호 (0부터 시작, 기본값: 0)
+		    - `size`: 한 페이지당 게시글 수 (기본값: 12)
+
+		    결과가 없을 경우 204(No Content)를 반환합니다.
+		""",
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = { @ApiResponse(responseCode = "200", description = "작성한 게시글 목록 조회 성공"),
+					@ApiResponse(responseCode = "204", description = "작성한 게시글이 없음"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
+					@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class))) })
+	@GetMapping("/boards")
+	public ResponseEntity<?> getUserBoardList(@PathVariable("userId") Long userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
+
+		Pageable pageable = PageRequest.of(page, size);
+		Page<GetBoard> list = userService.getUserBoardList(userId, pageable);
+
+		if (list == null || list.isEmpty()) {
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		}
+
+		return new ResponseEntity<Page<GetBoard>>(list, HttpStatus.OK);
+	}
 	
 	@Operation(summary = "찜 목록 조회", description = """
 		    찜한 전체 목록을 최신순으로 조회합니다.
