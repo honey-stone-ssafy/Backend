@@ -29,4 +29,6 @@ public interface UserService {
 	void changePassword(MyUserPrincipal user, Long userId, String newPassword);
 
 	Page<GetBoard> getUserBoardList(Long userId, Pageable pageable);
+
+	GetUser getUserById(MyUserPrincipal requestUser, Long userId);
 }

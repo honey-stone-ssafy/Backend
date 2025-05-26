@@ -226,4 +226,13 @@ public class UserServiceImpl implements UserService{
 		return new PageImpl<>(boards, pageable, total);
 	}
 
+	@Override
+	public GetUser getUserById(MyUserPrincipal requestUser, Long userId) {
+		String nickname = userDao.findNicknameByUserId(userId);
+		if (nickname == null) {
+			throw new BusinessException("사용자를 찾을 수 없습니다.");
+		}
+		return userDao.searchByNickname(requestUser == null ? -1 : requestUser.getId(), nickname).get(0);
+	}
+
 }

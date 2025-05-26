@@ -152,4 +152,24 @@ public class GetUserController {
 		
 		return new ResponseEntity<Page<GetUser>>(list, HttpStatus.OK);
 	}
+
+	@Operation(summary = "유저 정보 조회", description = """
+        userId에 해당하는 유저의 프로필 정보를 조회합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "유저 정보 조회 성공"),
+					@ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음", content = @Content(schema = @Schema(implementation = ApiError.class))),
+					@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class)))
+			})
+	@GetMapping("")
+	public ResponseEntity<?> getUserById(@AuthenticationPrincipal MyUserPrincipal requestUser, @PathVariable("userId") Long userId) {
+		GetUser user = userService.getUserById(requestUser, userId);
+
+		if (user == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		return new ResponseEntity<>(user, HttpStatus.OK);
+	}
 }
