@@ -12,7 +12,7 @@
 			b.*,
 			f.*,
 			c.*,
-			(SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id) AS reviewCount,
+			(SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id AND r.deleted_at IS NULL) AS reviewCount,
 	        (SELECT COUNT(*) FROM favorites fav2 WHERE fav2.board_id = b.id) AS favoriteCount
 		
 		FROM boards b
@@ -132,7 +132,14 @@
 
 	<!-- 상세 게시글 조회 -->
 	<select id="getBoard" resultType="GetBoard" parameterType="Long">
-		SELECT *
+		SELECT b.*,
+		f.*,
+		c.*,
+		(SELECT nickname from users u WHERE u.id = b.user_id) AS nickname,
+		(SELECT img from users u WHERE u.id = b.user_id) AS profile,
+		(SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id AND r.deleted_at IS NULL) AS reviewCount,
+		(SELECT COUNT(*) FROM favorites fav WHERE fav.board_id = b.id) AS favoriteCount
+
 		FROM boards b
 		LEFT JOIN files f
 		ON b.id = f.board_id
