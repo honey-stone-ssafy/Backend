@@ -81,7 +81,7 @@
 	</delete>
 
 	<select id="findNicknameByUserId" resultType="String">
-		SELECT nickname FROM users WHERE id = #{userId}
+		SELECT nickname FROM users WHERE id = #{userId} AND deleted_at IS NULL
 	</select>
 
 	<update id="updateNicknameAndDescription">
@@ -90,6 +90,7 @@
 		description = #{description},
 		updated_at = NOW()
 		WHERE id = #{userId}
+		AND deleted_at IS NULL
 	</update>
 
 	<update id="deleteUser">
@@ -102,6 +103,7 @@
 		UPDATE users
 		SET password = #{newPassword}, updated_at = NOW()
 		WHERE id = #{userId}
+		AND deleted_at IS NULL
 	</update>
 
 	<!-- 작성한 게시글 수 -->
