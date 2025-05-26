@@ -15,6 +15,7 @@
         SELECT COUNT(*) 
         FROM users 
         WHERE nickname = #{nickname}
+		AND deleted_at IS NULL
     </select>
     
     <!-- 이메일 중복 확인용 -->
@@ -22,6 +23,7 @@
 	    SELECT COUNT(*) 
 	    FROM users 
 	    WHERE email = #{email}
+		AND deleted_at IS NULL
 	</select>
 	
     <!-- 토큰 발급용 이메일로 유저 찾기 -->
@@ -29,6 +31,7 @@
         SELECT *
         FROM users
         WHERE email = #{email}
+		AND deleted_at IS NULL
     </select>
     
     <!-- 닉네임으로 유저 검색 -->
@@ -46,6 +49,7 @@
 	        <if test="nickname != null and nickname != ''">
 	            u.nickname LIKE CONCAT('%', #{nickname}, '%')
 	        </if>
+			AND u.deleted_at IS NULL
 	    </where>
 	</select>
 
@@ -53,5 +57,82 @@
         SELECT COUNT(*)
         FROM users
         WHERE id = #{userId}
+		AND deleted_at IS NULL
     </select>
+
+	<insert id="createUserFile" parameterType="UserFile">
+		INSERT INTO user_files (user_id, url, filename)
+		VALUES (#{userId}, #{url}, #{filename})
+	</insert>
+
+	<update id="updateProfileImage">
+		UPDATE users
+		SET img = #{img},
+		updated_at = NOW()
+		WHERE id = #{userId}
+	</update>
+
+	<select id="findUserFileByUserId" resultType="UserFile">
+		SELECT * FROM user_files WHERE user_id = #{userId}
+	</select>
+
+	<delete id="deleteUserFileByUserId">
+		DELETE FROM user_files WHERE user_id = #{userId}
+	</delete>
+
+	<select id="findNicknameByUserId" resultType="String">
+		SELECT nickname FROM users WHERE id = #{userId}
+	</select>
+
+	<update id="updateNicknameAndDescription">
+		UPDATE users
+		SET nickname = #{nickname},
+		description = #{description},
+		updated_at = NOW()
+		WHERE id = #{userId}
+	</update>
+
+	<update id="deleteUser">
+		UPDATE users
+		SET deleted_at = NOW()
+		WHERE id = #{userId}
+	</update>
+
+	<update id="updatePassword">
+		UPDATE users
+		SET password = #{newPassword}, updated_at = NOW()
+		WHERE id = #{userId}
+	</update>
+
+	<!-- 작성한 게시글 수 -->
+	<select id="countBoards" parameterType="long" resultType="long">
+		SELECT COUNT(*)
+		FROM boards b
+		WHERE b.user_id = #{userId}
+	</select>
+
+	<!-- 작성한 게시글 목록 -->
+	<select id="getBoardList" parameterType="map" resultType="GetBoard">
+		SELECT
+		b.id AS id,
+		b.title,
+		b.description,
+		b.level,
+		b.skill,
+		f.url,
+		c.*,
+		(SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id) AS reviewCount,
+		(SELECT COUNT(*) FROM favorites fav2 WHERE fav2.board_id = b.id) AS favoriteCount
+
+		FROM boards b
+
+		LEFT JOIN files f ON b.id = f.board_id
+		LEFT JOIN the_climb_board cb ON b.id = cb.board_id
+		LEFT JOIN the_climb c ON cb.the_climb_id = c.id
+
+		WHERE b.user_id = #{userId}
+		ORDER BY b.id DESC
+		LIMIT #{size} OFFSET #{offset}
+	</select>
+
 </mapper>

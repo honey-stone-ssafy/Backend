@@ -3,10 +3,13 @@ package com.honeystone.scheduler;
 import com.honeystone.common.dto.plan.Plan;
 import com.honeystone.common.dto.board.Board;
 import com.honeystone.common.dto.review.Review;
+import com.honeystone.common.dto.user.User;
+import com.honeystone.common.dto.user.UserFile;
 import com.honeystone.common.util.FileRemove;
 import com.honeystone.plan.model.dao.PlanDao;
 import com.honeystone.board.model.dao.BoardDao;
 import com.honeystone.review.model.dao.ReviewDao;
+import com.honeystone.user.model.dao.UserDao;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +24,14 @@ public class CleanupScheduler {
     private final FileRemove fileRemove;
     private final PlanDao planDao;
     private final ReviewDao reviewDao;
+    private final UserDao userDao;
 
-    public CleanupScheduler(BoardDao boardDao, FileRemove fileRemove, PlanDao planDao, ReviewDao reviewDao) {
+    public CleanupScheduler(BoardDao boardDao, FileRemove fileRemove, PlanDao planDao, ReviewDao reviewDao, UserDao userDao) {
         this.boardDao = boardDao;
         this.fileRemove = fileRemove;
         this.planDao = planDao;
         this.reviewDao = reviewDao;
+        this.userDao = userDao;
     }
 
     @Scheduled(cron = "0 0 2 * * *") // 매일 새벽 2시에 실행
@@ -66,6 +71,6 @@ public class CleanupScheduler {
             Long id = review.getId();
             reviewDao.completeDeleteReview(id);
         }
-
     }
+
 }

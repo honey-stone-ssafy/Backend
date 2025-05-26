@@ -1,19 +1,14 @@
 package com.honeystone.user.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.honeystone.common.dto.user.GetUser;
-import com.honeystone.common.dto.user.User;
 import com.honeystone.common.dto.user.UserSignupRequest;
 import com.honeystone.common.security.MyUserPrincipal;
 import com.honeystone.user.model.service.UserService;
@@ -23,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/users")
@@ -123,9 +119,93 @@ public class UserController {
 					@ApiResponse(responseCode = "200", description = "유저 목록 조회 성공"),
 					@ApiResponse(responseCode = "400", description = "잘못된 요청")
 			})
-
 	public ResponseEntity<List<GetUser>> searchUsers(@AuthenticationPrincipal MyUserPrincipal requestUser, @RequestParam(required = false, defaultValue = "") String nickname) {
 	    List<GetUser> users = userService.searchUsersByNickname(requestUser, nickname);
 		return new ResponseEntity<List<GetUser>>(users, HttpStatus.OK);
 	}
+
+	@PatchMapping("/{userId}")
+	@Operation(summary = "프로필 정보 변경", description = """
+        유저의 프로필 정보를 변경합니다.
+        🔐 **인증 필요** \s
+			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "프로필 정보 변경 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청")
+			})
+	public ResponseEntity<GetUser> updateUser(
+			@AuthenticationPrincipal MyUserPrincipal user,
+			@PathVariable("userId") Long userId,
+			@RequestPart(value = "file", required = false) MultipartFile file,
+			@RequestPart("nickname") String nickname,
+			@RequestPart(value = "description", required = false) String description
+	) {
+		GetUser updateUser = userService.updateUserProfile(user, userId, nickname, description, file);
+		return new ResponseEntity<GetUser>(updateUser, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{userId}")
+	@Operation(summary = "회원 탈퇴", description = """
+        회원 가입을 철회하고 유저 정보를 삭제합니다.
+        🔐 **인증 필요** \s
+			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "회원탈퇴 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청")
+			})
+	public ResponseEntity<Void> deleteUser(
+			@AuthenticationPrincipal MyUserPrincipal user,
+			@PathVariable("userId") Long userId
+	) {
+		userService.deleteUser(user, userId);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PostMapping("/{userId}/verify-password")
+	@Operation(summary = "비밀번호 확인", description = """
+        비밀번호 변경을 위해 현재 비밀번호를 확인합니다.
+        🔐 **인증 필요** \s
+			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "비밀번호 확인 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청")
+			})
+	public ResponseEntity<Void> verifyPassword(
+			@AuthenticationPrincipal MyUserPrincipal user,
+			@PathVariable("userId") Long userId,
+			@RequestBody Map<String, String> request
+	) {
+		String password = request.get("password");
+		userService.verifyPassword(user, userId, password);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@PatchMapping("/{userId}/verify-password")
+	@Operation(summary = "비밀번호 변경", description = """
+        새로운 비밀번호로 변경합니다.
+        🔐 **인증 필요** \s
+			  요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
+			security = @SecurityRequirement(name = "bearerAuth"),
+			responses = {
+					@ApiResponse(responseCode = "200", description = "비밀번호 변경 성공"),
+					@ApiResponse(responseCode = "400", description = "잘못된 요청")
+			})
+	public ResponseEntity<Void> changePassword(
+			@AuthenticationPrincipal MyUserPrincipal user,
+			@PathVariable("userId") Long userId,
+			@RequestBody Map<String, String> request
+	) {
+		String newPassword = request.get("newPassword");
+
+		userService.changePassword(user, userId, newPassword);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 }

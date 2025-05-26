@@ -13,6 +13,7 @@
 	        b.level,
 	        b.skill,
 	        f.url,
+			c.*,
 	        (SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id) AS reviewCount,
 	        (SELECT COUNT(*) FROM favorites fav2 WHERE fav2.board_id = b.id) AS favoriteCount
 	        
