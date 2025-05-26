@@ -131,7 +131,7 @@ CREATE TABLE follows (
 -- 9. 사용자 테이블
 CREATE TABLE users (
   id             BIGINT       NOT NULL AUTO_INCREMENT,
-  email          VARCHAR(50)  NOT NULL UNIQUE,
+  email          VARCHAR(50)  NOT NULL,
   nickname       VARCHAR(50)  NOT NULL UNIQUE COMMENT '닉네임',
   password       VARCHAR(255) NOT NULL,
   created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
