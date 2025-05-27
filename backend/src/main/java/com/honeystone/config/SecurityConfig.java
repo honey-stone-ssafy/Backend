@@ -16,8 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.*;
 
 import com.honeystone.common.security.CustomAccessDeniedHandler;
 import com.honeystone.common.security.CustomAuthenticationEntryPoint;
@@ -54,6 +53,10 @@ public class SecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ✅ CORS Preflight 허용
+            .requestMatchers(HttpMethod.GET, "/api/boards").permitAll()
+            // GET /api/boards/{any} 이하
+            .requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll()
                 .requestMatchers(
                     "/api/auth/**",
                     "/api/users/**",
@@ -63,8 +66,6 @@ public class SecurityConfig {
                     "/webjars/**",
                     "/api/recommandations/**"
                 ).permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/boards/**").permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ✅ CORS Preflight 허용
                 .anyRequest().authenticated()
             .and()
             .exceptionHandling()
@@ -89,17 +90,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);  // 쿠키 및 인증정보 허용
-        config.setAllowedOrigins(List.of("http://localhost:5173"));  // 프론트 주소
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));  // 모든 헤더 허용
-        config.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("Authorization","Content-Disposition"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        return source;
     }
 
 }
