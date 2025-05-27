@@ -3,11 +3,15 @@ package com.honeystone.user.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.user.GetUser;
 import com.honeystone.common.dto.user.UserSignupRequest;
 import com.honeystone.common.security.MyUserPrincipal;
@@ -119,9 +123,13 @@ public class UserController {
 					@ApiResponse(responseCode = "200", description = "유저 목록 조회 성공"),
 					@ApiResponse(responseCode = "400", description = "잘못된 요청")
 			})
-	public ResponseEntity<List<GetUser>> searchUsers(@AuthenticationPrincipal MyUserPrincipal requestUser, @RequestParam(required = false, defaultValue = "") String nickname) {
-	    List<GetUser> users = userService.searchUsersByNickname(requestUser, nickname);
-		return new ResponseEntity<List<GetUser>>(users, HttpStatus.OK);
+	public ResponseEntity<?> searchUsers(@AuthenticationPrincipal MyUserPrincipal requestUser, @RequestParam(required = false, defaultValue = "") String nickname, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		Page<GetUser> users = userService.searchUsersByNickname(requestUser, nickname, pageable);
+		if (users == null || users.isEmpty()) {
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<Page<GetUser>>(users, HttpStatus.OK);
 	}
 
 	@PatchMapping("/{userId}")
