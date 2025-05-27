@@ -151,6 +151,12 @@
 		b.skill,
 		f.url,
 		c.*,
+				EXISTS (
+		SELECT 1
+		FROM favorites fav
+		WHERE fav.user_id = #{userId}
+		AND fav.board_id = b.id
+		) AS liked,
 		(SELECT COUNT(*) FROM reviews r WHERE r.board_id = b.id) AS reviewCount,
 		(SELECT COUNT(*) FROM favorites fav2 WHERE fav2.board_id = b.id) AS favoriteCount
 
