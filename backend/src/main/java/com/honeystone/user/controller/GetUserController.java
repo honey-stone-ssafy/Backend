@@ -113,7 +113,7 @@ public class GetUserController {
 	@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class))) })
 	@GetMapping("/following")
 	public ResponseEntity<?> getFollowingList(@AuthenticationPrincipal MyUserPrincipal requestUser, @PathVariable("userId") Long userId,
-			  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
+			  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		
 		Pageable pageable = PageRequest.of(page, size);
 		Page<GetUser> list = followService.getFollowingList(requestUser, userId, pageable);
@@ -141,7 +141,7 @@ public class GetUserController {
 	@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class))) })
 	@GetMapping("/followers")
 	public ResponseEntity<?> getFollowerList(@AuthenticationPrincipal MyUserPrincipal requestUser, @PathVariable("userId") Long userId,
-			  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
+			  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
 		
 		Pageable pageable = PageRequest.of(page, size);
 		Page<GetUser> list = followService.getFollowerList(requestUser, userId, pageable);
