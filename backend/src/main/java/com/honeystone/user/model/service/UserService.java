@@ -18,7 +18,7 @@ public interface UserService {
 	
 	Boolean confirmEmail(String email);
 	
-	List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname);
+	Page<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname, Pageable pageable);
 
 	GetUser updateUserProfile(MyUserPrincipal user, Long userId, String nickname, String description, MultipartFile file);
 
@@ -29,4 +29,6 @@ public interface UserService {
 	void changePassword(MyUserPrincipal user, Long userId, String newPassword);
 
 	Page<GetBoard> getUserBoardList(Long userId, Pageable pageable);
+
+	GetUser getUserById(MyUserPrincipal requestUser, Long userId);
 }

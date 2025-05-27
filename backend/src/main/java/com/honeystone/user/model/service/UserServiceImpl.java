@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserService{
 				.nickname(user.getNickname())
 				.password(encoded)
 				.build();
-		
 		try {			
 			userDao.createUser(newUser);
 		} catch (DataAccessException e) {
@@ -85,8 +84,14 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname) throws ServerException {
-		return userDao.searchByNickname(requestUser == null ? -1 : requestUser.getId(), nickname);
+	public Page<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname, Pageable pageable) throws ServerException {
+		long total = userDao.countSearchByNickname(nickname);
+		int offset = pageable.getPageNumber() * pageable.getPageSize();
+		int size = pageable.getPageSize();
+
+		long requestUserId = requestUser == null ? -1 : requestUser.getId();
+		List<GetUser> users = userDao.searchByNickname(requestUserId, nickname, offset, size);
+		return new PageImpl<>(users, pageable, total);
 	}
 
 	@Override
@@ -114,42 +119,41 @@ public class UserServiceImpl implements UserService{
 			throw new ServerException("닉네임/소개글 수정 중 DB 오류가 발생했습니다.", e);
 		}
 
-		// 파일 유효성 검사
-//		if (file == null || file.isEmpty()) {
-//			throw new BusinessException("파일이 비어 있습니다.");
-//		}
-
 		// 기존 파일 조회
 		UserFile oldFile = userDao.findUserFileByUserId(userId);
 
-		// 기존 파일 삭제
-		if (oldFile != null) {
-			userDao.deleteUserFileByUserId(userId);
-			fileRemove.removeUserProfileFile(oldFile.getUrl());
+		// 파일이 비어있지 않은 경우에만 새로 업로드
+		if (file != null && !file.isEmpty()) {
+			// 기존 파일 삭제
+			if (oldFile != null) {
+				userDao.deleteUserFileByUserId(userId);
+				fileRemove.removeUserProfileFile(oldFile.getUrl());
+			}
+			
+			// 새 파일 업로드
+			String filename = fileUpload.generateFileName("user", userId, file);
+			String fileUrl;
+			try {
+				fileUrl = fileUpload.uploadFile(file, filename, "users");
+			} catch (IOException e) {
+				throw new ServerException("S3 업로드 실패", e);
+			}
+			
+			UserFile newFile = UserFile.builder()
+					.userId(userId)
+					.filename(filename)
+					.url(fileUrl)
+					.build();
+			
+			try {
+				userDao.createUserFile(newFile);
+				userDao.updateProfileImage(userId, fileUrl);
+			} catch (DataAccessException e) {
+				throw new ServerException("프로필 이미지 저장 중 DB 오류가 발생했습니다.", e);
+			}
 		}
-
-		// 새 파일 업로드
-		String filename = fileUpload.generateFileName("user", userId, file);
-		String fileUrl;
-		try {
-			fileUrl = fileUpload.uploadFile(file, filename, "users");
-		} catch (IOException e) {
-			throw new ServerException("S3 업로드 실패", e);
-		}
-
-		UserFile newFile = UserFile.builder()
-				.userId(userId)
-				.filename(filename)
-				.url(fileUrl)
-				.build();
-
-		try {
-			userDao.createUserFile(newFile);
-			userDao.updateProfileImage(userId, fileUrl);
-		} catch (DataAccessException e) {
-			throw new ServerException("프로필 이미지 저장 중 DB 오류가 발생했습니다.", e);
-		}
-		return userDao.searchByNickname(userId, nickname).get(0);
+		
+		return userDao.getUserByNickname(userId, nickname);
 	}
 
 	@Override
@@ -226,6 +230,15 @@ public class UserServiceImpl implements UserService{
 
 		List<GetBoard> boards = userDao.getBoardList(userId, offset, size);
 		return new PageImpl<>(boards, pageable, total);
+	}
+
+	@Override
+	public GetUser getUserById(MyUserPrincipal requestUser, Long userId) {
+		String nickname = userDao.findNicknameByUserId(userId);
+		if (nickname == null) {
+			throw new BusinessException("사용자를 찾을 수 없습니다.");
+		}
+		return userDao.getUserByNickname(requestUser == null ? -1 : requestUser.getId(), nickname);
 	}
 
 }

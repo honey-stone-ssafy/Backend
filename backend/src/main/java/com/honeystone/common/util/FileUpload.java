@@ -1,18 +1,18 @@
 package com.honeystone.common.util;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -29,9 +29,11 @@ public class FileUpload {
             String extension = originalFileName.contains(".")
                 ? originalFileName.substring(originalFileName.lastIndexOf("."))
                 : ""; // 기본값을 빈 문자열로 설정
+            
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 
             String formattedFileName = String.format(
-                "%s_%d%s", prefix, id, extension
+                "%s_%d_%s%s", prefix, id, timestamp, extension
             );
 
         return formattedFileName;

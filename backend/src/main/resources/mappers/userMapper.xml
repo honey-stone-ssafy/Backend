@@ -34,8 +34,23 @@
 		AND deleted_at IS NULL
     </select>
     
+    <!-- 닉네임으로 GetUser 가져오기 -->
+    <select id="getUserByNickname" resultType="GetUser">
+	    SELECT 
+	    	u.*,
+			EXISTS (
+	            SELECT 1 
+	            FROM follows f
+	            WHERE f.follower_id = #{userId}
+	              AND f.followee_id = u.id
+	        	) AS isFollowing 
+	    FROM users u
+	    WHERE u.nickname = #{nickname}
+		AND u.deleted_at IS NULL
+	</select>
+    
     <!-- 닉네임으로 유저 검색 -->
-    <select id="searchByNickname" parameterType="string" resultType="GetUser">
+    <select id="searchByNickname" parameterType="map" resultType="GetUser">
 	    SELECT 
 	    	u.*,
 			EXISTS (
@@ -50,6 +65,19 @@
 	            u.nickname LIKE CONCAT('%', #{nickname}, '%')
 	        </if>
 			AND u.deleted_at IS NULL
+	    </where>
+	    LIMIT #{size} OFFSET #{offset}
+	</select>
+	
+	<!-- 닉네임 조회 카운팅 -->
+	<select id="countSearchByNickname" parameterType="string" resultType="long">
+	    SELECT COUNT(*)
+	    FROM users u
+	    <where>
+	        <if test="nickname != null and nickname != ''">
+	            u.nickname LIKE CONCAT('%', #{nickname}, '%')
+	        </if>
+	        AND u.deleted_at IS NULL
 	    </where>
 	</select>
 
@@ -81,7 +109,7 @@
 	</delete>
 
 	<select id="findNicknameByUserId" resultType="String">
-		SELECT nickname FROM users WHERE id = #{userId}
+		SELECT nickname FROM users WHERE id = #{userId} AND deleted_at IS NULL
 	</select>
 
 	<update id="updateNicknameAndDescription">
@@ -90,6 +118,7 @@
 		description = #{description},
 		updated_at = NOW()
 		WHERE id = #{userId}
+		AND deleted_at IS NULL
 	</update>
 
 	<update id="deleteUser">
@@ -102,6 +131,7 @@
 		UPDATE users
 		SET password = #{newPassword}, updated_at = NOW()
 		WHERE id = #{userId}
+		AND deleted_at IS NULL
 	</update>
 
 	<!-- 작성한 게시글 수 -->
