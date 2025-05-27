@@ -114,4 +114,7 @@ public class GetBoard {
     @Schema(description = "유저 프로필 이미지", example = "default.png")
     private String profile;
 
+    @Schema(description = "찜 추가 or not", example = "true")
+    private boolean liked;
+
 }
