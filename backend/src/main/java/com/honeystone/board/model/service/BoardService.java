@@ -17,7 +17,7 @@ public interface BoardService {
 
 	public void createBoard(Long userId, Board board, MultipartFile file) throws IOException;
 
-	public void updateBoard(Long userId, Long id, Board board, MultipartFile file);
+	public void updateBoard(Long userId, Long id, Board board);
 
 	public void deleteBoard(MyUserPrincipal user, Long id);
 

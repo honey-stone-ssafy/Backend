@@ -158,13 +158,14 @@ public class BoardController {
 
 
 	@Operation(summary = "게시글 수정", description = """
-        PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
-        수정 가능한 필드: title, description, level, skill, wallColor, wall, file
-        ※ 파일이 포함되지 않으면 기존 파일이 유지됩니다.
-        
-        🔐 **인증 필요** 
-        요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
-    """,
+      		PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
+      		수정 가능한 필드: title, description, level, skill
+      		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다.
+      		게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
+
+		    🔐 **인증 필요** \s
+		    요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+		""",
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
@@ -185,16 +186,12 @@ public class BoardController {
 			)
 		}
 	)
-	@PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Void> updateBoard(
-		@AuthenticationPrincipal MyUserPrincipal user,
-		@PathVariable("id") Long id,
-		@Parameter(description = "게시글 정보와 첨부 파일, 클라이밍 정보", required = true)
-		@Valid @ModelAttribute Board board
-	) throws IOException {
-		boardService.updateBoard(user.getId(), id, board, board.getFile());
+	@PatchMapping("/{id}")
+	public ResponseEntity<Void> updateBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id, @RequestBody Board board){
+		boardService.updateBoard(user.getId(), id, board);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
 
 	@Operation(summary = "게시글 삭제", description = """
       		PathVariable로 지정된 게시글 ID의 내용을 삭제합니다.
