@@ -18,7 +18,7 @@ public interface UserService {
 	
 	Boolean confirmEmail(String email);
 	
-	List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname);
+	Page<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname, Pageable pageable);
 
 	GetUser updateUserProfile(MyUserPrincipal user, Long userId, String nickname, String description, MultipartFile file);
 

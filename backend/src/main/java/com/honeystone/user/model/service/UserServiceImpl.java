@@ -84,8 +84,14 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public List<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname) throws ServerException {
-		return userDao.searchByNickname(requestUser == null ? -1 : requestUser.getId(), nickname);
+	public Page<GetUser> searchUsersByNickname(MyUserPrincipal requestUser, String nickname, Pageable pageable) throws ServerException {
+		long total = userDao.countSearchByNickname(nickname);
+		int offset = pageable.getPageNumber() * pageable.getPageSize();
+		int size = pageable.getPageSize();
+
+		long requestUserId = requestUser == null ? -1 : requestUser.getId();
+		List<GetUser> users = userDao.searchByNickname(requestUserId, nickname, offset, size);
+		return new PageImpl<>(users, pageable, total);
 	}
 
 	@Override
@@ -147,7 +153,7 @@ public class UserServiceImpl implements UserService{
 			}
 		}
 		
-		return userDao.searchByNickname(userId, nickname).get(0);
+		return userDao.getUserByNickname(userId, nickname);
 	}
 
 	@Override
@@ -232,7 +238,7 @@ public class UserServiceImpl implements UserService{
 		if (nickname == null) {
 			throw new BusinessException("사용자를 찾을 수 없습니다.");
 		}
-		return userDao.searchByNickname(requestUser == null ? -1 : requestUser.getId(), nickname).get(0);
+		return userDao.getUserByNickname(requestUser == null ? -1 : requestUser.getId(), nickname);
 	}
 
 }

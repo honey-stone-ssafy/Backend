@@ -22,7 +22,7 @@ public interface UserDao {
 
 	User findByEmail(@Param("email") String email);
 	
-	List<GetUser> searchByNickname(@Param("requestUserId") Long requestUserId, String nickname);
+	List<GetUser> searchByNickname(@Param("requestUserId") Long requestUserId, @Param("nickname") String nickname, int offset, int size);
 
 	int existsById(Long userId);
 
@@ -36,7 +36,7 @@ public interface UserDao {
 
 	String findNicknameByUserId(Long userId);
 
-	void updateNicknameAndDescription(@Param("userId") Long userId, @Param("nickname")String nickname, @Param("description") String description);
+	void updateNicknameAndDescription(@Param("userId") Long userId, @Param("nickname") String nickname, @Param("description") String description);
 
 	void deleteUser(Long userId);
 
@@ -45,4 +45,8 @@ public interface UserDao {
 	long countBoards(Long userId);
 
 	List<GetBoard> getBoardList(Long userId, int offset, int size);
+
+	long countSearchByNickname(String nickname);
+
+	GetUser getUserByNickname(@Param("userId") Long userId, @Param("nickname") String nickname);
 }
