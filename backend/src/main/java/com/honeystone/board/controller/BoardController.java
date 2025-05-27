@@ -22,16 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.honeystone.board.model.service.BoardService;
 import com.honeystone.common.dto.board.Board;
@@ -52,6 +43,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/boards")
+@CrossOrigin
 @Tag(name= "Board API", description = "게시물 관련 API 입니다.")
 public class BoardController {
 
@@ -87,12 +79,14 @@ public class BoardController {
 		@ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = ApiError.class))),
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류", content = @Content(schema = @Schema(implementation = ApiError.class))) })
 	@GetMapping("")
-	public ResponseEntity<?> getBoardList(@ParameterObject @ModelAttribute SearchBoardCondition search,
+	public ResponseEntity<?> getBoardList(@AuthenticationPrincipal MyUserPrincipal user, @ParameterObject @ModelAttribute SearchBoardCondition search,
 										  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size) {
+
+
 		// 페이지네이션
 		Pageable pageable = PageRequest.of(page, size);
 
-		Page<GetBoard> list = boardService.getBoardList(search, pageable);
+		Page<GetBoard> list = boardService.getBoardList(user, search, pageable);
 
 		if (list == null || list.isEmpty()) {
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -114,8 +108,9 @@ public class BoardController {
 		}
 	)
 	@GetMapping("/{id}")
-	public ResponseEntity<GetBoard> getBoard(@PathVariable("id") Long id){
-		GetBoard board = boardService.getBoard(id);
+	public ResponseEntity<GetBoard> getBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id){
+
+		GetBoard board = boardService.getBoard(user, id);
 		
 		if (board == null) {
 			return new ResponseEntity<GetBoard>(HttpStatus.NO_CONTENT);
@@ -163,14 +158,13 @@ public class BoardController {
 
 
 	@Operation(summary = "게시글 수정", description = """
-      		PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
-      		수정 가능한 필드: title, description, level, skill, name, wallColor, wall
-      		※ 요청 바디에 포함된 값만 변경되고, 나머지는 그대로 유지됩니다.
-      		게시물 인덱스, 생성 및 수정 날짜는 empty value로 보내주세요.
-
-		    🔐 **인증 필요** \s
-		    요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
-		""",
+        PathVariable로 지정된 게시글 ID의 내용을 수정합니다.
+        수정 가능한 필드: title, description, level, skill, wallColor, wall, file
+        ※ 파일이 포함되지 않으면 기존 파일이 유지됩니다.
+        
+        🔐 **인증 필요** 
+        요청 시 Authorization 헤더에 JWT 토큰을 `Bearer {token}` 형식으로 포함해야 합니다.
+    """,
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
@@ -191,9 +185,14 @@ public class BoardController {
 			)
 		}
 	)
-	@PatchMapping("/{id}")
-	public ResponseEntity<Void> updateBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id, @RequestBody Board board){
-		boardService.updateBoard(user.getId(), id, board);
+	@PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Void> updateBoard(
+		@AuthenticationPrincipal MyUserPrincipal user,
+		@PathVariable("id") Long id,
+		@Parameter(description = "게시글 정보와 첨부 파일, 클라이밍 정보", required = true)
+		@Valid @ModelAttribute Board board
+	) throws IOException {
+		boardService.updateBoard(user.getId(), id, board, board.getFile());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
@@ -226,7 +225,7 @@ public class BoardController {
 	)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteBoard(@AuthenticationPrincipal MyUserPrincipal user, @PathVariable("id") Long id){
-		boardService.deleteBoard(user.getId(), id);
+		boardService.deleteBoard(user, id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

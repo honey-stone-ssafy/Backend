@@ -11,11 +11,12 @@ import com.honeystone.common.dto.board.BoardFile;
 import com.honeystone.common.dto.board.GetBoard;
 import com.honeystone.common.dto.searchCondition.SearchBoardCondition;
 import com.honeystone.common.dto.theClimb.TheClimb;
+import org.springframework.security.core.parameters.P;
 
 @Mapper
 public interface BoardDao {
 
-	 List<GetBoard> getBoardList(@Param("search") SearchBoardCondition search, @Param("pageable") Pageable pageable);
+	 List<GetBoard> getBoardList(@Param("userId") Long userId, @Param("search") SearchBoardCondition search, @Param("pageable") Pageable pageable);
 
 	 void createBoard(Board video);
 
@@ -37,11 +38,15 @@ public interface BoardDao {
 
 	 void deleteFile(Long id);
 
-	 GetBoard getBoard(Long id);
+	 GetBoard getBoard(@Param("userId") Long userId, @Param("id") Long id);
 
 	 List<Board> findBoardsToDelete();
 
 	 long countBoards(SearchBoardCondition search);
 
 	 void deleteTheClimbBoard(Long boardId);
+
+	BoardFile getBoardFile(Long boardId);
+	void deleteFileById(Long fileId);  // 특정 파일 삭제 (수정용)
+	void deleteFileByBoardId(Long boardId);  // 게시글의 모든 파일 삭제 (영구삭제용)
 }
