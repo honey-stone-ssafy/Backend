@@ -167,6 +167,7 @@
 		LEFT JOIN the_climb c ON cb.the_climb_id = c.id
 
 		WHERE b.user_id = #{userId}
+		AND b.deleted_at IS NULL
 		ORDER BY b.id DESC
 		LIMIT #{size} OFFSET #{offset}
 	</select>
