@@ -28,6 +28,7 @@
 		ON cb.the_climb_id = c.id  
 		
 		WHERE fav.user_id = #{userId}
+		AND b.deleted_at IS NULL
 		ORDER BY fav.id DESC
 		LIMIT #{size} OFFSET #{offset}
 	</select>
